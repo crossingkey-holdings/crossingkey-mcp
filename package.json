@@ -1,0 +1,20 @@
+{
+  "name": "crossingkey-revenue-mcp",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs",
+    "scan:files": "node scripts/scan-safe-files.mjs",
+    "stripe:sync": "node scripts/sync-stripe-links.mjs",
+    "stripe:webhook:create": "node scripts/create-webhook-endpoint.mjs",
+    "stripe:credits:redirect": "node scripts/activate-credit-redirects.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.0",
+    "express": "^5.1.0",
+    "stripe": "^18.5.0",
+    "zod": "^3.25.0"
+  }
+}
