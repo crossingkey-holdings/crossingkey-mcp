@@ -1,7 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "com.crossingkeyintelligence/revenue-mcp",
-  "description": "CrossingKey MCP for agent commerce, prepaid credits, and bounded paid XKEY validation.",
+  "name": "io.github.crossingkey-holdings/crossingkey-revenue",
+  "title": "CrossingKey Revenue",
+  "description": "Agent-native commerce and paid execution interface for CrossingKey Intelligence. Agents can discover capabilities, inspect offers, evaluate pricing and requirements, preflight purchases, acquire execution credits, and invoke paid capabilities through MCP.",
   "version": "2.1.0",
   "remotes": [
     {

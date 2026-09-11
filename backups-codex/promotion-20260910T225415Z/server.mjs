@@ -9,7 +9,6 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { CAPABILITIES as MACHINE_CAPABILITIES, RECEIVER as LOCKED_RECEIVER, createMachineCommerce } from './lib/machine-commerce.mjs';
 
 const HERE = process.cwd();
 const PORT = Number(process.env.PORT || 3000);
@@ -24,11 +23,6 @@ const SERVICES_FILE = path.join(HERE,'data','request_services.json');
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
 const CLAIM_SECRET = process.env.CLAIM_SECRET || '';
-const CK_RECEIVER_ADDRESS = process.env.CK_RECEIVER_ADDRESS || LOCKED_RECEIVER;
-const CK_ENABLE_MAINNET = process.env.CK_ENABLE_MAINNET === 'true';
-const X402_FACILITATOR_URL = process.env.X402_FACILITATOR_URL || 'https://x402.org/facilitator';
-const MACHINE_COMMERCE_FILE = process.env.MACHINE_COMMERCE_FILE || path.join(HERE,'data','machine_commerce.json');
-const KENNEKARTE_SECRET = process.env.CK_KENNEKARTE_HMAC_SECRET || CLAIM_SECRET;
 
 const XKEY_ROOT =
   process.env.XKEY_ROOT ||
@@ -45,15 +39,6 @@ const XKEY_CREDIT_DB =
 const XKEY_MAX_INPUT_CHARS = 100000;
 
 const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
-const machineCommerce = KENNEKARTE_SECRET.length >= 32 ? createMachineCommerce({
-  dataFile:MACHINE_COMMERCE_FILE,
-  receiver:CK_RECEIVER_ADDRESS,
-  network:CK_ENABLE_MAINNET?'eip155:8453':'eip155:84532',
-  mainnetEnabled:CK_ENABLE_MAINNET,
-  publicBaseUrl:PUBLIC_BASE_URL,
-  facilitatorUrl:X402_FACILITATOR_URL,
-  kennekarteSecret:KENNEKARTE_SECRET
-}) : null;
 const readJson = f => JSON.parse(fs.readFileSync(f,'utf8'));
 const writeJsonAtomic = (f, value) => {
   const tmp = `${f}.${process.pid}.tmp`;
@@ -162,7 +147,7 @@ const PROVIDER_PROFILE=Object.freeze({
   protocol:'MCP Streamable HTTP',
   commerce_model:'discover -> understand -> evaluate -> trust -> price -> authorize -> pay -> execute',
   discovery_policy:'Offer and capability metadata are readable before payment. Valuable execution and delivery remain gated.',
-  currency:'USD',payment_rails:['stripe_payment_links','prepaid_request_credits','x402_base_usdc'],
+  currency:'USD',payment_rails:['stripe_payment_links','prepaid_request_credits'],
   human_sites:['https://www.crossingkeyintelligence.com','https://shop.crossingkeyintelligence.com'],
   machine_site:'https://mcp.crossingkeyintelligence.com/mcp'
 });
@@ -193,8 +178,7 @@ function publicCapabilityList(){
     ['get_fulfillment_status','Fulfillment readiness','Checks verified delivery binding.'],
     ['list_request_services','Approved request services','Lists explicitly approved request services.']
   ].map(([tool,name,summary])=>({id:`tool.${tool}`,tool,name,summary,access:'free',price:{amount_usd:0}}));
-  const machine=MACHINE_CAPABILITIES.map(x=>({id:x.name,tool:x.name,name:x.name,summary:x.description,access:'paid',charging_model:'x402_exact',price:{amount_usd:Number(x.priceUsd),currency:'USD'},deterministic:true,ai_required:false,idempotency_required:true}));
-  return [...free,...PAID_CAPABILITIES,...machine];
+  return [...free,...PAID_CAPABILITIES];
 }
 function offerDescriptor(x){
   const p=publicOffer(x);
@@ -208,7 +192,7 @@ function offerDescriptor(x){
 }
 function findPublicItem(id){
   const offer=catalog().offers.find(v=>v.id===id); if(offer) return {type:'offer',value:offerDescriptor(offer)};
-  const cap=publicCapabilityList().find(v=>v.access==='paid'&&(v.id===id||v.tool===id)); if(cap) return {type:'capability',value:cap};
+  const cap=PAID_CAPABILITIES.find(v=>v.id===id||v.tool===id); if(cap) return {type:'capability',value:cap};
   return null;
 }
 function matchesQuery(item,q){return !q||JSON.stringify(item).toLowerCase().includes(String(q).trim().toLowerCase());}
@@ -359,88 +343,8 @@ app.use((err, req, res, next) => {
 app.get('/health',(_req,res)=>res.json({
   ok:true,service:'crossingkey-revenue-mcp',version:'2.1.0',
   stripe_configured:Boolean(stripe),webhook_configured:Boolean(STRIPE_WEBHOOK_SECRET),
-  claim_secret_configured:Boolean(CLAIM_SECRET),
-  machine_commerce_configured:Boolean(machineCommerce),
-  machine_commerce:machineCommerce?machineCommerce.status():{walletMode:'receiver-only',receiver:CK_RECEIVER_ADDRESS,mainnetEnabled:false,aiRequired:false,x402Versions:[1,2]}
+  claim_secret_configured:Boolean(CLAIM_SECRET)
 }));
-
-app.get('/.well-known/x402',(_req,res)=>res.json({
-  x402Version:2,
-  ingress:[{version:1,requestHeader:'X-PAYMENT',responseHeader:'X-PAYMENT-RESPONSE'},{version:2,requestHeader:'PAYMENT-SIGNATURE',challengeHeader:'PAYMENT-REQUIRED',responseHeader:'PAYMENT-RESPONSE'}],
-  networks:['eip155:84532'],
-  mainnetEnabled:CK_ENABLE_MAINNET,
-  receiver:CK_RECEIVER_ADDRESS,
-  walletMode:'receiver-only',
-  capabilities:MACHINE_CAPABILITIES.map(({name,priceUsd})=>({name,priceUsd}))
-}));
-
-app.get('/.well-known/mcp.json',(_req,res)=>res.json({name:'CrossingKey Revenue MCP',version:'2.1.0',endpoint:`${PUBLIC_BASE_URL}/mcp`,transport:'streamable-http',machineCommerce:true}));
-
-app.get('/api/machine-commerce/status',(_req,res)=>res.json(machineCommerce?machineCommerce.status():{configured:false,receiver:CK_RECEIVER_ADDRESS,mainnetEnabled:false}));
-
-app.post('/api/x402/:capability',async(req,res)=>{
-  try{
-    if(!machineCommerce) return res.status(503).json({error:'machine_commerce_not_configured'});
-    const capabilityName=String(req.params.capability||'');
-    if(!MACHINE_CAPABILITIES.some(x=>x.name===capabilityName)) return res.status(404).json({error:'unknown_capability'});
-    const input=req.body?.input;
-    const idempotencyKey=String(req.body?.idempotency_key||req.headers['idempotency-key']||'');
-    if(!input||typeof input!=='object'||Array.isArray(input)) return res.status(400).json({error:'input_object_required'});
-    if(!/^[A-Za-z0-9._:-]{8,160}$/.test(idempotencyKey)) return res.status(400).json({error:'bounded_idempotency_key_required'});
-    const v1Header=req.headers['x-payment'];
-    const v2Header=req.headers['payment-signature'];
-    if(!v1Header&&!v2Header){
-      const requested=String(req.query.x402Version||req.headers['x402-version']||'2');
-      const version=requested==='1'?1:2;
-      const challenge=machineCommerce.paymentRequired(capabilityName,version);
-      for(const [name,value] of Object.entries(challenge.headers)) res.set(name,value);
-      return res.status(402).json(challenge.body);
-    }
-    if(v1Header&&v2Header) return res.status(400).json({error:'ambiguous_payment_headers'});
-    const paymentPayload=decodeBase64Json(v1Header||v2Header);
-    const expectedVersion=v1Header?1:2;
-
-    console.error(
-      `[x402] paid_ingress capability=${capabilityName} version=${expectedVersion} idempotency=${idempotencyKey}`
-    );
-
-    if(paymentPayload.x402Version!==expectedVersion) return res.status(400).json({error:'payment_header_version_mismatch'});
-
-    console.error(`[x402] invoke_start capability=${capabilityName}`);
-
-    const result=await machineCommerce.invoke({
-      capabilityName,
-      input,
-      idempotencyKey,
-      paymentPayload
-    });
-
-    console.error(
-      `[x402] invoke_ok capability=${capabilityName} purchase=${result.purchaseId||'duplicate'}`
-    );
-
-    const settlementHeader=Buffer.from(JSON.stringify(result.settlement)).toString('base64');
-    res.set(expectedVersion===1?'X-PAYMENT-RESPONSE':'PAYMENT-RESPONSE',settlementHeader);
-    return res.json(result);
-  }catch(err){
-    const message=String(err?.message||'x402 execution failed');
-
-    console.error(
-      `[x402] route_error name=${String(err?.name||'Error')} message=${message.slice(0,240)}`
-    );
-
-    const client=/required|mismatch|unsupported|invalid|conflict|replay|disabled/i.test(message);
-    return res.status(client?400:502).json({
-      error:client?'invalid_payment_or_request':'settlement_or_execution_failed',
-      message
-    });
-  }
-});
-
-function decodeBase64Json(value){
-  try{return JSON.parse(Buffer.from(String(value),'base64').toString('utf8'));}
-  catch{throw new Error('Invalid payment header encoding');}
-}
 
 app.get('/claim',async(req,res)=>{
   res.set('Cache-Control','no-store');
@@ -597,19 +501,6 @@ function makeMcpServer(authContext=null){
     const services=requestServices();
     return {structuredContent:{services},content:[{type:'text',text:services.length?`${services.length} request services available.`:'No request services have been approved yet.'}]};
   });
-
-  const freeResult=(data,text)=>({structuredContent:data,content:[{type:'text',text}]});
-  s.registerTool('crossingkey.describe',{description:'FREE. Describes the receiver-only CrossingKey machine-commerce service and its safety boundaries.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({provider:PROVIDER_PROFILE,wallet_mode:'receiver-only',receiver:CK_RECEIVER_ADDRESS,mainnet_enabled:CK_ENABLE_MAINNET,ai_required:false,x402_versions:[1,2]},'CrossingKey machine-commerce metadata returned. No payment consumed.'));
-  s.registerTool('capabilities.list',{description:'FREE. Lists deterministic paid machine-commerce capabilities without executing them.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({items:MACHINE_CAPABILITIES,count:MACHINE_CAPABILITIES.length},`${MACHINE_CAPABILITIES.length} deterministic capabilities listed. No payment consumed.`));
-  s.registerTool('capability.get',{description:'FREE. Returns one deterministic capability definition and exact advertised price.',inputSchema:{name:z.string().min(1).max(160)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({name})=>{const item=MACHINE_CAPABILITIES.find(x=>x.name===name); return item?freeResult({item},'Capability metadata returned. No payment consumed.'):{isError:true,content:[{type:'text',text:'Unknown capability.'}]};});
-  s.registerTool('capability.quote',{description:'FREE. Returns x402 v1 and v2 challenge requirements for one capability without executing or settling payment.',inputSchema:{name:z.string().min(1).max(160)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({name})=>{if(!machineCommerce)return {isError:true,content:[{type:'text',text:'Machine commerce is not configured.'}]}; try{return freeResult({v1:machineCommerce.paymentRequired(name,1).body,v2:JSON.parse(Buffer.from(machineCommerce.paymentRequired(name,2).headers['PAYMENT-REQUIRED'],'base64').toString('utf8'))},'Bilingual x402 quote returned. No payment consumed.');}catch{return {isError:true,content:[{type:'text',text:'Unknown capability.'}]};}});
-  s.registerTool('payment.methods',{description:'FREE. Lists supported payment methods and explicitly reports the receiver-only wallet boundary.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({methods:[{rail:'stripe_payment_links',mode:'existing'},{rail:'prepaid_request_credits',mode:'existing'},{rail:'x402',versions:[1,2],network:CK_ENABLE_MAINNET?'eip155:8453':'eip155:84532',asset:'USDC',receiver:CK_RECEIVER_ADDRESS}],wallet_authority:{receive:true,sign:false,send:false,swap:false,bridge:false,agent_spend:false}},'Payment methods returned. No payment consumed.'));
-  s.registerTool('purchase.status',{description:'FREE STATUS. Returns the state of a machine-commerce purchase by its idempotency key without revealing paid result content.',inputSchema:{idempotency_key:z.string().min(8).max(160)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({idempotency_key})=>{const p=machineCommerce?.getPurchase(idempotency_key); return freeResult(p?{found:true,status:p.response.status,purchaseId:p.response.purchaseId,entitlementId:p.response.entitlementId,resultHash:p.response.receipt.resultHash}:{found:false},p?'Purchase status returned.':'Purchase not found.');});
-  s.registerTool('entitlement.inspect',{description:'FREE STATUS. Inspects entitlement state by identifier without granting execution or result access.',inputSchema:{id:z.string().min(1).max(200)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({id})=>freeResult({entitlement:machineCommerce?.inspectEntitlement(id)||null},'Entitlement status returned.'));
-  s.registerTool('fulfillment.status',{description:'FREE STATUS. Returns fulfillment state and result hash by purchase idempotency key.',inputSchema:{idempotency_key:z.string().min(8).max(160)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({idempotency_key})=>{const p=machineCommerce?.getPurchase(idempotency_key); return freeResult(p?{found:true,status:p.response.status,resultHash:p.response.receipt.resultHash}:{found:false},'Fulfillment status returned.');});
-  s.registerTool('fulfillment.get',{description:'FREE STATUS. Returns fulfillment identifiers and integrity binding but does not disclose paid result content.',inputSchema:{idempotency_key:z.string().min(8).max(160)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({idempotency_key})=>{const p=machineCommerce?.getPurchase(idempotency_key); return freeResult(p?{found:true,purchaseId:p.response.purchaseId,entitlementId:p.response.entitlementId,resultHash:p.response.receipt.resultHash,receiptId:p.response.receipt.id}:{found:false},'Fulfillment binding returned.');});
-  s.registerTool('receipt.verify',{description:'FREE. Recomputes the deterministic result hash embedded in a CrossingKey receipt.',inputSchema:{receipt:z.record(z.unknown())},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({receipt})=>freeResult({valid:Boolean(machineCommerce?.verifyReceipt(receipt)),receiptId:receipt?.id||null},'Receipt integrity checked.'));
-  s.registerTool('health',{description:'FREE. Returns local service readiness flags and the mainnet safety-gate state.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({ok:true,stripeConfigured:Boolean(stripe),machineCommerceConfigured:Boolean(machineCommerce),mainnetEnabled:CK_ENABLE_MAINNET,walletMode:'receiver-only'},'Health status returned.'));
 
   s.registerTool('xkey_validate_intake',{
     title:'Validate structured XKEY intake',

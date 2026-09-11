@@ -1,6 +1,6 @@
 {
   "name": "crossingkey-revenue-mcp",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,8 +13,14 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.0",
+    "@x402/core": "^2.25.0",
+    "@x402/evm": "^2.25.0",
+    "@x402/fetch": "^2.25.0",
+    "dotenv": "^17.4.2",
     "express": "^5.1.0",
     "stripe": "^18.5.0",
+    "viem": "^2.56.3",
     "zod": "^3.25.0"
-  }
+  },
+  "license": "SEE LICENSE IN LICENSE"
 }

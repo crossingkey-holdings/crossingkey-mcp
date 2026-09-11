@@ -1,0 +1,33 @@
+CrossingKey Proprietary License — Version 1.0
+Copyright (c) 2026 Jeremy Paul Allen / crossingkey. All rights reserved.
+
+Scope. These terms apply only to original CrossingKey-owned material for which
+the rights holder has authority to grant this license. Third-party components,
+notices, and previously granted licenses remain governed by their own terms.
+This license does not revoke rights already granted under earlier licenses.
+
+Permission. You may view the covered source and make a local copy solely for
+private, noncommercial inspection and evaluation. You may run that copy locally
+solely for evaluation. Preserve all copyright, license, and attribution notices.
+
+Restrictions. Except for the permission above, mandatory legal rights, or rights
+under the hosting platform terms, no permission is granted to redistribute,
+sublicense, sell, commercially deploy, host as a service, or distribute modified
+versions of covered material. No permission is granted to use covered material
+to train or fine-tune machine learning models. Other uses require prior written
+authorization from the rights holder. No trademark or patent license is granted.
+
+Ownership boundary. No ownership is claimed in MCP, x402, Base, USDC, Ethereum,
+EVM conventions, EIP-3009, public standards, third-party software, or unprotectable
+ideas or methods. Third-party licenses prevail for the material they govern.
+
+Termination. The permissions granted here terminate upon material breach.
+On termination, stop use and delete copies except those required by law.
+
+Disclaimer. THE COVERED MATERIAL IS PROVIDED AS IS, WITHOUT WARRANTIES OF ANY
+KIND, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
+NONINFRINGEMENT. TO THE EXTENT PERMITTED BY LAW, THE RIGHTS HOLDER IS NOT LIABLE
+FOR CLAIMS, DAMAGES, OR OTHER LIABILITY ARISING FROM THE MATERIAL OR ITS USE.
+
+Commercial licensing: founder@crossingkeyintelligence.com
+This is a proprietary, source-visible license, not an open-source license.
