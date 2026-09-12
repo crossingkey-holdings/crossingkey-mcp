@@ -8,7 +8,7 @@ https://mcp.crossingkeyintelligence.com/mcp
 
 Canonical MCP Registry identity:
 
-`com.crossingkeyintelligence/revenue-mcp`
+`com.crossingkeyintelligence/crossingkey-mcp`
 
 Current public discovery version:
 
@@ -20,7 +20,7 @@ CrossingKey MCP is a machine-commerce MCP endpoint designed for AI agents and ot
 
 Directories, registries, agents, crawlers, and integrations should prefer the canonical identity:
 
-`com.crossingkeyintelligence/revenue-mcp`
+`com.crossingkeyintelligence/crossingkey-mcp`
 
 rather than the ambiguous short name `revenue-mcp`.
 
@@ -182,7 +182,7 @@ Canonical endpoint:
 
 Canonical registry identity:
 
-`com.crossingkeyintelligence/revenue-mcp`
+`com.crossingkeyintelligence/crossingkey-mcp`
 
 ## CrossingKey Intelligence
 
