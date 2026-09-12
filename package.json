@@ -1,6 +1,6 @@
 {
-  "name": "crossingkey-revenue-mcp",
-  "version": "2.0.0",
+  "name": "crossingkey-mcp",
+  "version": "2.2.0",
   "private": true,
   "type": "module",
   "scripts": {

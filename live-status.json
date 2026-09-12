@@ -1,0 +1,30 @@
+{
+  "name": "CrossingKey MCP",
+  "runtimeName": "crossingkey-mcp",
+  "canonicalIdentity": "com.crossingkeyintelligence/crossingkey-mcp",
+  "version": "2.2.0",
+  "endpoint": "https://mcp.crossingkeyintelligence.com/mcp",
+  "wellKnown": "https://mcp.crossingkeyintelligence.com/.well-known/mcp.json",
+  "transport": "streamable-http",
+  "machineCommerce": true,
+  "mcpInitializeVerified": true,
+  "publicEndpointVerified": true,
+  "x402": {
+    "supported": true,
+    "generation": "v2",
+    "scheme": "exact",
+    "validatedNetwork": "eip155:84532",
+    "validatedChain": "Base Sepolia",
+    "asset": "USDC",
+    "baseMainnetEnabled": false
+  },
+  "execution": {
+    "deterministicXkey": true,
+    "entitlements": true,
+    "resultHashing": true,
+    "receiptBinding": true,
+    "replayResistance": true,
+    "idempotentRequests": true
+  },
+  "verifiedAt": "2026-09-12"
+}

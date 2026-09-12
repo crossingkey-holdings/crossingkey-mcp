@@ -22,7 +22,30 @@ Directories, registries, agents, crawlers, and integrations should prefer the ca
 
 `com.crossingkeyintelligence/crossingkey-mcp`
 
-rather than the ambiguous short name `revenue-mcp`.
+
+## Live service status
+
+The production service has been verified end-to-end through the public Cloudflare endpoint.
+
+- Public endpoint: `https://mcp.crossingkeyintelligence.com/mcp`
+- Human-facing name: `CrossingKey MCP`
+- MCP runtime name: `crossingkey-mcp`
+- Version: `2.2.0`
+- Transport: Streamable HTTP
+- Machine commerce: enabled
+- MCP initialize: verified
+- Public Cloudflare path: verified
+- Canonical registry identity: `com.crossingkeyintelligence/crossingkey-mcp`
+
+The live MCP initialize response identifies the server as:
+
+`crossingkey-mcp` version `2.2.0`
+
+The public well-known metadata identifies the service as:
+
+`CrossingKey MCP` version `2.2.0`
+
+These identifiers refer to the same production MCP service.
 
 ## Transport
 
