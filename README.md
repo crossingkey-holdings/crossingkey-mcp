@@ -10,9 +10,11 @@ Canonical MCP Registry identity:
 
 `com.crossingkeyintelligence/crossingkey-mcp`
 
-Current public discovery version:
+Current production discovery version:
 
 `2.3.0`
+
+Local release candidate: `2.4.0`. Production remains at `2.3.0` until an authorized deployment and Registry publication.
 
 ## What CrossingKey MCP is
 
@@ -101,6 +103,20 @@ Current validated test-network profile:
 Base mainnet is not enabled by this public metadata.
 
 No agent is granted unrestricted spending authority by CrossingKey MCP.
+
+## v2.4.0 discovery candidate
+
+The local v2.4.0 candidate adds official x402 Bazaar discovery metadata to every paid HTTP capability. Each v2 payment challenge declares a concrete POST request example, bounded JSON input schema, and representative output example. An unpaid request receives this discovery-bearing 402 challenge before execution-input validation; after a payment header is supplied, the server validates the bounded input before verification, settlement, execution, entitlement issuance, or receipt creation.
+
+The advertised paid capabilities are:
+
+- `x402.compatibility_audit`
+- `mcp.schema_audit`
+- `openapi.quality_audit`
+- `machine_commerce.readiness_audit`
+- `artifact.integrity_manifest`
+
+x402 v1 remains supported without changing its legacy challenge format. x402 v2 uses the official `@x402/extensions` Bazaar declaration implementation.
 
 ## Execution model
 

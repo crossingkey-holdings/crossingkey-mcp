@@ -1,6 +1,6 @@
 {
   "name": "crossingkey-mcp",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.0",
+    "@x402/extensions": "2.26.0",
     "express": "^5.1.0",
     "stripe": "^18.5.0",
     "zod": "^3.25.0"

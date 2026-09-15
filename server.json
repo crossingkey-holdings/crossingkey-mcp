@@ -1,8 +1,14 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.crossingkeyintelligence/crossingkey-mcp",
-  "description": "CrossingKey MCP for agent commerce, x402 payments, deterministic execution, and verifiable receipts.",
-  "version": "2.3.0",
+  "title": "CrossingKey MCP",
+  "description": "Paid MCP and x402 audits, integrity manifests, entitlements, and verifiable receipts for agents.",
+  "version": "2.4.0",
+  "websiteUrl": "https://www.crossingkeyintelligence.com",
+  "repository": {
+    "url": "https://github.com/crossingkey-holdings/crossingkey-mcp",
+    "source": "github"
+  },
   "remotes": [
     {
       "type": "streamable-http",

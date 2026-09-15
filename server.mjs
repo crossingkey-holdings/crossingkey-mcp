@@ -10,6 +10,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { CAPABILITIES as MACHINE_CAPABILITIES, RECEIVER as LOCKED_RECEIVER, createMachineCommerce } from './lib/machine-commerce.mjs';
+import { validatePaidCapabilityInput } from './lib/discovery.mjs';
 import { verifyOnchain } from './lib/onchain-verifier.mjs';
 
 const HERE = process.cwd();
@@ -310,7 +311,7 @@ app.disable('x-powered-by');
 app.get("/", (req, res) => {
   res.status(200).json({
     name: "CrossingKey MCP",
-    version: "2.3.0",
+    version: "2.4.0",
     status: "operational",
     description:
       "Public MCP endpoint for agent commerce, digital products, prepaid execution credits, fulfillment, and bounded paid capabilities.",
@@ -358,7 +359,7 @@ app.use((err, req, res, next) => {
 });
 
 app.get('/health',(_req,res)=>res.json({
-  ok:true,service:'crossingkey-mcp',version:'2.3.0',
+  ok:true,service:'crossingkey-mcp',version:'2.4.0',
   stripe_configured:Boolean(stripe),webhook_configured:Boolean(STRIPE_WEBHOOK_SECRET),
   claim_secret_configured:Boolean(CLAIM_SECRET),
   machine_commerce_configured:Boolean(machineCommerce),
@@ -368,14 +369,14 @@ app.get('/health',(_req,res)=>res.json({
 app.get('/.well-known/x402',(_req,res)=>res.json({
   x402Version:2,
   ingress:[{version:1,requestHeader:'X-PAYMENT',responseHeader:'X-PAYMENT-RESPONSE'},{version:2,requestHeader:'PAYMENT-SIGNATURE',challengeHeader:'PAYMENT-REQUIRED',responseHeader:'PAYMENT-RESPONSE'}],
-  networks:['eip155:84532'],
+  networks:CK_ENABLE_MAINNET?['eip155:8453','eip155:84532']:['eip155:84532'],
   mainnetEnabled:CK_ENABLE_MAINNET,
   receiver:CK_RECEIVER_ADDRESS,
   walletMode:'receiver-only',
   capabilities:MACHINE_CAPABILITIES.map(({name,priceUsd})=>({name,priceUsd}))
 }));
 
-app.get('/.well-known/mcp.json',(_req,res)=>res.json({name:'CrossingKey MCP',version:'2.3.0',endpoint:`${PUBLIC_BASE_URL}/mcp`,transport:'streamable-http',machineCommerce:true}));
+app.get('/.well-known/mcp.json',(_req,res)=>res.json({name:'CrossingKey MCP',version:'2.4.0',endpoint:`${PUBLIC_BASE_URL}/mcp`,transport:'streamable-http',machineCommerce:true}));
 
 app.get('/api/machine-commerce/status',(_req,res)=>res.json(machineCommerce?machineCommerce.status():{configured:false,receiver:CK_RECEIVER_ADDRESS,mainnetEnabled:false}));
 
@@ -384,10 +385,6 @@ app.post('/api/x402/:capability',async(req,res)=>{
     if(!machineCommerce) return res.status(503).json({error:'machine_commerce_not_configured'});
     const capabilityName=String(req.params.capability||'');
     if(!MACHINE_CAPABILITIES.some(x=>x.name===capabilityName)) return res.status(404).json({error:'unknown_capability'});
-    const input=req.body?.input;
-    const idempotencyKey=String(req.body?.idempotency_key||req.headers['idempotency-key']||'');
-    if(!input||typeof input!=='object'||Array.isArray(input)) return res.status(400).json({error:'input_object_required'});
-    if(!/^[A-Za-z0-9._:-]{8,160}$/.test(idempotencyKey)) return res.status(400).json({error:'bounded_idempotency_key_required'});
     const v1Header=req.headers['x-payment'];
     const v2Header=req.headers['payment-signature'];
     if(!v1Header&&!v2Header){
@@ -398,6 +395,11 @@ app.post('/api/x402/:capability',async(req,res)=>{
       return res.status(402).json(challenge.body);
     }
     if(v1Header&&v2Header) return res.status(400).json({error:'ambiguous_payment_headers'});
+    const input=req.body?.input;
+    const idempotencyKey=String(req.body?.idempotency_key||req.headers['idempotency-key']||'');
+    if(!/^[A-Za-z0-9._:-]{8,160}$/.test(idempotencyKey)) return res.status(400).json({error:'bounded_idempotency_key_required'});
+    const inputValidation=validatePaidCapabilityInput(capabilityName,input);
+    if(!inputValidation.ok) return res.status(400).json({error:inputValidation.code});
     const paymentPayload=decodeBase64Json(v1Header||v2Header);
     const expectedVersion=v1Header?1:2;
 
@@ -525,7 +527,7 @@ app.get('/api/credits/balance',(req,res)=>{
 });
 
 function makeMcpServer(authContext=null){
-  const s=new McpServer({name:'crossingkey-mcp',version:'2.3.0'});
+  const s=new McpServer({name:'crossingkey-mcp',version:'2.4.0'});
 
   s.registerTool('discover_provider',{title:'Discover CrossingKey Intelligence',description:'FREE DISCOVERY. Returns provider identity, commerce model, payment rails, policy, and next actions before payment.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>{
     const data={...PROVIDER_PROFILE,agent_commerce_version:AGENT_COMMERCE_VERSION,authority_boundary:{money:'human_or_predelegated_authority',identity:'external_authority',credentials:'external_authority',payment_execution:'outside_ordinary_mcp_computation',raw_payment_credentials_accepted:false,agent_may_discover:true,agent_may_evaluate:true,agent_may_estimate:true,agent_may_prepare:true,agent_may_spend_without_authority:false},counts:{offers:catalog().offers.length,request_credit_packs:creditPacks().length,request_services:requestServices().length,capabilities:publicCapabilityList().length},recommended_sequence:['discover_provider','list_capabilities','list_offers','get_offer','check_requirements','estimate_cost','preview_result_schema','execution_preflight','get_stripe_checkout_link']};
