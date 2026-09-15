@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.crossingkeyintelligence/crossingkey-mcp",
-  "description": "CrossingKey MCP for agent commerce, native x402 payments, prepaid credits, deterministic XKEY execution, entitlement issuance, replay-resistant fulfillment, and machine-verifiable receipts.",
+  "description": "CrossingKey MCP for agent commerce, x402 payments, deterministic execution, and verifiable receipts.",
   "version": "2.2.0",
   "remotes": [
     {
