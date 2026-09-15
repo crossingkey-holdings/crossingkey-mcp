@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.crossingkeyintelligence/crossingkey-mcp",
   "description": "CrossingKey MCP for agent commerce, x402 payments, deterministic execution, and verifiable receipts.",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "remotes": [
     {
       "type": "streamable-http",

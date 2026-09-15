@@ -12,7 +12,7 @@ Canonical MCP Registry identity:
 
 Current public discovery version:
 
-`2.2.0`
+`2.3.0`
 
 ## What CrossingKey MCP is
 
@@ -30,7 +30,7 @@ The production service has been verified end-to-end through the public Cloudflar
 - Public endpoint: `https://mcp.crossingkeyintelligence.com/mcp`
 - Human-facing name: `CrossingKey MCP`
 - MCP runtime name: `crossingkey-mcp`
-- Version: `2.2.0`
+- Version: `2.3.0`
 - Transport: Streamable HTTP
 - Machine commerce: enabled
 - MCP initialize: verified
@@ -39,11 +39,11 @@ The production service has been verified end-to-end through the public Cloudflar
 
 The live MCP initialize response identifies the server as:
 
-`crossingkey-mcp` version `2.2.0`
+`crossingkey-mcp` version `2.3.0`
 
 The public well-known metadata identifies the service as:
 
-`CrossingKey MCP` version `2.2.0`
+`CrossingKey MCP` version `2.3.0`
 
 These identifiers refer to the same production MCP service.
 

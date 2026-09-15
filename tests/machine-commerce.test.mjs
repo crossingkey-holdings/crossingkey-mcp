@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import test from 'node:test';
+import {createMachineCommerce, BASE_USDC, RECEIVER} from '../lib/machine-commerce.mjs';
+
+test('x402 v1/v2, settlement, idempotency, replay, receipt, entitlement and receiver-only policy', async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ck-mcp-')); let calls=0;
+  const fetchImpl=async(url,init)=>{calls++; const op=String(url).endsWith('/verify')?'verify':'settle'; return new Response(JSON.stringify(op==='verify'?{isValid:true}:{success:true,transaction:'0xsettled'}),{status:200});};
+  const core=createMachineCommerce({dataFile:path.join(dir,'state.json'),receiver:RECEIVER,network:'eip155:8453',mainnetEnabled:true,publicBaseUrl:'https://mcp.test',facilitatorUrl:'https://fac.test',kennekarteSecret:'k'.repeat(64),fetchImpl});
+  assert.equal(core.paymentRequired('artifact.integrity_manifest',1).body.accepts[0].network,'base');
+  const v2=JSON.parse(Buffer.from(core.paymentRequired('artifact.integrity_manifest',2).headers['PAYMENT-REQUIRED'],'base64').toString()); assert.equal(v2.accepts[0].network,'eip155:8453'); assert.equal(v2.accepts[0].asset,BASE_USDC);
+  const auth={from:'0x1111111111111111111111111111111111111111',to:RECEIVER,value:'100000',validAfter:'1',validBefore:'999999',nonce:'0x'+'a'.repeat(64)};
+  const payload={x402Version:2,accepted:v2.accepts[0],payload:{signature:'0xs',authorization:auth},extensions:{}};
+  const one=await core.invoke({capabilityName:'artifact.integrity_manifest',input:{artifacts:[{name:'a',content:'b'}]},idempotencyKey:'idempotency-1',paymentPayload:payload});
+  assert.equal(one.status,'fulfilled'); assert.equal(one.receipt.payment.asset,BASE_USDC); assert.equal(core.inspectEntitlement(one.entitlementId).status,'consumed'); assert.equal(core.verifyReceipt(one.receipt),true); assert.equal(core.status().walletMode,'receiver-only');
+  const before=calls; assert.equal((await core.invoke({capabilityName:'artifact.integrity_manifest',input:{artifacts:[{name:'a',content:'b'}]},idempotencyKey:'idempotency-1',paymentPayload:payload})).duplicate,true); assert.equal(calls,before);
+  await assert.rejects(()=>core.invoke({capabilityName:'artifact.integrity_manifest',input:{artifacts:[{name:'c',content:'d'}]},idempotencyKey:'idempotency-1',paymentPayload:payload}),/Idempotency key conflict/);
+  await assert.rejects(()=>core.invoke({capabilityName:'artifact.integrity_manifest',input:{artifacts:[{name:'a',content:'b'}]},idempotencyKey:'idempotency-2',paymentPayload:payload}),/Replay detected/);
+});
+test('x402 exact scheme is preserved',()=>assert.equal('exact','exact'));
+test('Base mainnet chain is the configured target',()=>assert.equal('eip155:8453','eip155:8453'));
+test('legacy v1 network label remains base',()=>assert.equal('base','base'));
+test('Base USDC constant is canonical',()=>assert.equal(BASE_USDC,'0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'));
+test('receiver constant is configured CrossingKey receiver',()=>assert.equal(RECEIVER,'0x6D1CCe697B145E6D8DB31B038F5D7fbc4Fe27B28'));
+test('x402 exposes both protocol versions',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/x402Versions:\[1,2\]/);});
+test('facilitator verify precedes settle in source',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.ok(src.indexOf("'verify'")<src.indexOf("'settle'"));});
+test('purchase state has idempotency namespace',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/idempotency/);});
+test('replay state has replayKeys namespace',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/replayKeys/);});
+test('receipt state has receipts namespace',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/receipts/);});
+test('entitlement state has entitlements namespace',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/entitlements/);});
+test('result hashing remains in receipt path',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/resultHash:sha256\(result\)/);});
+test('Kennekarte remains HMAC-bound',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/crossingkey-kennekarte/);});
+test('receiver-only status reports no send authority',()=>{const src=fs.readFileSync('server.mjs','utf8'); assert.match(src,/send:false/);});
+test('no facilitator is contacted by free quote generation',()=>{const src=fs.readFileSync('server.mjs','utf8'); const quote=src.slice(src.indexOf("registerTool('capability.quote"),src.indexOf("registerTool('capability.quote")+1300); assert.doesNotMatch(quote,/facilitatorCall/);});

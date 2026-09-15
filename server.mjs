@@ -10,6 +10,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { CAPABILITIES as MACHINE_CAPABILITIES, RECEIVER as LOCKED_RECEIVER, createMachineCommerce } from './lib/machine-commerce.mjs';
+import { verifyOnchain } from './lib/onchain-verifier.mjs';
 
 const HERE = process.cwd();
 const PORT = Number(process.env.PORT || 3000);
@@ -309,7 +310,7 @@ app.disable('x-powered-by');
 app.get("/", (req, res) => {
   res.status(200).json({
     name: "CrossingKey MCP",
-    version: "2.2.0",
+    version: "2.3.0",
     status: "operational",
     description:
       "Public MCP endpoint for agent commerce, digital products, prepaid execution credits, fulfillment, and bounded paid capabilities.",
@@ -357,7 +358,7 @@ app.use((err, req, res, next) => {
 });
 
 app.get('/health',(_req,res)=>res.json({
-  ok:true,service:'crossingkey-mcp',version:'2.2.0',
+  ok:true,service:'crossingkey-mcp',version:'2.3.0',
   stripe_configured:Boolean(stripe),webhook_configured:Boolean(STRIPE_WEBHOOK_SECRET),
   claim_secret_configured:Boolean(CLAIM_SECRET),
   machine_commerce_configured:Boolean(machineCommerce),
@@ -374,7 +375,7 @@ app.get('/.well-known/x402',(_req,res)=>res.json({
   capabilities:MACHINE_CAPABILITIES.map(({name,priceUsd})=>({name,priceUsd}))
 }));
 
-app.get('/.well-known/mcp.json',(_req,res)=>res.json({name:'CrossingKey MCP',version:'2.2.0',endpoint:`${PUBLIC_BASE_URL}/mcp`,transport:'streamable-http',machineCommerce:true}));
+app.get('/.well-known/mcp.json',(_req,res)=>res.json({name:'CrossingKey MCP',version:'2.3.0',endpoint:`${PUBLIC_BASE_URL}/mcp`,transport:'streamable-http',machineCommerce:true}));
 
 app.get('/api/machine-commerce/status',(_req,res)=>res.json(machineCommerce?machineCommerce.status():{configured:false,receiver:CK_RECEIVER_ADDRESS,mainnetEnabled:false}));
 
@@ -524,7 +525,7 @@ app.get('/api/credits/balance',(req,res)=>{
 });
 
 function makeMcpServer(authContext=null){
-  const s=new McpServer({name:'crossingkey-mcp',version:'2.2.0'});
+  const s=new McpServer({name:'crossingkey-mcp',version:'2.3.0'});
 
   s.registerTool('discover_provider',{title:'Discover CrossingKey Intelligence',description:'FREE DISCOVERY. Returns provider identity, commerce model, payment rails, policy, and next actions before payment.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>{
     const data={...PROVIDER_PROFILE,agent_commerce_version:AGENT_COMMERCE_VERSION,authority_boundary:{money:'human_or_predelegated_authority',identity:'external_authority',credentials:'external_authority',payment_execution:'outside_ordinary_mcp_computation',raw_payment_credentials_accepted:false,agent_may_discover:true,agent_may_evaluate:true,agent_may_estimate:true,agent_may_prepare:true,agent_may_spend_without_authority:false},counts:{offers:catalog().offers.length,request_credit_packs:creditPacks().length,request_services:requestServices().length,capabilities:publicCapabilityList().length},recommended_sequence:['discover_provider','list_capabilities','list_offers','get_offer','check_requirements','estimate_cost','preview_result_schema','execution_preflight','get_stripe_checkout_link']};
@@ -639,6 +640,7 @@ function makeMcpServer(authContext=null){
   s.registerTool('fulfillment.get',{description:'FREE STATUS. Returns fulfillment identifiers and integrity binding but does not disclose paid result content.',inputSchema:{idempotency_key:z.string().min(8).max(160)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({idempotency_key})=>{const p=machineCommerce?.getPurchase(idempotency_key); return freeResult(p?{found:true,purchaseId:p.response.purchaseId,entitlementId:p.response.entitlementId,resultHash:p.response.receipt.resultHash,receiptId:p.response.receipt.id}:{found:false},'Fulfillment binding returned.');});
   s.registerTool('receipt.verify',{description:'FREE. Recomputes the deterministic result hash embedded in a CrossingKey receipt.',inputSchema:{receipt:z.record(z.unknown())},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({receipt})=>freeResult({valid:Boolean(machineCommerce?.verifyReceipt(receipt)),receiptId:receipt?.id||null},'Receipt integrity checked.'));
   s.registerTool('health',{description:'FREE. Returns local service readiness flags and the mainnet safety-gate state.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({ok:true,stripeConfigured:Boolean(stripe),machineCommerceConfigured:Boolean(machineCommerce),mainnetEnabled:CK_ENABLE_MAINNET,walletMode:'receiver-only'},'Health status returned.'));
+  s.registerTool('payment.verify_onchain',{title:'Verify Base USDC payment on chain',description:'FREE READ-ONLY. Independently verifies a CrossingKey Base mainnet USDC transfer using Base JSON-RPC and optionally reconciles an existing receipt.',inputSchema:{txHash:z.string().regex(/^0x[0-9a-fA-F]{64}$/).optional(),receiptId:z.string().regex(/^ck_[A-Za-z0-9_-]{8,200}$/).optional()},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({txHash,receiptId})=>{const rpcUrl=process.env.BASE_RPC_URL||'https://mainnet.base.org'; const fallbackRpcUrl=process.env.BASE_RPC_FALLBACK_URL||''; try { const proof=await verifyOnchain({txHash,receiptId,receiver:CK_RECEIVER_ADDRESS,rpcUrl,fallbackRpcUrl,minConfirmations:process.env.CK_ONCHAIN_MIN_CONFIRMATIONS,getReceipt:machineCommerce?.getReceipt,bindProof:machineCommerce?.bindOnchainVerification}); return freeResult(proof,proof.verified?'On-chain payment verified.':`On-chain verification did not succeed: ${proof.errorCode||'VERIFICATION_UNKNOWN'}.`); } catch { return freeResult({verified:false,verificationVersion:'ck/onchain-1',errorCode:'VERIFICATION_UNKNOWN'},'On-chain verification failed safely.');}});
 
   s.registerTool('xkey_validate_intake',{
     title:'Validate structured XKEY intake',

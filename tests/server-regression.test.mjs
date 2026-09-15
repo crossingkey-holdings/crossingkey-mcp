@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import test from 'node:test';
+const source=fs.readFileSync('server.mjs','utf8');
+test('server registers MCP initialize identity',()=>assert.match(source,/name:'crossingkey-mcp',version:'2\.3\.0'/));
+test('server registers payment.verify_onchain',()=>assert.match(source,/registerTool\('payment\.verify_onchain'/));
+test('payment.verify_onchain registration is free and read-only',()=>{const x=source.slice(source.indexOf("registerTool('payment.verify_onchain")); assert.match(x,/readOnlyHint:true/); assert.match(x,/destructiveHint:false/);});
+test('server exposes crossingkey.describe',()=>assert.match(source,/registerTool\('crossingkey\.describe'/));
+test('server exposes payment.methods',()=>assert.match(source,/registerTool\('payment\.methods'/));
+test('server exposes health tool',()=>assert.match(source,/registerTool\('health'/));
+test('server exposes capability.quote',()=>assert.match(source,/registerTool\('capability\.quote'/));
+test('server exposes execution_preflight',()=>assert.match(source,/registerTool\('execution_preflight'/));
+test('server preserves receiver-only authority',()=>{assert.match(source,/wallet_authority/); assert.match(source,/send:false/); assert.match(source,/sign:false/);});
+test('server HTTP discovery surfaces report 2.3.0',()=>{assert.match(source,/version: "2\.3\.0"/); assert.match(source,/version:'2\.3\.0'/);});
+test('server MCP endpoint remains streamable HTTP',()=>assert.match(source,/StreamableHTTPServerTransport/));

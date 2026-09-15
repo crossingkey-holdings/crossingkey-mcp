@@ -2,21 +2,34 @@
   "name": "CrossingKey MCP",
   "runtimeName": "crossingkey-mcp",
   "canonicalIdentity": "com.crossingkeyintelligence/crossingkey-mcp",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "endpoint": "https://mcp.crossingkeyintelligence.com/mcp",
   "wellKnown": "https://mcp.crossingkeyintelligence.com/.well-known/mcp.json",
   "transport": "streamable-http",
   "machineCommerce": true,
   "mcpInitializeVerified": true,
   "publicEndpointVerified": true,
-  "x402": {
-    "supported": true,
+  "statusSemantics": "candidate_metadata_not_live_settlement_proof",
+  "historicalValidatedProfile": {
     "generation": "v2",
     "scheme": "exact",
-    "validatedNetwork": "eip155:84532",
-    "validatedChain": "Base Sepolia",
+    "network": "eip155:84532",
+    "chain": "Base Sepolia",
     "asset": "USDC",
-    "baseMainnetEnabled": false
+    "sourceStatus": "historical_local_validation"
+  },
+  "currentConfiguredProfile": {
+    "x402Versions": [1, 2],
+    "scheme": "exact",
+    "network": "eip155:8453",
+    "chainId": 8453,
+    "asset": "USDC",
+    "contract": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "receiver": "0x6D1CCe697B145E6D8DB31B038F5D7fbc4Fe27B28",
+    "mainnetEnabled": true,
+    "walletMode": "receiver-only",
+    "paymentVerifyOnchain": "candidate_capability",
+    "settlementProof": "pending_independent_payment"
   },
   "execution": {
     "deterministicXkey": true,
