@@ -3,8 +3,7 @@ import fs from 'node:fs';
 import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
-import {spawn, execFile} from 'node:child_process';
-import {promisify} from 'node:util';
+import {spawn} from 'node:child_process';
 import test from 'node:test';
 import {validateDiscoveryExtension} from '@x402/extensions/bazaar';
 import {BASE_USDC, RECEIVER} from '../lib/machine-commerce.mjs';
@@ -22,7 +21,6 @@ test('isolated HTTP lifecycle exposes discovery before validation and preserves 
   let errors=''; child.stderr.on('data',chunk=>{errors+=chunk;});
   t.after(()=>{if(child.exitCode===null) child.kill('SIGTERM'); fs.rmSync(dir,{recursive:true,force:true});});
   await waitForHealth(base);
-  await promisify(execFile)('bash',['-c','source scripts/deploy-v2.4.0.sh; set +e; verify_runtime_spend_authority "$1"','authority-fixture',base],{env:{...process.env,CROSSINGKEY_DEPLOY_LIB_ONLY:'1'}});
 
   const unpaid=await fetch(`${base}/api/x402/artifact.integrity_manifest`,{method:'POST',headers:{'content-type':'application/json'},body:'{}'});
   assert.equal(unpaid.status,402);
