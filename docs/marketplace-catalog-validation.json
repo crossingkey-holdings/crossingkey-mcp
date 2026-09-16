@@ -55,5 +55,6 @@
       "status": "planned",
       "contentHash": "sha256:4f93aa76854b1ce6d207ef033567ccfc34affc2cf8f5fe8eb7a0cc8435fed7ce"
     }
-  ]
+  ],
+  "rightsStatus": "OPERATOR_AFFIRMATION_REQUIRED"
 }

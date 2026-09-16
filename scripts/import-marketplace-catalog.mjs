@@ -31,7 +31,6 @@ export async function importCatalog({root,dataFile,reportFile}) {
   let provider=Object.values(existing.providers).find(p=>p.slug==='crossingkey-first-party-staged');
   if(!provider)provider=await marketplace.registerProvider({displayName:'CrossingKey Intelligence',slug:'crossingkey-first-party-staged',description:'First-party staged catalog; publication and paid activation await operator review.',contact:'local operator'});
   const previousStatus=provider.status;
-  await marketplace.setProviderStatus(provider.providerId,'active',admin);
   const imported=[];
   try {
     for(const p of products) {
@@ -41,11 +40,10 @@ export async function importCatalog({root,dataFile,reportFile}) {
       const capability=await marketplace.registerCapability({providerId:provider.providerId,name:p.id,slug:p.slug,description:p.description,category:'digital-products',version:p.version,
         inputSchema:{type:'object',properties:{},additionalProperties:false},
         outputSchema:{type:'object',properties:{artifactId:{type:'string',maxLength:160},contentHash:{type:'string',maxLength:80},bytes:{type:'integer',minimum:0},downloadPath:{type:'string',maxLength:300},authentication:{type:'string',maxLength:100}},required:['artifactId','contentHash','bytes','downloadPath','authentication'],additionalProperties:false},
-        deliveryType:'digital_asset',price:p.atomicPrice,currency:'USDC',network:'eip155:84532',license:p.license,visibility:'private',contentHash:`sha256:${p.sha256}`,sourceProvenance:`First-party products.json catalog ${catalogSha256}; staged ${p.version}; ${p.verification}`,
-        rights:{ownershipRepresentation:'First-party CrossingKey catalog imported under operator authorization. Creator ownership retained. Staged; public release not approved.',distributionPermission:true,commercializationPermission:true,derivativePermission:false,aiTrainingPermission:false,revocationPolicy:'Disable new sales; existing buyer license and refund obligations require operator review.',affirmed:true}},admin);
+        deliveryType:'digital_asset',price:p.atomicPrice,currency:'USDC',network:'eip155:84532',license:p.license,visibility:'private',contentHash:`sha256:${p.sha256}`,sourceProvenance:`First-party products.json catalog ${catalogSha256}; staged ${p.version}; ${p.verification}`},admin,{stagedImport:true});
       imported.push({productId:p.id,capabilityId:capability.capabilityId,status:capability.status,contentHash:capability.contentHash});
     }
-  }finally{await marketplace.setProviderStatus(provider.providerId,previousStatus,admin);}
+  }finally{/* Imported metadata does not activate a provider or accept a rights agreement. */}
   const report={verifiedAt:new Date().toISOString(),catalogSha256,count:imported.length,archiveModifications:0,publicProducts:0,providerStatus:previousStatus,priceSource:'priceUsd; launchPriceUsd retained only in original catalog, not silently substituted',products:imported};
   if(reportFile)writeJson(reportFile,report);return report;
 }

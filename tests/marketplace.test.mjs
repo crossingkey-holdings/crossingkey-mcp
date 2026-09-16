@@ -10,7 +10,7 @@ import {createAdapters,publicIp,validateEndpoint,artifactInfo} from '../lib/mark
 import {splitAmount,validateSchema,validateValue,boundedJson} from '../lib/marketplace-schema.mjs';
 import {resolveMarketplacePrincipal,createRateLimit} from '../lib/marketplace-tools.mjs';
 import {readJson,writeJson,withFileLock} from '../lib/marketplace-storage.mjs';
-import {usdToAtomic} from '../scripts/import-marketplace-catalog.mjs';
+import {usdToAtomic,importCatalog,validateCatalog} from '../scripts/import-marketplace-catalog.mjs';
 
 const admin={role:'admin',id:'LOCAL TEST FIXTURE administrator'};
 const buyer={role:'buyer',buyerReference:'LOCAL-TEST-BUYER',id:'buyer'};
@@ -63,6 +63,16 @@ test('provider/capability statuses and ownership reject unauthorized registratio
   await f.mp.setProviderStatus(f.p.providerId,'suspended',admin);
   assert.equal(f.mp.search().total,0);assert.throws(()=>f.mp.getCapability(f.cap.capabilityId),/UNAUTHORIZED/);
   await assert.rejects(()=>f.mp.purchase(f.args,buyer),/CAPABILITY_DISABLED/);assert.equal(f.calls.length,0);
+});
+test('first-party metadata import requires a later human rights affirmation before activation',async t=>{
+  const f=await fixture(t);
+  const cap=await f.mp.registerCapability({providerId:f.p.providerId,name:'staged-first-party',slug:'staged-first-party',description:'First-party metadata only',category:'test',version:'1.0.1',inputSchema:schema,outputSchema:schema,deliveryType:'mcp_tool',price:'1',currency:'USDC',network:'eip155:84532',license:'Operator review required',sourceProvenance:'LOCAL TEST CATALOG'},admin,{stagedImport:true});
+  assert.equal(cap.rights.affirmed,false);assert.equal(cap.rights.commercializationPermission,false);assert.equal(cap.rights.affirmationTimestamp,null);
+  f.bindings[cap.capabilityId]={type:'local',adapter:'echo'};
+  await assert.rejects(()=>f.mp.setCapabilityStatus(cap.capabilityId,'active',admin),/RIGHTS_AFFIRMATION_REQUIRED/);
+  await assert.rejects(()=>f.mp.affirmCapabilityRights(cap.capabilityId,rights,buyer),/UNAUTHORIZED/);
+  await f.mp.affirmCapabilityRights(cap.capabilityId,rights,admin);await f.mp.setCapabilityStatus(cap.capabilityId,'active',admin,'public');
+  assert.equal(f.mp.getCapability(cap.capabilityId).rights.affirmed,true);
 });
 test('inactive and unconfigured capability rejects payment',async t=>{
   const f=await fixture(t);await f.mp.setCapabilityStatus(f.cap.capabilityId,'disabled',admin);
@@ -152,4 +162,15 @@ test('credential hashes, expiry and rate limits are enforced',async t=>{
   assert.equal(resolveMarketplacePrincipal(`Bearer ${token}`,file).buyerReference,'A');assert.equal(resolveMarketplacePrincipal(`Bearer ${'x'.repeat(64)}`,file),null);
   const limit=createRateLimit({max:2});limit('a');limit('a');assert.throws(()=>limit('a'),/RATE_LIMITED/);
   await withFileLock(file,async()=>{await assert.rejects(()=>withFileLock(file,()=>{}),/STORE_BUSY/);});
+});
+test('catalog import preserves bytes, is idempotent and rejects a mismatched sidecar',async t=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ck-catalog-test-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+  fs.mkdirSync(path.join(dir,'catalog'));fs.mkdirSync(path.join(dir,'releases'));
+  const name='crossingkey-fixture-v1.0.1.zip',bytes=Buffer.from('TEST-ONLY-ARTIFACT'),hash=crypto.createHash('sha256').update(bytes).digest('hex');
+  fs.writeFileSync(path.join(dir,'releases',name),bytes);fs.writeFileSync(path.join(dir,'releases',name+'.sha256'),`${hash}  ${name}\n`);
+  writeJson(path.join(dir,'catalog/products.json'),[{id:'fixture-product',slug:'fixture-product',name:'Fixture',description:'Local catalog fixture',version:'1.0.1',priceUsd:9,license:'Test only',verification:'LOCAL_TEST',archive:'releases/'+name,sha256:hash}]);
+  const dataFile=path.join(dir,'state.json');const first=await importCatalog({root:dir,dataFile}),second=await importCatalog({root:dir,dataFile});
+  assert.equal(first.count,1);assert.equal(second.products[0].capabilityId,first.products[0].capabilityId);assert.deepEqual(fs.readFileSync(path.join(dir,'releases',name)),bytes);
+  const s=readJson(dataFile,{});assert.equal(Object.values(s.providers)[0].status,'pending');assert.equal(Object.values(s.capabilities)[0].rights.affirmed,false);
+  fs.writeFileSync(path.join(dir,'releases',name+'.sha256'),`${'0'.repeat(64)}  ${name}\n`);await assert.rejects(()=>validateCatalog(dir),/CATALOG_HASH_MISMATCH/);
 });

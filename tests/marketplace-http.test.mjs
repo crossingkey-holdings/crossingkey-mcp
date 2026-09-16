@@ -61,6 +61,12 @@ test('real MCP transport E2E: provider onboarding, digital delivery, human appro
   const args={capabilityId:capability.capabilityId,approvalId:approval.approvalId,idempotencyKey:'http-sandbox-purchase',input:{},paymentPayload:{x402Version:2,accepted:quote.paymentRequirement.v2,payload:{signature:'sandbox-only-no-real-signature',authorization:{from:'0x'+'b'.repeat(40),to:RECEIVER,value:'100000',validAfter:'1',validBefore:'9999999999',nonce:'0x'+'c'.repeat(64)}}}};
   const purchase=await call('buyer','capability.purchase',args);assert.equal(purchase.status,'verified');assert.equal(purchase.paymentStatus,'successful');assert.equal(settlements,1);
   assert.equal((await call('buyer','capability.purchase',args)).duplicate,true);assert.equal(settlements,1);
+  const unpaid=await fetch(base+'/api/marketplace/purchase',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({capabilityId:capability.capabilityId})});
+  assert.equal(unpaid.status,402);assert.equal((await unpaid.json()).accepts[0].network,'base-sepolia');
+  const challenge=JSON.parse(Buffer.from(unpaid.headers.get('payment-required'),'base64').toString());assert.equal(challenge.accepts[0].amount,'100000');
+  const {paymentPayload,...httpArgs}=args;
+  const paidHttp=await fetch(base+'/api/marketplace/purchase',{method:'POST',headers:{'content-type':'application/json',authorization:`Bearer ${tokens.buyer}`,'PAYMENT-SIGNED':Buffer.from(JSON.stringify(paymentPayload)).toString('base64')},body:JSON.stringify(httpArgs)});
+  assert.equal(paidHttp.status,200);assert.equal((await paidHttp.json()).duplicate,true);assert.ok(paidHttp.headers.get('payment-response'));assert.ok(paidHttp.headers.get('x-payment-response'));assert.equal(settlements,1);
   const receipt=await call('buyer','receipt.get',{receiptId:purchase.receipt.id});assert.equal(BigInt(receipt.allocation.platformAmount)+BigInt(receipt.allocation.providerAmount),100000n);
   assert.equal((await call('buyer','job.status',{jobId:purchase.job.jobId})).job.status,'verified');
   assert.equal((await call('provider','settlement.getProviderBalance',{providerId:provider.providerId})).balances[0].payable,'90000');
@@ -69,4 +75,6 @@ test('real MCP transport E2E: provider onboarding, digital delivery, human appro
   const legacy=await call('anonymous','capability.get',{name:'artifact.integrity_manifest'});assert.equal(legacy.item.amount,'100000');
   const wrongSession=await fetch(base+'/mcp',{method:'POST',headers:{'content-type':'application/json',accept:'application/json, text/event-stream','mcp-session-id':sessions.buyer},body:JSON.stringify({jsonrpc:'2.0',id:100,method:'tools/list',params:{}})});assert.equal(wrongSession.status,401);
   const discovery=await (await fetch(base+'/.well-known/mcp.json')).json();assert.equal(discovery.version,'2.5.0');assert.equal(discovery.marketplace,true);assert.equal(discovery.activeCapabilityCount,1);
+  const buyerHash=crypto.createHash('sha256').update(tokens.buyer).digest('hex');principals[buyerHash].disabled=true;writeJson(authFile,{principals});
+  const revoked=await fetch(base+'/mcp',{method:'POST',headers:{'content-type':'application/json',accept:'application/json, text/event-stream',authorization:`Bearer ${tokens.buyer}`,'mcp-session-id':sessions.buyer},body:JSON.stringify({jsonrpc:'2.0',id:101,method:'tools/list',params:{}})});assert.equal(revoked.status,401);
 });

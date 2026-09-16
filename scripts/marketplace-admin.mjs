@@ -7,8 +7,8 @@ import {readJson} from '../lib/marketplace-storage.mjs';
 
 // Local operator tool. Never register approval creation on MCP or HTTP.
 const [operation,inputFile]=process.argv.slice(2);
-if(!['approve-purchase','provider-status','capability-status','mark-settled'].includes(operation)||!inputFile) {
-  console.error('Usage: node scripts/marketplace-admin.mjs <approve-purchase|provider-status|capability-status|mark-settled> <private-json-file>');process.exit(2);
+if(!['approve-purchase','provider-status','capability-status','affirm-rights','mark-settled'].includes(operation)||!inputFile) {
+  console.error('Usage: node scripts/marketplace-admin.mjs <approve-purchase|provider-status|capability-status|affirm-rights|mark-settled> <private-json-file>');process.exit(2);
 }
 const stat=fs.statSync(inputFile);
 if(!stat.isFile()||stat.size>65536)throw new Error('INVALID_INPUT_FILE');
@@ -21,5 +21,6 @@ let result;
 if(operation==='approve-purchase')result=await marketplace.approvePurchase(args,admin);
 if(operation==='provider-status')result=await marketplace.setProviderStatus(args.providerId,args.status,admin);
 if(operation==='capability-status')result=await marketplace.setCapabilityStatus(args.capabilityId,args.status,admin,args.visibility);
+if(operation==='affirm-rights')result=await marketplace.affirmCapabilityRights(args.capabilityId,args.rights,admin);
 if(operation==='mark-settled')result=await marketplace.markSettled(args.allocationId,args.reference,admin);
 console.log(JSON.stringify(result,null,2));
