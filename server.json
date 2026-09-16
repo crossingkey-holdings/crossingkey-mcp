@@ -3,7 +3,7 @@
   "name": "com.crossingkeyintelligence/crossingkey-mcp",
   "title": "CrossingKey MCP",
   "description": "Paid MCP and x402 audits, integrity manifests, entitlements, and verifiable receipts for agents.",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "websiteUrl": "https://www.crossingkeyintelligence.com",
   "repository": {
     "url": "https://github.com/crossingkey-holdings/crossingkey-mcp",

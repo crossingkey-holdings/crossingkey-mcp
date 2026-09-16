@@ -12,6 +12,10 @@ import { z } from 'zod';
 import { CAPABILITIES as MACHINE_CAPABILITIES, RECEIVER as LOCKED_RECEIVER, createMachineCommerce } from './lib/machine-commerce.mjs';
 import { validatePaidCapabilityInput } from './lib/discovery.mjs';
 import { verifyOnchain } from './lib/onchain-verifier.mjs';
+import { createMarketplace } from './lib/marketplace.mjs';
+import { createAdapters } from './lib/marketplace-adapters.mjs';
+import { readJson as readMarketplaceJson } from './lib/marketplace-storage.mjs';
+import { registerMarketplaceTools, resolveMarketplacePrincipal, createRateLimit, purchaseSchema, safeError } from './lib/marketplace-tools.mjs';
 
 const HERE = process.cwd();
 const PORT = Number(process.env.PORT || 3000);
@@ -68,6 +72,15 @@ const catalog = () => readJson(CATALOG_FILE);
 const creditPacks = () => readJson(CREDITS_FILE).packs;
 const fulfillment = () => readJson(FULFILL_FILE).products;
 const requestServices = () => readJson(SERVICES_FILE).services || [];
+const marketplaceAuthFile = process.env.MARKETPLACE_AUTH_FILE || '';
+const marketplace = createMarketplace({core:machineCommerce,
+  dataFile:process.env.MARKETPLACE_FILE || path.join(HERE,'data','marketplace.json'),
+  feeBps:Number(process.env.MARKETPLACE_FEE_BPS || '1000'),
+  adapters:createAdapters({bindings:()=>process.env.MARKETPLACE_ADAPTERS_FILE?readMarketplaceJson(process.env.MARKETPLACE_ADAPTERS_FILE,{}):{},assetRoot:process.env.MARKETPLACE_ASSET_ROOT})
+});
+const marketplaceRate=createRateLimit();
+const marketplaceIntakeRate=createRateLimit({max:10});
+const marketplacePrincipal=req=>resolveMarketplacePrincipal(req.headers.authorization,marketplaceAuthFile);
 
 function hmac(label) {
   if (!CLAIM_SECRET) throw new Error('CLAIM_SECRET is not configured');
@@ -311,7 +324,7 @@ app.disable('x-powered-by');
 app.get("/", (req, res) => {
   res.status(200).json({
     name: "CrossingKey MCP",
-    version: "2.4.0",
+    version: "2.5.0",
     status: "operational",
     description:
       "Public MCP endpoint for agent commerce, digital products, prepaid execution credits, fulfillment, and bounded paid capabilities.",
@@ -359,7 +372,7 @@ app.use((err, req, res, next) => {
 });
 
 app.get('/health',(_req,res)=>res.json({
-  ok:true,service:'crossingkey-mcp',version:'2.4.0',
+  ok:true,service:'crossingkey-mcp',version:'2.5.0',
   stripe_configured:Boolean(stripe),webhook_configured:Boolean(STRIPE_WEBHOOK_SECRET),
   claim_secret_configured:Boolean(CLAIM_SECRET),
   machine_commerce_configured:Boolean(machineCommerce),
@@ -376,7 +389,29 @@ app.get('/.well-known/x402',(_req,res)=>res.json({
   capabilities:MACHINE_CAPABILITIES.map(({name,priceUsd})=>({name,priceUsd}))
 }));
 
-app.get('/.well-known/mcp.json',(_req,res)=>res.json({name:'CrossingKey MCP',version:'2.4.0',endpoint:`${PUBLIC_BASE_URL}/mcp`,transport:'streamable-http',machineCommerce:true}));
+app.get('/.well-known/mcp.json',(_req,res)=>res.json({name:'CrossingKey MCP',version:'2.5.0',endpoint:`${PUBLIC_BASE_URL}/mcp`,transport:'streamable-http',machineCommerce:true,...marketplace.describe()}));
+
+app.get('/api/marketplace/delivery/:id',async(req,res)=>{
+  try {
+    marketplaceRate(`delivery:${req.socket.remoteAddress}`);
+    const artifact=await marketplace.download(req.params.id,marketplacePrincipal(req));
+    res.setHeader('content-type','application/octet-stream');
+    res.setHeader('content-disposition','attachment; filename="capability-asset.zip"');
+    res.setHeader('cache-control','private, no-store');
+    const stream=fs.createReadStream(artifact.file);stream.on('error',()=>res.destroy());stream.pipe(res);
+  }catch(error){res.status(403).json({errorCode:safeError(error)});}
+});
+app.post('/api/marketplace/purchase',async(req,res)=>{
+  try {
+    marketplaceRate(`purchase:${req.socket.remoteAddress}`);
+    const raw=req.headers['payment-signature']||req.headers['payment-signed']||req.headers['x-payment'];
+    if(!raw){const quote=marketplace.quote(req.body?.capabilityId);res.setHeader('PAYMENT-REQUIRED',Buffer.from(JSON.stringify({x402Version:2,resource:{url:`${PUBLIC_BASE_URL}/api/marketplace/purchase`,mimeType:'application/json'},accepts:[quote.paymentRequirement.v2]})).toString('base64'));return res.status(402).json({x402Version:1,accepts:[quote.paymentRequirement.v1]});}
+    const args=purchaseSchema.parse({...req.body,paymentPayload:JSON.parse(Buffer.from(String(raw),'base64').toString('utf8'))});
+    const result=await marketplace.purchase(args,marketplacePrincipal(req));
+    if(result.receipt){const settlement=Buffer.from(JSON.stringify({success:result.paymentStatus==='successful',transaction:result.receipt.payment.transaction,network:result.receipt.payment.network})).toString('base64');res.setHeader('PAYMENT-RESPONSE',settlement);res.setHeader('X-PAYMENT-RESPONSE',settlement);}
+    res.status(result.status==='verified'?200:202).json(result);
+  }catch(error){res.status(error.message==='STORE_BUSY'?409:400).json({errorCode:safeError(error)});}
+});
 
 app.get('/api/machine-commerce/status',(_req,res)=>res.json(machineCommerce?machineCommerce.status():{configured:false,receiver:CK_RECEIVER_ADDRESS,mainnetEnabled:false}));
 
@@ -526,8 +561,10 @@ app.get('/api/credits/balance',(req,res)=>{
   });
 });
 
-function makeMcpServer(authContext=null){
-  const s=new McpServer({name:'crossingkey-mcp',version:'2.4.0'});
+function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='anonymous'){
+  const s=new McpServer({name:'crossingkey-mcp',version:'2.5.0'});
+  registerMarketplaceTools(s,{marketplace,principal:marketplaceContext,legacyCapabilities:MACHINE_CAPABILITIES,core:machineCommerce,
+    rate:name=>{marketplaceRate(rateKey);if(['provider.register','creator.apply','capability.register'].includes(name))marketplaceIntakeRate(rateKey);}});
 
   s.registerTool('discover_provider',{title:'Discover CrossingKey Intelligence',description:'FREE DISCOVERY. Returns provider identity, commerce model, payment rails, policy, and next actions before payment.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>{
     const data={...PROVIDER_PROFILE,agent_commerce_version:AGENT_COMMERCE_VERSION,authority_boundary:{money:'human_or_predelegated_authority',identity:'external_authority',credentials:'external_authority',payment_execution:'outside_ordinary_mcp_computation',raw_payment_credentials_accepted:false,agent_may_discover:true,agent_may_evaluate:true,agent_may_estimate:true,agent_may_prepare:true,agent_may_spend_without_authority:false},counts:{offers:catalog().offers.length,request_credit_packs:creditPacks().length,request_services:requestServices().length,capabilities:publicCapabilityList().length},recommended_sequence:['discover_provider','list_capabilities','list_offers','get_offer','check_requirements','estimate_cost','preview_result_schema','execution_preflight','get_stripe_checkout_link']};
@@ -631,9 +668,8 @@ function makeMcpServer(authContext=null){
   });
 
   const freeResult=(data,text)=>({structuredContent:data,content:[{type:'text',text}]});
-  s.registerTool('crossingkey.describe',{description:'FREE. Describes the receiver-only CrossingKey machine-commerce service and its safety boundaries.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({provider:PROVIDER_PROFILE,wallet_mode:'receiver-only',receiver:CK_RECEIVER_ADDRESS,mainnet_enabled:CK_ENABLE_MAINNET,ai_required:false,x402_versions:[1,2]},'CrossingKey machine-commerce metadata returned. No payment consumed.'));
+  s.registerTool('crossingkey.describe',{description:'FREE. Describes the receiver-only CrossingKey machine-commerce service and its safety boundaries.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({provider:PROVIDER_PROFILE,wallet_mode:'receiver-only',receiver:CK_RECEIVER_ADDRESS,mainnet_enabled:CK_ENABLE_MAINNET,ai_required:false,x402_versions:[1,2],marketplace:marketplace.describe()},'CrossingKey machine-commerce metadata returned. No payment consumed.'));
   s.registerTool('capabilities.list',{description:'FREE. Lists deterministic paid machine-commerce capabilities without executing them.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({items:MACHINE_CAPABILITIES,count:MACHINE_CAPABILITIES.length},`${MACHINE_CAPABILITIES.length} deterministic capabilities listed. No payment consumed.`));
-  s.registerTool('capability.get',{description:'FREE. Returns one deterministic capability definition and exact advertised price.',inputSchema:{name:z.string().min(1).max(160)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({name})=>{const item=MACHINE_CAPABILITIES.find(x=>x.name===name); return item?freeResult({item},'Capability metadata returned. No payment consumed.'):{isError:true,content:[{type:'text',text:'Unknown capability.'}]};});
   s.registerTool('capability.quote',{description:'FREE. Returns x402 v1 and v2 challenge requirements for one capability without executing or settling payment.',inputSchema:{name:z.string().min(1).max(160)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({name})=>{if(!machineCommerce)return {isError:true,content:[{type:'text',text:'Machine commerce is not configured.'}]}; try{return freeResult({v1:machineCommerce.paymentRequired(name,1).body,v2:JSON.parse(Buffer.from(machineCommerce.paymentRequired(name,2).headers['PAYMENT-REQUIRED'],'base64').toString('utf8'))},'Bilingual x402 quote returned. No payment consumed.');}catch{return {isError:true,content:[{type:'text',text:'Unknown capability.'}]};}});
   s.registerTool('payment.methods',{description:'FREE. Lists supported payment methods and explicitly reports the receiver-only wallet boundary.',inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({methods:[{rail:'stripe_payment_links',mode:'existing'},{rail:'prepaid_request_credits',mode:'existing'},{rail:'x402',versions:[1,2],network:CK_ENABLE_MAINNET?'eip155:8453':'eip155:84532',asset:'USDC',receiver:CK_RECEIVER_ADDRESS}],wallet_authority:{receive:true,sign:false,send:false,swap:false,bridge:false,agent_spend:false}},'Payment methods returned. No payment consumed.'));
   s.registerTool('purchase.status',{description:'FREE STATUS. Returns the state of a machine-commerce purchase by its idempotency key without revealing paid result content.',inputSchema:{idempotency_key:z.string().min(8).max(160)},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({idempotency_key})=>{const p=machineCommerce?.getPurchase(idempotency_key); return freeResult(p?{found:true,status:p.response.status,purchaseId:p.response.purchaseId,entitlementId:p.response.entitlementId,resultHash:p.response.receipt.resultHash}:{found:false},p?'Purchase status returned.':'Purchase not found.');});
@@ -727,9 +763,11 @@ function makeMcpServer(authContext=null){
 
 const transports=new Map();
 const sessionPrincipals=new Map();
+const marketplaceSessionPrincipals=new Map();
 
 function sessionAuthorizationMatches(sid,req){
   if(!sessionPrincipals.has(sid)) return false;
+  if(marketplaceSessionPrincipals.get(sid)!==(marketplacePrincipal(req)?.credentialHash||null)) return false;
 
   const bound=sessionPrincipals.get(sid);
 
@@ -749,6 +787,7 @@ function forgetMcpSession(sid){
   if(!sid) return;
   transports.delete(sid);
   sessionPrincipals.delete(sid);
+  marketplaceSessionPrincipals.delete(sid);
 }
 
 app.post('/mcp',async(req,res)=>{
@@ -777,6 +816,7 @@ app.post('/mcp',async(req,res)=>{
         sessionIdGenerator:()=>randomUUID(),
         onsessioninitialized:id=>{
           transports.set(id,t);
+          marketplaceSessionPrincipals.set(id,marketplacePrincipal(req)?.credentialHash||null);
           sessionPrincipals.set(
             id,
             authContext
@@ -790,7 +830,9 @@ app.post('/mcp',async(req,res)=>{
         if(t.sessionId) forgetMcpSession(t.sessionId);
       };
 
-      await makeMcpServer(authContext).connect(t);
+      const authorization=req.headers.authorization;
+      const rateKey=marketplacePrincipal(req)?.credentialHash||req.socket.remoteAddress||'anonymous';
+      await makeMcpServer(authContext,()=>resolveMarketplacePrincipal(authorization,marketplaceAuthFile),rateKey).connect(t);
     }
     else{
       return res.status(400).json({

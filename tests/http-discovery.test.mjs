@@ -39,7 +39,7 @@ test('isolated HTTP lifecycle exposes discovery before validation and preserves 
   const initialize=await fetch(`${base}/mcp`,{method:'POST',headers:{'content-type':'application/json','accept':'application/json, text/event-stream'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'initialize',params:{protocolVersion:'2025-11-25',capabilities:{},clientInfo:{name:'local-gate',version:'1.0.0'}}})});
   assert.equal(initialize.status,200,errors);
   const initBody=await sseJson(initialize);
-  assert.equal(initBody.result.serverInfo.version,'2.4.0');
+  assert.equal(initBody.result.serverInfo.version,'2.5.0');
   const session=initialize.headers.get('mcp-session-id'); assert.ok(session);
   const toolsResponse=await fetch(`${base}/mcp`,{method:'POST',headers:{'content-type':'application/json','accept':'application/json, text/event-stream','mcp-session-id':session},body:JSON.stringify({jsonrpc:'2.0',id:2,method:'tools/list',params:{}})});
   const toolsBody=await sseJson(toolsResponse);

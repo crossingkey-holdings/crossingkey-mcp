@@ -1,0 +1,59 @@
+{
+  "verifiedAt": "2026-09-16T18:18:47.373Z",
+  "catalogSha256": "087d6b155eeb4f9561f93d0df4ca502e0fb2b10c34513616f652dd928e56c6cb",
+  "count": 8,
+  "archiveModifications": 0,
+  "publicProducts": 0,
+  "providerStatus": "pending",
+  "priceSource": "priceUsd; launchPriceUsd retained only in original catalog, not silently substituted",
+  "products": [
+    {
+      "productId": "ck-ai-operator-prompt-library",
+      "capabilityId": "ck_capability_29a865f4-e0e4-42e0-9310-3f04e3a8336e",
+      "status": "planned",
+      "contentHash": "sha256:3096fd5c9bea7763f7cafa147a3284d223f1ff53bfc56e54618ceb61f20d7690"
+    },
+    {
+      "productId": "ck-ai-automation-workshop",
+      "capabilityId": "ck_capability_35883d83-2e54-4ab7-8522-9461bd26655e",
+      "status": "planned",
+      "contentHash": "sha256:1c9cf1517ad82e76b91680fc2dabb534a7d7c89cb0e75c0270fb1aae16acc4ed"
+    },
+    {
+      "productId": "ck-local-ai-field-guide",
+      "capabilityId": "ck_capability_7ac08522-a081-42cf-a9dc-bf8077871fc2",
+      "status": "planned",
+      "contentHash": "sha256:e6ca82592a05afcb083a155939ab52d5287b495a7d809c660bc40ae70ae0e91b"
+    },
+    {
+      "productId": "ck-business-systems-template-vault",
+      "capabilityId": "ck_capability_fe5e5b0b-ba0a-4848-8770-5a9b7c060b6c",
+      "status": "planned",
+      "contentHash": "sha256:8167306d4c480bdc5506f0a71b5b3211cef55f09e3ec562d2a01f1a55c5a2c4f"
+    },
+    {
+      "productId": "ck-founder-operations-vault",
+      "capabilityId": "ck_capability_9b4c9c06-2765-4e17-bdf7-cc573e148068",
+      "status": "planned",
+      "contentHash": "sha256:8f3cac6bcb7f4d076007292832f7f8d9e713cf85f98919dbdde59be7a8f8422c"
+    },
+    {
+      "productId": "ck-ai-agent-operations-kit",
+      "capabilityId": "ck_capability_83c51f9a-ae51-4244-b14b-4190dbad64f7",
+      "status": "planned",
+      "contentHash": "sha256:0dca34dfd8973db1718dcc3d392f23f6c2108aa3470f38b66ddcda6fab871277"
+    },
+    {
+      "productId": "ck-workflow-roi-audit-system",
+      "capabilityId": "ck_capability_b0850236-93d5-4b34-9f09-1c405176638a",
+      "status": "planned",
+      "contentHash": "sha256:35300307b434efa8e07105fb9532958df98373b07c8ddcf4894268f519a74584"
+    },
+    {
+      "productId": "ck-client-intake-scope-engine",
+      "capabilityId": "ck_capability_dc944d3f-b5a6-4753-b946-9fb1f28d89b9",
+      "status": "planned",
+      "contentHash": "sha256:4f93aa76854b1ce6d207ef033567ccfc34affc2cf8f5fe8eb7a0cc8435fed7ce"
+    }
+  ]
+}

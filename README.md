@@ -10,11 +10,11 @@ Canonical MCP Registry identity:
 
 `com.crossingkeyintelligence/crossingkey-mcp`
 
-Current production discovery version:
+Operator-host runtime observed on 2026-09-16:
 
-`2.3.0`
+`2.4.0`
 
-Local release candidate: `2.4.0`. Production remains at `2.3.0` until an authorized deployment and Registry publication.
+Local marketplace release candidate: `2.5.0`. This candidate is not deployed or published. See [marketplace documentation](docs/MARKETPLACE.md) and [verification report](docs/ONE-PASS-VERIFICATION.md). The local operator-host health response reports 2.4.0; the historical public verification below does not establish the current public release state.
 
 ## What CrossingKey MCP is
 
@@ -25,9 +25,9 @@ Directories, registries, agents, crawlers, and integrations should prefer the ca
 `com.crossingkeyintelligence/crossingkey-mcp`
 
 
-## Live service status
+## Historical public service verification
 
-The production service has been verified end-to-end through the public Cloudflare endpoint.
+The following 2.3.0 record is historical and predates this marketplace build:
 
 - Public endpoint: `https://mcp.crossingkeyintelligence.com/mcp`
 - Human-facing name: `CrossingKey MCP`

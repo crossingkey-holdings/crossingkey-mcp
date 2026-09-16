@@ -2,14 +2,17 @@
   "name": "CrossingKey MCP",
   "runtimeName": "crossingkey-mcp",
   "canonicalIdentity": "com.crossingkeyintelligence/crossingkey-mcp",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "endpoint": "https://mcp.crossingkeyintelligence.com/mcp",
   "wellKnown": "https://mcp.crossingkeyintelligence.com/.well-known/mcp.json",
   "transport": "streamable-http",
   "machineCommerce": true,
   "mcpInitializeVerified": true,
-  "publicEndpointVerified": true,
-  "statusSemantics": "candidate_metadata_not_live_settlement_proof",
+  "publicEndpointVerified": false,
+  "statusSemantics": "local_marketplace_candidate_only_not_deployed",
+  "marketplace": true,
+  "localVerification": "sandbox_MCP_transport_and_mock_facilitator_no_money_movement",
+  "operatorHostVersionObserved": "2.4.0",
   "historicalValidatedProfile": {
     "generation": "v2",
     "scheme": "exact",
@@ -39,5 +42,5 @@
     "replayResistance": true,
     "idempotentRequests": true
   },
-  "verifiedAt": "2026-09-12"
+  "verifiedAt": "2026-09-16"
 }
