@@ -1,0 +1,27 @@
+{
+  "schema": "crossingkey-marketplace-proof/1",
+  "verifiedAt": "2026-09-16T18:34:15Z",
+  "classification": "PRIVATE_CK",
+  "originalHead": "8513a0dc3d21e60c30b19083478f40970fcbeed6",
+  "implementationHead": "a33de8d00ccb4712cf614c36970c001b1b870859",
+  "branch": "upgrade/marketplace-one-pass",
+  "version": "2.5.0",
+  "node": "22.23.2",
+  "npm": "10.9.8",
+  "results": {
+    "baseline": {"passed": 60, "failed": 0},
+    "finalWorkingTree": {"passed": 85, "failed": 0},
+    "cleanCommittedExport": {"passed": 70, "failed": 0, "dependencies": "existing installed tree symlink"},
+    "preparedRuntimeMcpE2E": {"passed": 1, "failed": 0},
+    "marketplaceTests": 25,
+    "secretScan": {"findings": 0, "scope": "tracked and staged files; patterns only"},
+    "npmAudit": {"vulnerabilities": 0, "scope": "production dependencies"},
+    "publicFreeMcpAdapter": {"status": "PASS", "tool": "payment.methods", "methodCount": 3, "agentSpend": false},
+    "catalog": {"products": 8, "archiveModifications": 0, "activeCapabilities": 0, "rightsStatus": "OPERATOR_AFFIRMATION_REQUIRED"}
+  },
+  "paymentTests": {"facilitator": "mock", "versions": [1, 2], "gross": "100001", "platform": "10000", "provider": "90001", "duplicateSettlements": 0, "realMoneyMoved": false},
+  "testedControls": ["human approval binding", "tenant authorization", "session credential binding and revocation", "rights affirmation gate", "integer allocations", "idempotency", "shared replay protection", "exclusive process lock", "persistent failure evidence", "HTTPS DNS pinning", "response limits", "strict schema subset", "private artifact confinement", "no automatic payout"],
+  "operatorHost": {"service": "crossingkey-revenue-mcp.service", "observedVersion": "2.4.0", "state": "active/running", "modified": false},
+  "release": {"status": "PREPARED_NOT_DEPLOYED", "runtimeFiles": 13, "manifest": "work/marketplace-2.5.0-final/PREPARED_MARKETPLACE_RELEASE.json", "publicApproval": false},
+  "limitations": ["No real payment or payout", "No contracted third-party paid provider E2E", "Single-host JSON storage", "Manual uncertain-settlement reconciliation", "Host promotion and rollback rehearsal pending"]
+}
