@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.crossingkeyintelligence/crossingkey-mcp",
   "title": "CrossingKey MCP",
-  "description": "Paid MCP and x402 audits, integrity manifests, entitlements, and verifiable receipts for agents.",
-  "version": "2.5.0",
+  "description": "Agent-native commerce and marketplace execution interface for CrossingKey Intelligence. Agents can discover offers and capabilities, evaluate exact pricing and requirements, register approved provider capabilities, preflight purchases, use Stripe or prepaid credits where applicable, invoke deterministic x402 capabilities on Base USDC, and verify receipts and entitlements.",
+  "version": "2.4.0",
   "websiteUrl": "https://www.crossingkeyintelligence.com",
   "repository": {
     "url": "https://github.com/crossingkey-holdings/crossingkey-mcp",

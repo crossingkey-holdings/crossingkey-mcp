@@ -41,7 +41,10 @@ test('real MCP transport E2E: provider onboarding, digital delivery, human appro
   async function call(who,name,args={}) {const result=await rpc(who,'tools/call',{name,arguments:args});assert.equal(result.error,undefined,JSON.stringify(result));assert.equal(result.result.isError,undefined,JSON.stringify(result));return result.result.structuredContent;}
   await initialize('anonymous');await initialize('admin');await initialize('buyer');
   const tools=(await rpc('anonymous','tools/list',{})).result.tools;
-  assert.equal(tools.length,42);assert.equal(new Set(tools.map(x=>x.name)).size,42);
+  const ownership=JSON.parse(fs.readFileSync(new URL('../release/tool-registration-ownership-v2.4-marketplace.json',import.meta.url),'utf8'));
+  const expectedToolNames=[...ownership.public_tool_union].sort();
+  const actualToolNames=tools.map(x=>x.name).sort();
+  assert.deepEqual(actualToolNames,expectedToolNames);
   assert.equal(tools.find(x=>x.name==='capability.purchase').execution.taskSupport,'forbidden');
   assert.equal(tools.find(x=>x.name==='provider.register').inputSchema.additionalProperties,false);
   const provider=await call('anonymous','provider.register',{displayName:'Provider A LOCAL SANDBOX',slug:'http-fixture-provider',description:'Local test only',contact:'sandbox fixture'});assert.equal(provider.status,'pending');
@@ -74,7 +77,17 @@ test('real MCP transport E2E: provider onboarding, digital delivery, human appro
   const unauthorized=await fetch(base+purchase.result.downloadPath);assert.equal(unauthorized.status,403);
   const legacy=await call('anonymous','capability.get',{name:'artifact.integrity_manifest'});assert.equal(legacy.item.amount,'100000');
   const wrongSession=await fetch(base+'/mcp',{method:'POST',headers:{'content-type':'application/json',accept:'application/json, text/event-stream','mcp-session-id':sessions.buyer},body:JSON.stringify({jsonrpc:'2.0',id:100,method:'tools/list',params:{}})});assert.equal(wrongSession.status,401);
-  const discovery=await (await fetch(base+'/.well-known/mcp.json')).json();assert.equal(discovery.version,'2.5.0');assert.equal(discovery.marketplace,true);assert.equal(discovery.activeCapabilityCount,1);
+  const discovery=await (await fetch(base+'/.well-known/mcp.json')).json();
+  assert.equal(discovery.version,'2.4.0');
+  assert.equal(discovery.machineCommerce,true);
+  assert.equal(discovery.walletMode,'receiver-only');
+  assert.equal(discovery.marketplace.marketplace,true);
+  assert.equal(discovery.marketplace.machineCommerce,true);
+  assert.equal(discovery.marketplace.walletMode,'receiver-only');
+  assert.equal(discovery.marketplace.providerPayouts,'manual accounting only');
+  assert.equal(discovery.marketplace.creatorOwnershipRetained,true);
+  assert.equal(discovery.marketplace.aiTrainingDefault,false);
+  assert.equal(discovery.marketplace.activeCapabilityCount,1);
   const buyerHash=crypto.createHash('sha256').update(tokens.buyer).digest('hex');principals[buyerHash].disabled=true;writeJson(authFile,{principals});
   const revoked=await fetch(base+'/mcp',{method:'POST',headers:{'content-type':'application/json',accept:'application/json, text/event-stream',authorization:`Bearer ${tokens.buyer}`,'mcp-session-id':sessions.buyer},body:JSON.stringify({jsonrpc:'2.0',id:101,method:'tools/list',params:{}})});assert.equal(revoked.status,401);
 });
