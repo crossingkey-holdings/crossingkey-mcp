@@ -1,0 +1,55 @@
+{
+  "release": "3.0.0",
+  "policy": "resource.action names with role-scoped marketplace controls",
+  "anonymous_tool_profile": [
+    "marketplace.describe",
+    "provider.register",
+    "provider.get",
+    "capability.get",
+    "capability.search",
+    "catalog.list",
+    "commerce.quote",
+    "creator.apply",
+    "provider.describe",
+    "offer.list",
+    "cost.estimate",
+    "result.preview",
+    "requirement.check",
+    "execution.preflight",
+    "credit.options",
+    "service.list",
+    "machine_capability.list",
+    "machine_capability.quote",
+    "payment.methods",
+    "purchase.status",
+    "entitlement.inspect",
+    "receipt.verify",
+    "system.health",
+    "payment.verify",
+    "xkey.validate"
+  ],
+  "buyer_additional_tools": [
+    "capability.purchase",
+    "job.status",
+    "receipt.get"
+  ],
+  "provider_additional_tools": [
+    "capability.register",
+    "job.status",
+    "receipt.get",
+    "settlement.get_balance",
+    "settlement.list_allocations"
+  ],
+  "admin_additional_tools": [
+    "provider.set_status",
+    "capability.register",
+    "capability.set_status",
+    "job.status",
+    "receipt.get",
+    "settlement.get_balance",
+    "settlement.list_allocations",
+    "settlement.mark_settled"
+  ],
+  "naming": "resource.action",
+  "recommended_entry_tool": "provider.describe"
+}

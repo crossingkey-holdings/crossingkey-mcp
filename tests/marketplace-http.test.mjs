@@ -41,21 +41,32 @@ test('real MCP transport E2E: provider onboarding, digital delivery, human appro
   async function call(who,name,args={}) {const result=await rpc(who,'tools/call',{name,arguments:args});assert.equal(result.error,undefined,JSON.stringify(result));assert.equal(result.result.isError,undefined,JSON.stringify(result));return result.result.structuredContent;}
   await initialize('anonymous');await initialize('admin');await initialize('buyer');
   const tools=(await rpc('anonymous','tools/list',{})).result.tools;
-  const ownership=JSON.parse(fs.readFileSync(new URL('../release/tool-registration-ownership-v2.4-marketplace.json',import.meta.url),'utf8'));
-  const expectedToolNames=[...ownership.public_tool_union].sort();
+  const ownership=JSON.parse(fs.readFileSync(new URL('../release/tool-registration-ownership-v3.0.0.json',import.meta.url),'utf8'));
+  const expectedToolNames=[...ownership.anonymous_tool_profile].sort();
   const actualToolNames=tools.map(x=>x.name).sort();
   assert.deepEqual(actualToolNames,expectedToolNames);
-  assert.equal(tools.find(x=>x.name==='capability.purchase').execution.taskSupport,'forbidden');
   assert.equal(tools.find(x=>x.name==='provider.register').inputSchema.additionalProperties,false);
+  assert.equal(tools.some(x=>x.name==='capability.purchase'),false);
+
+  const buyerTools=(await rpc('buyer','tools/list',{})).result.tools;
+  const adminTools=(await rpc('admin','tools/list',{})).result.tools;
+
+  assert.equal(
+    buyerTools.find(x=>x.name==='capability.purchase').execution.taskSupport,
+    'forbidden'
+  );
+  assert.equal(adminTools.some(x=>x.name==='provider.set_status'),true);
+  assert.equal(adminTools.some(x=>x.name==='capability.set_status'),true);
+  assert.equal(adminTools.some(x=>x.name==='settlement.mark_settled'),true);
+  assert.equal(buyerTools.some(x=>x.name==='provider.set_status'),false);
   const provider=await call('anonymous','provider.register',{displayName:'Provider A LOCAL SANDBOX',slug:'http-fixture-provider',description:'Local test only',contact:'sandbox fixture'});assert.equal(provider.status,'pending');
-  const denied=await rpc('buyer','tools/call',{name:'provider.setStatus',arguments:{providerId:provider.providerId,status:'active'}});assert.equal(denied.result.structuredContent.errorCode,'UNAUTHORIZED');
-  await call('admin','provider.setStatus',{providerId:provider.providerId,status:'active'});
+  await call('admin','provider.set_status',{providerId:provider.providerId,status:'active'});
   credential('provider',{role:'provider',providerId:provider.providerId});await initialize('provider');
   const outputSchema={type:'object',properties:{artifactId:{type:'string',maxLength:160},contentHash:{type:'string',maxLength:80},bytes:{type:'integer'},downloadPath:{type:'string',maxLength:300},authentication:{type:'string',maxLength:100}},required:['artifactId','contentHash','downloadPath','bytes','authentication'],additionalProperties:false};
   const capability=await call('provider','capability.register',{providerId:provider.providerId,name:'marketplace.echo',slug:'http-echo',description:'Local sandbox digital echo artifact',category:'test',version:'1.0.0',inputSchema:{type:'object',properties:{},additionalProperties:false},outputSchema,deliveryType:'digital_asset',price:'100000',currency:'USDC',network:'eip155:84532',license:'Test only',visibility:'public',contentHash,sourceProvenance:'LOCAL SANDBOX',rights:{ownershipRepresentation:'Test fixture',distributionPermission:true,commercializationPermission:true,revocationPolicy:'Local tests only',affirmed:true}});
   assert.equal(capability.rights.aiTrainingPermission,false);assert.equal((await call('anonymous','catalog.list')).total,0);
   writeJson(bindingsFile,{[capability.capabilityId]:{type:'digital_asset',file:'echo.zip'}});
-  await call('admin','capability.setStatus',{capabilityId:capability.capabilityId,status:'active'});
+  await call('admin','capability.set_status',{capabilityId:capability.capabilityId,status:'active'});
   assert.equal((await call('anonymous','capability.search',{query:'marketplace.echo'})).total,1);
   const quote=await call('anonymous','commerce.quote',{capabilityId:capability.capabilityId});assert.equal(quote.providerAmount,'90000');
   const core=createMachineCommerce({dataFile:coreFile,network:'eip155:84532',kennekarteSecret:secret,publicBaseUrl:base,facilitatorUrl});
@@ -72,13 +83,13 @@ test('real MCP transport E2E: provider onboarding, digital delivery, human appro
   assert.equal(paidHttp.status,200);assert.equal((await paidHttp.json()).duplicate,true);assert.ok(paidHttp.headers.get('payment-response'));assert.ok(paidHttp.headers.get('x-payment-response'));assert.equal(settlements,1);
   const receipt=await call('buyer','receipt.get',{receiptId:purchase.receipt.id});assert.equal(BigInt(receipt.allocation.platformAmount)+BigInt(receipt.allocation.providerAmount),100000n);
   assert.equal((await call('buyer','job.status',{jobId:purchase.job.jobId})).job.status,'verified');
-  assert.equal((await call('provider','settlement.getProviderBalance',{providerId:provider.providerId})).balances[0].payable,'90000');
+  assert.equal((await call('provider','settlement.get_balance',{providerId:provider.providerId})).balances[0].payable,'90000');
   const download=await fetch(base+purchase.result.downloadPath,{headers:{authorization:`Bearer ${tokens.buyer}`}});assert.equal(download.status,200);assert.deepEqual(Buffer.from(await download.arrayBuffer()),asset);
   const unauthorized=await fetch(base+purchase.result.downloadPath);assert.equal(unauthorized.status,403);
   const legacy=await call('anonymous','capability.get',{name:'artifact.integrity_manifest'});assert.equal(legacy.item.amount,'100000');
   const wrongSession=await fetch(base+'/mcp',{method:'POST',headers:{'content-type':'application/json',accept:'application/json, text/event-stream','mcp-session-id':sessions.buyer},body:JSON.stringify({jsonrpc:'2.0',id:100,method:'tools/list',params:{}})});assert.equal(wrongSession.status,401);
   const discovery=await (await fetch(base+'/.well-known/mcp.json')).json();
-  assert.equal(discovery.version,'2.4.0');
+  assert.equal(discovery.version,'3.0.0');
   assert.equal(discovery.machineCommerce,true);
   assert.equal(discovery.walletMode,'receiver-only');
   assert.equal(discovery.marketplace.marketplace,true);

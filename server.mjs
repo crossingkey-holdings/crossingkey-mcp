@@ -37,7 +37,7 @@ const MACHINE_COMMERCE_FILE = process.env.MACHINE_COMMERCE_FILE || path.join(HER
 const KENNEKARTE_SECRET = process.env.CK_KENNEKARTE_HMAC_SECRET || CLAIM_SECRET;
 const CK_EXPOSE_LEGACY_TOOLS = process.env.CK_EXPOSE_LEGACY_TOOLS === 'true';
 const LEGACY_TOOL_NAMES = new Set(['list_stripe_offers','get_stripe_checkout_link','get_fulfillment_status']);
-const DISCOVERY_PROFILE_VERSION = 'tdqs-2026-09-17-v8';
+const DISCOVERY_PROFILE_VERSION = 'mcp-v3-2026-09-21';
 
 const XKEY_ROOT =
   process.env.XKEY_ROOT ||
@@ -185,7 +185,7 @@ const PROVIDER_PROFILE=Object.freeze({
   machine_site:'https://mcp.crossingkeyintelligence.com/mcp'
 });
 const PAID_CAPABILITIES=Object.freeze([{
-  id:'xkey.validate_intake',tool:'xkey_validate_intake',name:'xkey Intake Validation',
+  id:'xkey.validate',tool:'xkey.validate',name:'xkey Intake Validation',
   summary:'Validates and normalizes a bounded xkey intake payload.',access:'paid',
   charging_model:'prepaid_credit',price:{credits:1,currency:'CK_REQUEST_CREDIT'},
   speculative_call_safe:false,idempotency_required:true,
@@ -199,19 +199,19 @@ function publicCapabilityList(){
   const free=[
     ['provider.describe','Provider discovery','Returns provider identity, commerce policy, payment rails, and discovery sequence.'],
 
-    ['offers.list','Offer discovery','Searches public CrossingKey offers before payment.'],
+    ['offer.list','Offer discovery','Searches public CrossingKey offers before payment.'],
 
     ['cost.estimate','Cost estimation','Returns known purchase price or credit cost without executing.'],
 
     ['result.preview','Result preview','Shows result shape without revealing paid output.'],
 
-    ['requirements.check','Requirements check','Explains prerequisites before purchase or execution.'],
+    ['requirement.check','Requirements check','Explains prerequisites before purchase or execution.'],
 
     ['execution.preflight','Execution preflight','Final no-charge decision point before payment/execution.'],
 
-    ['credits.options','Request-credit purchase options','Returns prepaid request-credit packs.'],
+    ['credit.options','Request-credit purchase options','Returns prepaid request-credit packs.'],
 
-    ['services.list','Approved request services','Lists explicitly approved request services.'],
+    ['service.list','Approved request services','Lists explicitly approved request services.'],
   ].filter(([tool])=>CK_EXPOSE_LEGACY_TOOLS || !LEGACY_TOOL_NAMES.has(tool)).map(([tool,name,summary])=>({id:`tool.${tool}`,tool,name,summary,access:'free',price:{amount_usd:0}}));
   const machine=MACHINE_CAPABILITIES.map(x=>({id:x.name,tool:x.name,name:x.name,summary:x.description,access:'paid',charging_model:'x402_exact',price:{amount_usd:Number(x.priceUsd),currency:'USD'},deterministic:true,ai_required:false,idempotency_required:true}));
   return [...free,...PAID_CAPABILITIES,...machine];
@@ -329,10 +329,10 @@ app.disable('x-powered-by');
 app.get("/", (req, res) => {
   res.status(200).json({
     name: "CrossingKey MCP",
-    version: "2.4.0",
+    version:"3.0.0",
     status: "operational",
     description:
-      "Public MCP endpoint for agent commerce, digital products, prepaid execution credits, fulfillment, and bounded paid capabilities.",
+      "CrossingKey MCP v3 marketplace and machine-commerce endpoint for discovery, qualification, buyer-authorized purchase, fulfillment, receipts, provider intake, and bounded paid capabilities.",
     operator: "CrossingKey Intelligence",
     mcp: {
       endpoint: "https://mcp.crossingkeyintelligence.com/mcp",
@@ -382,7 +382,7 @@ app.get('/health', (_req, res) => {
   return res.status(200).json({
     ok: true,
     service: 'crossingkey-mcp',
-    version: '2.4.0'
+    version:'3.0.0'
   });
 });
 
@@ -408,7 +408,7 @@ app.get('/.well-known/x402',(_req,res)=>res.json({
 app.get('/.well-known/mcp.json',(_req,res)=>res.json({
   name:'CrossingKey MCP',
   canonicalId:'com.crossingkeyintelligence/crossingkey-mcp',
-  version:'2.4.0',
+  version:'3.0.0',
   endpoint:`${PUBLIC_BASE_URL}/mcp`,
   transport:'streamable-http',
   protocolVersion:'2025-11-25',
@@ -418,6 +418,10 @@ app.get('/.well-known/mcp.json',(_req,res)=>res.json({
   walletMode:'receiver-only',
   paymentRails:['stripe_payment_links','prepaid_request_credits','x402_base_usdc'],
   recommendedEntryTool:'provider.describe',
+  toolNaming:'resource.action',
+  roleScopedTools:true,
+  anonymousToolProfile:'public-marketplace',
+  toolVisibility:'buyer/provider/admin tools appear only in matching authenticated MCP sessions',
   legacyCompatibility:{available:true,exposed:CK_EXPOSE_LEGACY_TOOLS},
   marketplace:marketplace.describe()
 }));
@@ -593,24 +597,24 @@ app.get('/api/credits/balance',(req,res)=>{
 });
 
 function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='anonymous'){
-  const s=new McpServer({name:'crossingkey-mcp',version:'2.4.0'});
+  const s=new McpServer({name:'crossingkey-mcp',version:'3.0.0'});
   registerMarketplaceTools(s,{marketplace,principal:marketplaceContext,legacyCapabilities:MACHINE_CAPABILITIES,core:machineCommerce,
     rate:name=>{marketplaceRate(rateKey);if(['provider.register','creator.apply','capability.register'].includes(name))marketplaceIntakeRate(rateKey);}});
-  s.registerTool('provider.describe',{title:'Discover CrossingKey Intelligence',description:"FREE, read-only provider discovery. Use this first to learn CrossingKey identity, commerce model, payment rails, authority boundaries, and recommended next actions; it never creates a payment or executes paid work. For offer-specific data use offers.list and capability.get, and for x402 terms use capability.get/capability.quote.",inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>{
-    const data={...PROVIDER_PROFILE,agent_commerce_version:AGENT_COMMERCE_VERSION,authority_boundary:{money:'human_or_predelegated_authority',identity:'external_authority',credentials:'external_authority',payment_execution:'outside_ordinary_mcp_computation',raw_payment_credentials_accepted:false,agent_may_discover:true,agent_may_evaluate:true,agent_may_estimate:true,agent_may_prepare:true,agent_may_spend_without_authority:false},counts:{offers:catalog().offers.length,request_credit_packs:creditPacks().length,request_services:requestServices().length,capabilities:publicCapabilityList().length},recommended_sequence:['provider.describe','payment.methods','capabilities.list','offers.list','capability.get','cost.estimate','requirements.check','result.preview','execution.preflight']};
+  s.registerTool('provider.describe',{title:'Discover CrossingKey Intelligence',description:"FREE, read-only provider discovery. Use this first to learn CrossingKey identity, commerce model, payment rails, authority boundaries, and recommended next actions; it never creates a payment or executes paid work. For offer-specific data use offer.list and capability.get, and for x402 terms use capability.get/machine_capability.quote.",inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>{
+    const data={...PROVIDER_PROFILE,agent_commerce_version:AGENT_COMMERCE_VERSION,authority_boundary:{money:'human_or_predelegated_authority',identity:'external_authority',credentials:'external_authority',payment_execution:'outside_ordinary_mcp_computation',raw_payment_credentials_accepted:false,agent_may_discover:true,agent_may_evaluate:true,agent_may_estimate:true,agent_may_prepare:true,agent_may_spend_without_authority:false},counts:{offers:catalog().offers.length,request_credit_packs:creditPacks().length,request_services:requestServices().length,capabilities:publicCapabilityList().length},recommended_sequence:['provider.describe','payment.methods','machine_capability.list','offer.list','capability.get','cost.estimate','requirement.check','result.preview','execution.preflight']};
     return {structuredContent:data,content:[{type:'text',text:'CrossingKey Intelligence machine-commerce provider discovered. Metadata is free before payment.'}]};
   });
 
-  s.registerTool('offers.list',{title:'Discover CrossingKey offers',description:"FREE, read-only canonical offer search. Use this to find public digital or service offers by query, kind, or maximum USD price before payment; it returns metadata only and creates no checkout session. Use capability.get only for x402 capability detail; offer details are returned by offers.list.",inputSchema:{query:z.string().min(1).max(160).optional().describe("Optional case-insensitive text search across public offer metadata; 1-160 characters."),kind:z.enum(['all','digital','service']).optional().describe("Optional offer-kind filter: 'all', 'digital', or 'service'. Defaults to 'all'."),max_price_usd:z.number().nonnegative().max(1000000).optional().describe("Optional inclusive maximum advertised USD price, from 0 through 1000000.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({query,kind='all',max_price_usd}={})=>{
+  s.registerTool('offer.list',{title:'Discover CrossingKey offers',description:"FREE, read-only canonical offer search. Use this to find public digital or service offers by query, kind, or maximum USD price before payment; it returns metadata only and creates no checkout session. Use capability.get only for x402 capability detail; offer details are returned by offer.list.",inputSchema:{query:z.string().min(1).max(160).optional().describe("Optional case-insensitive text search across public offer metadata; 1-160 characters."),kind:z.enum(['all','digital','service']).optional().describe("Optional offer-kind filter: 'all', 'digital', or 'service'. Defaults to 'all'."),max_price_usd:z.number().nonnegative().max(1000000).optional().describe("Optional inclusive maximum advertised USD price, from 0 through 1000000.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({query,kind='all',max_price_usd}={})=>{
     let items=catalog().offers.map(offerDescriptor); if(kind!=='all') items=items.filter(x=>x.kind===kind); if(max_price_usd!==undefined) items=items.filter(x=>x.price.amount_usd<=max_price_usd); if(query) items=items.filter(x=>matchesQuery(x,query));
     return {structuredContent:{items,count:items.length,query:query||null},content:[{type:'text',text:`${items.length} matching offers found. Discovery is free.`}]};
   });
 
-  s.registerTool('cost.estimate',{title:'Estimate exact known cost',description:"FREE, read-only cross-domain price lookup. Supply an offer or capability identifier to return the currently advertised USD price or request-credit cost; no payment, reservation, or credit consumption occurs. For x402 challenge terms use capability.quote instead.",inputSchema:{id:z.string().min(1).max(160).describe("Exact offer or paid-capability identifier returned by discovery; 1-160 characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({id})=>{const found=findPublicItem(id); if(!found)return {isError:true,content:[{type:'text',text:'Unknown CrossingKey offer or capability.'}]}; return {structuredContent:{id,cost:found.value.price,estimated:false,creates_payment:false,consumes_credit:false},content:[{type:'text',text:'Known advertised cost returned. No payment or credit consumed.'}]};});
+  s.registerTool('cost.estimate',{title:'Estimate exact known cost',description:"FREE, read-only cross-domain price lookup. Supply an offer or capability identifier to return the currently advertised USD price or request-credit cost; no payment, reservation, or credit consumption occurs. For x402 challenge terms use machine_capability.quote instead.",inputSchema:{id:z.string().min(1).max(160).describe("Exact offer or paid-capability identifier returned by discovery; 1-160 characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({id})=>{const found=findPublicItem(id); if(!found)return {isError:true,content:[{type:'text',text:'Unknown CrossingKey offer or capability.'}]}; return {structuredContent:{id,cost:found.value.price,estimated:false,creates_payment:false,consumes_credit:false},content:[{type:'text',text:'Known advertised cost returned. No payment or credit consumed.'}]};});
 
-  s.registerTool('result.preview',{title:'Preview result or fulfillment schema',description:"FREE, read-only result preview. Supply an offer or capability identifier to see the expected fulfillment or output shape without exposing paid content or executing work. Use this after offers.list or capabilities.list when an agent needs to evaluate the result contract before authorization.",inputSchema:{id:z.string().min(1).max(160).describe("Exact offer or paid-capability identifier whose result or fulfillment shape should be previewed; 1-160 characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({id})=>{const found=findPublicItem(id); if(!found)return {isError:true,content:[{type:'text',text:'Unknown CrossingKey offer or capability.'}]}; const preview=found.type==='capability'?{id,output_schema:found.value.output_preview,paid_output_included:false}:{id,kind:found.value.kind,fulfillment:found.value.fulfillment,delivery_ready:found.value.delivery_ready,paid_output_included:false,expected_result:found.value.kind==='digital'?{type:'digital_entitlement',fields:['offer_id','download_authorization_or_delivery_state']}:{type:'service_order',fields:['offer_id','order_state','session_reference']}}; return {structuredContent:preview,content:[{type:'text',text:'Result shape previewed. Paid content not disclosed.'}]};});
+  s.registerTool('result.preview',{title:'Preview result or fulfillment schema',description:"FREE, read-only result preview. Supply an offer or capability identifier to see the expected fulfillment or output shape without exposing paid content or executing work. Use this after offer.list or machine_capability.list when an agent needs to evaluate the result contract before authorization.",inputSchema:{id:z.string().min(1).max(160).describe("Exact offer or paid-capability identifier whose result or fulfillment shape should be previewed; 1-160 characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({id})=>{const found=findPublicItem(id); if(!found)return {isError:true,content:[{type:'text',text:'Unknown CrossingKey offer or capability.'}]}; const preview=found.type==='capability'?{id,output_schema:found.value.output_preview,paid_output_included:false}:{id,kind:found.value.kind,fulfillment:found.value.fulfillment,delivery_ready:found.value.delivery_ready,paid_output_included:false,expected_result:found.value.kind==='digital'?{type:'digital_entitlement',fields:['offer_id','download_authorization_or_delivery_state']}:{type:'service_order',fields:['offer_id','order_state','session_reference']}}; return {structuredContent:preview,content:[{type:'text',text:'Result shape previewed. Paid content not disclosed.'}]};});
 
-  s.registerTool('requirements.check',{title:'Check purchase or execution requirements',description:"FREE, read-only prerequisite check. Supply an offer or capability identifier to receive payment, authorization, fulfillment, and idempotency requirements without creating a payment. Use execution.preflight for the final machine-readable go/no-go decision.",inputSchema:{id:z.string().min(1).max(160).describe("Exact offer or paid-capability identifier whose prerequisites should be checked; 1-160 characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({id})=>{const found=findPublicItem(id); if(!found)return {isError:true,content:[{type:'text',text:'Unknown CrossingKey offer or capability.'}]}; const requirements=found.type==='offer'?found.value.requirements:['A valid prepaid request-credit principal is required.',`${found.value.price.credits} request credit is required for verified success.`,'A unique idempotency key is required.','Do not invoke speculatively; inspect metadata first.',found.value.failure_policy]; return {structuredContent:{id,requirements,ready_for_evaluation:true},content:[{type:'text',text:'Requirements returned. No paid action taken.'}]};});
+  s.registerTool('requirement.check',{title:'Check purchase or execution requirements',description:"FREE, read-only prerequisite check. Supply an offer or capability identifier to receive payment, authorization, fulfillment, and idempotency requirements without creating a payment. Use execution.preflight for the final machine-readable go/no-go decision.",inputSchema:{id:z.string().min(1).max(160).describe("Exact offer or paid-capability identifier whose prerequisites should be checked; 1-160 characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({id})=>{const found=findPublicItem(id); if(!found)return {isError:true,content:[{type:'text',text:'Unknown CrossingKey offer or capability.'}]}; const requirements=found.type==='offer'?found.value.requirements:['A valid prepaid request-credit principal is required.',`${found.value.price.credits} request credit is required for verified success.`,'A unique idempotency key is required.','Do not invoke speculatively; inspect metadata first.',found.value.failure_policy]; return {structuredContent:{id,requirements,ready_for_evaluation:true},content:[{type:'text',text:'Requirements returned. No paid action taken.'}]};});
 
   s.registerTool('execution.preflight',{title:'Preflight an agent purchase or execution',description:"FREE, read-only final preflight before any paid action. Supply an offer or capability identifier to receive payment method, exact advertised price, readiness, safety warnings, and next action; this tool never charges or executes. Call it after discovery and requirement checks, not as a replacement for paid execution.",inputSchema:{id:z.string().min(1).max(160).describe("Exact offer or paid-capability identifier to evaluate immediately before payment or credit-consuming execution; 1-160 characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({id})=>{const found=findPublicItem(id); if(!found)return {isError:true,content:[{type:'text',text:'Unknown CrossingKey offer or capability.'}]}; let decision; if(found.type==='offer'){const x=found.value; decision={id,can_execute_now:false,can_purchase_now:!(x.kind==='digital'&&!x.delivery_ready),payment_required:true,payment_method:'stripe_payment_link',checkout_url:x.checkout_url,price:x.price,warning:x.kind==='digital'&&!x.delivery_ready?'Immediate digital fulfillment is not verified. Autonomous purchase is not recommended yet.':null,next_action:x.kind==='digital'&&!x.delivery_ready?'wait_or_choose_another_offer':'obtain_payment_authorization_then_open_checkout'};}else if(found.value?.charging_model==='x402_exact'){
   decision={
@@ -625,7 +629,7 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
     asset:'USDC',
     receiver:CK_RECEIVER_ADDRESS,
     x402_versions:[1,2],
-    quote_tool:'capability.quote',
+    quote_tool:'machine_capability.quote',
     speculative_call_safe:false,
     idempotency_required:true,
     next_action:'request_x402_quote_then_obtain_payment_authorization'
@@ -643,7 +647,7 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
   };
 } return {structuredContent:decision,content:[{type:'text',text:'Preflight complete. No payment or paid execution occurred.'}]};});
 
-  s.registerTool('credits.options',{
+  s.registerTool('credit.options',{
     title:'Get request-credit payment links',
     description:"FREE, read-only prepaid-credit purchase discovery. Returns available request-credit packs and their existing Stripe Payment Links; it does not open a checkout session or spend funds. Use this only when prepaid request credits are the intended payment rail.",
     inputSchema:{},
@@ -653,7 +657,7 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
     return {structuredContent:{packs},content:[{type:'text',text:`${packs.length} prepaid credit packs are live in Stripe.`}]};
   });
 
-  s.registerTool('services.list',{
+  s.registerTool('service.list',{
     title:'List paid request services',
     description:"FREE, read-only service catalog. Returns only request services explicitly approved by the server's safety process and may legitimately be empty; it creates no order or payment. Use this when evaluating approved request-service availability.",
     inputSchema:{},
@@ -663,27 +667,27 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
     return {structuredContent:{services},content:[{type:'text',text:services.length?`${services.length} request services available.`:'No request services have been approved yet.'}]};
   });
 
-  s.registerTool('capabilities.list',{description:"FREE, read-only x402 capability list. Use this only for deterministic machine-commerce capabilities priced for x402 execution; it does not list the full CrossingKey offer/service catalog and never executes a capability. For public offers use offers.list.",inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({items:MACHINE_CAPABILITIES,count:MACHINE_CAPABILITIES.length},`${MACHINE_CAPABILITIES.length} deterministic capabilities listed. No payment consumed.`));
+  s.registerTool('machine_capability.list',{description:"FREE, read-only x402 capability list. Use this only for deterministic machine-commerce capabilities priced for x402 execution; it does not list the full CrossingKey offer/service catalog and never executes a capability. For public offers use offer.list.",inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({items:MACHINE_CAPABILITIES,count:MACHINE_CAPABILITIES.length},`${MACHINE_CAPABILITIES.length} deterministic capabilities listed. No payment consumed.`));
 
-  s.registerTool('capability.quote',{description:"FREE, read-only x402 quote/challenge lookup. Supply the exact capability name returned by capabilities.list to receive v1 and v2 payment requirements without execution or settlement. Use capability.get for metadata only and execution.preflight for the cross-domain authorization decision.",inputSchema:{name:z.string().min(1).max(160).describe('Exact capability name returned by capabilities.list; do not guess or use an offer ID.').describe("Exact deterministic x402 capability name returned by capabilities.list; 1-160 characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({name})=>{if(!machineCommerce)return {isError:true,content:[{type:'text',text:'Machine commerce is not configured.'}]}; try{return freeResult({v1:machineCommerce.paymentRequired(name,1).body,v2:JSON.parse(Buffer.from(machineCommerce.paymentRequired(name,2).headers['PAYMENT-REQUIRED'],'base64').toString('utf8'))},'Bilingual x402 quote returned. No payment consumed.');}catch{return {isError:true,content:[{type:'text',text:'Unknown capability.'}]};}});
+  s.registerTool('machine_capability.quote',{description:"FREE, read-only x402 quote/challenge lookup. Supply the exact capability name returned by machine_capability.list to receive v1 and v2 payment requirements without execution or settlement. Use capability.get for metadata only and execution.preflight for the cross-domain authorization decision.",inputSchema:{name:z.string().min(1).max(160).describe("Exact deterministic x402 capability name returned by machine_capability.list; 1-160 characters; do not guess or use an offer ID.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({name})=>{if(!machineCommerce)return {isError:true,content:[{type:'text',text:'Machine commerce is not configured.'}]}; try{return freeResult({v1:machineCommerce.paymentRequired(name,1).body,v2:JSON.parse(Buffer.from(machineCommerce.paymentRequired(name,2).headers['PAYMENT-REQUIRED'],'base64').toString('utf8'))},'Bilingual x402 quote returned. No payment consumed.');}catch{return {isError:true,content:[{type:'text',text:'Unknown capability.'}]};}});
 
   s.registerTool('payment.methods',{description:"FREE, read-only payment-rail discovery. Returns supported Stripe, prepaid-credit, and x402 rails plus the receiver-only wallet authority boundary; it never signs or spends. Use this when selecting a payment rail before any authorization step.",inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({methods:[{rail:'stripe_payment_links',mode:'existing'},{rail:'prepaid_request_credits',mode:'existing'},{rail:'x402',versions:[1,2],network:CK_ENABLE_MAINNET?'eip155:8453':'eip155:84532',asset:'USDC',receiver:CK_RECEIVER_ADDRESS}],wallet_authority:{receive:true,sign:false,send:false,swap:false,bridge:false,agent_spend:false}},'Payment methods returned. No payment consumed.'));
 
-  s.registerTool('purchase.status',{description:"FREE, read-only x402 purchase-status lookup. Supply the original idempotency key to retrieve purchase state and integrity identifiers without revealing paid result content or changing state. The response includes purchase, entitlement, and result-integrity identifiers when available.",inputSchema:{idempotency_key:z.string().min(8).max(160).regex(/^[A-Za-z0-9._:-]+$/).describe('Exact client idempotency key used for the original purchase or execution; 8-160 ASCII characters.').describe("Original client-generated idempotency key used for the paid x402 purchase; 8-160 characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({idempotency_key})=>{const p=machineCommerce?.getPurchase(idempotency_key); return freeResult(p?{found:true,status:p.response.status,purchaseId:p.response.purchaseId,entitlementId:p.response.entitlementId,resultHash:p.response.receipt.resultHash}:{found:false},p?'Purchase status returned.':'Purchase not found.');});
+  s.registerTool('purchase.status',{description:"FREE, read-only x402 purchase-status lookup. Supply the original idempotency key to retrieve purchase state and integrity identifiers without revealing paid result content or changing state. The response includes purchase, entitlement, and result-integrity identifiers when available.",inputSchema:{idempotency_key:z.string().min(8).max(160).regex(/^[A-Za-z0-9._:-]+$/).describe("Original client-generated idempotency key used for the paid x402 purchase; 8-160 ASCII characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({idempotency_key})=>{const p=machineCommerce?.getPurchase(idempotency_key); return freeResult(p?{found:true,status:p.response.status,purchaseId:p.response.purchaseId,entitlementId:p.response.entitlementId,resultHash:p.response.receipt.resultHash}:{found:false},p?'Purchase status returned.':'Purchase not found.');});
 
   s.registerTool('entitlement.inspect',{description:"FREE, read-only entitlement inspection. Supply a CrossingKey entitlement identifier to return current entitlement state without granting execution, download access, or paid result content. Use purchase.status when only an idempotency key is available.",inputSchema:{id:z.string().min(1).max(200).describe("CrossingKey entitlement identifier returned by a successful paid purchase; 1-200 characters.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({id})=>freeResult({entitlement:machineCommerce?.inspectEntitlement(id)||null},'Entitlement status returned.'));
 
   s.registerTool('receipt.verify',{description:"FREE, read-only receipt integrity verification. Supply a CrossingKey receipt object to recompute and compare its deterministic result hash; this performs no payment, entitlement mutation, or network settlement. A true result verifies integrity only, not external payment finality.",inputSchema:{receipt:z.record(z.unknown()).describe("Complete CrossingKey receipt object whose deterministic integrity binding should be recomputed.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({receipt})=>freeResult({valid:Boolean(machineCommerce?.verifyReceipt(receipt)),receiptId:receipt?.id||null},'Receipt integrity checked.'));
 
-  s.registerTool('health',{description:"FREE, read-only MCP readiness check. Returns service, Stripe, machine-commerce, mainnet-gate, and receiver-only wallet readiness flags without contacting payment rails or changing state. Use this for operational readiness, not purchase status.",inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({ok:true,stripeConfigured:Boolean(stripe),machineCommerceConfigured:Boolean(machineCommerce),mainnetEnabled:CK_ENABLE_MAINNET,walletMode:'receiver-only'},'Health status returned.'));
+  s.registerTool('system.health',{description:"FREE, read-only MCP readiness check. Returns service, Stripe, machine-commerce, mainnet-gate, and receiver-only wallet readiness flags without contacting payment rails or changing state. Use this for operational readiness, not purchase status.",inputSchema:{},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async()=>freeResult({ok:true,stripeConfigured:Boolean(stripe),machineCommerceConfigured:Boolean(machineCommerce),mainnetEnabled:CK_ENABLE_MAINNET,walletMode:'receiver-only'},'Health status returned.'));
 
   s.registerTool('payment.verify',{title:'Verify Base USDC payment on chain',description:"FREE, read-only Base USDC verification. Provide a Base transaction hash, a CrossingKey receipt ID, or both to verify the receiver transfer and optionally reconcile an existing receipt; it never signs, sends, settles, swaps, bridges, or spends funds. Use receipt.verify for local receipt integrity without chain lookup.",inputSchema:{txHash:z.string().regex(/^0x[0-9a-fA-F]{64}$/).optional().describe("Optional Base transaction hash in 0x-prefixed 32-byte hexadecimal form. Provide txHash, receiptId, or both."),receiptId:z.string().regex(/^ck_[A-Za-z0-9_-]{8,200}$/).optional().describe("Optional CrossingKey receipt identifier beginning with ck_. Provide receiptId, txHash, or both.")},annotations:{readOnlyHint:true,destructiveHint:false,openWorldHint:false}},async({txHash,receiptId})=>{const rpcUrl=process.env.BASE_RPC_URL||'https://mainnet.base.org'; const fallbackRpcUrl=process.env.BASE_RPC_FALLBACK_URL||''; try { const proof=await verifyOnchain({txHash,receiptId,receiver:CK_RECEIVER_ADDRESS,rpcUrl,fallbackRpcUrl,minConfirmations:process.env.CK_ONCHAIN_MIN_CONFIRMATIONS,getReceipt:machineCommerce?.getReceipt,bindProof:machineCommerce?.bindOnchainVerification}); return freeResult(proof,proof.verified?'On-chain payment verified.':`On-chain verification did not succeed: ${proof.errorCode||'VERIFICATION_UNKNOWN'}.`); } catch { return freeResult({verified:false,verificationVersion:'ck/onchain-1',errorCode:'VERIFICATION_UNKNOWN'},'On-chain verification failed safely.');}});
 
   s.registerTool('xkey.validate',{
     title:'Validate structured XKEY intake',
-    description:"PAID bounded intake validation. Requires an authenticated prepaid-credit principal, an 8-160 character idempotency key, and 2-100000 characters of raw intake; one credit is committed only on verified success, while safe validation failures release the reservation. Do not call speculatively; use requirements.check and execution.preflight first.",
+    description:"PAID bounded intake validation. Requires an authenticated prepaid-credit principal, an 8-160 character idempotency key, and 2-100000 characters of raw intake; one credit is committed only on verified success, while safe validation failures release the reservation. Do not call speculatively; use requirement.check and execution.preflight first.",
     inputSchema:{
-      idempotency_key:z.string().min(8).max(160).regex(/^[A-Za-z0-9._:-]+$/).describe('Exact client idempotency key used for the original purchase or execution; 8-160 ASCII characters.').describe("Unique client-generated key for safe retry/deduplication; 8-160 characters. Reuse only when retrying the same intake."),
+      idempotency_key:z.string().min(8).max(160).regex(/^[A-Za-z0-9._:-]+$/).describe("Unique client-generated key for safe retry/deduplication; 8-160 ASCII characters. Reuse only when retrying the same intake."),
       raw_intake:z.string().min(2).max(XKEY_MAX_INPUT_CHARS).describe("Raw intake text to validate and normalize; 2-100000 characters.")},
     annotations:{
       readOnlyHint:false,

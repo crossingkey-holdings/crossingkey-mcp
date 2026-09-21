@@ -4,13 +4,15 @@ import fs from 'node:fs';
 
 const source=fs.readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
 
-test('marketplace-inclusive v2.4 discovery advertises canonical identity',()=>{
+test('marketplace-inclusive v3 discovery advertises canonical identity',()=>{
   assert.ok(source.includes("canonicalId:'com.crossingkeyintelligence/crossingkey-mcp'"));
-  assert.ok(source.includes("version:'2.4.0'"));
+  assert.ok(source.includes("version:'3.0.0'"));
   assert.ok(source.includes("recommendedEntryTool:'provider.describe'"));
+  assert.ok(source.includes("toolNaming:'resource.action'"));
+  assert.ok(source.includes("roleScopedTools:true"));
   assert.ok(source.includes("marketplace:marketplace.describe()"));
 });
-test('marketplace-inclusive v2.4 discovery preserves receiver-only x402 policy',()=>{
+test('marketplace-inclusive v3 discovery preserves receiver-only x402 policy',()=>{
   assert.ok(source.includes("walletMode:'receiver-only'"));
   assert.ok(source.includes("networks:CK_ENABLE_MAINNET?['eip155:8453']:['eip155:84532']"));
   assert.ok(source.includes("x402Version:2"));

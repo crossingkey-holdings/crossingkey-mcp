@@ -1,227 +1,204 @@
 # crossingkey-mcp
 
-Public source and discovery metadata for the CrossingKey MCP server.
+Public source, protocol metadata, and release record for the CrossingKey MCP machine-commerce server.
 
-Production MCP endpoint:
+**Production endpoint**
 
-https://mcp.crossingkeyintelligence.com/mcp
+`https://mcp.crossingkeyintelligence.com/mcp`
 
-Canonical MCP Registry identity:
-
-`com.crossingkeyintelligence/crossingkey-mcp`
-
-Operator-host runtime observed on 2026-09-16:
-
-`2.4.0`
-
-Local marketplace release candidate: `2.5.0`. This candidate is not deployed or published. See [marketplace documentation](docs/MARKETPLACE.md) and [verification report](docs/ONE-PASS-VERIFICATION.md). The local operator-host health response reports 2.4.0; the historical public verification below does not establish the current public release state.
-
-## What CrossingKey MCP is
-
-CrossingKey MCP is a machine-commerce MCP endpoint designed for AI agents and other authorized software clients to discover capabilities, inspect pricing, authorize bounded purchases, receive entitlements, execute deterministic paid capabilities, and verify fulfillment through machine-readable receipts.
-
-Directories, registries, agents, crawlers, and integrations should prefer the canonical identity:
+**Canonical identity**
 
 `com.crossingkeyintelligence/crossingkey-mcp`
 
+**Current production release**
 
-## Historical public service verification
+`3.0.0`
 
-The following 2.3.0 record is historical and predates this marketplace build:
+**Protocol**
 
-- Public endpoint: `https://mcp.crossingkeyintelligence.com/mcp`
-- Human-facing name: `CrossingKey MCP`
-- MCP runtime name: `crossingkey-mcp`
-- Version: `2.3.0`
-- Transport: Streamable HTTP
-- Machine commerce: enabled
-- MCP initialize: verified
-- Public Cloudflare path: verified
-- Canonical registry identity: `com.crossingkeyintelligence/crossingkey-mcp`
+MCP Streamable HTTP  
+Protocol version `2025-11-25`
 
-The live MCP initialize response identifies the server as:
+## CrossingKey MCP v3
 
-`crossingkey-mcp` version `2.3.0`
+CrossingKey MCP is a machine-commerce control plane for AI agents and authorized software clients.
 
-The public well-known metadata identifies the service as:
+It allows agents to discover offers and capabilities, inspect pricing and requirements, obtain bounded authorization, purchase approved capabilities, receive entitlements, verify receipts, and interact with creator/provider marketplace infrastructure through one machine-readable interface.
 
-`CrossingKey MCP` version `2.3.0`
+The design principle is:
 
-These identifiers refer to the same production MCP service.
+> Discovery is free. Evaluation is safe. Payment is explicit. Authority stays bounded. Execution is deterministic. Fulfillment is verifiable.
 
-## Transport
+## v3 public surface
 
-- Model Context Protocol
-- Streamable HTTP
-- Production endpoint: `https://mcp.crossingkeyintelligence.com/mcp`
+The anonymous MCP surface contains 25 public tools using the canonical `resource.action` naming convention.
 
-## Core capabilities
+Public discovery includes:
 
-- Offer discovery
-- Capability discovery
-- Pricing discovery
-- Stripe checkout discovery
-- Prepaid-credit commerce
-- Native x402 payment flows
-- Payment preflight
-- Signed payment authorization
-- Payment verification and settlement
-- Purchase creation
-- Entitlement issuance
-- Entitlement redemption
-- Deterministic XKEY execution
-- Result hashing
-- Receipt binding
-- Fulfillment status
-- Machine-readable fulfillment evidence
-- Idempotent purchase handling
-- Replay resistance
-- Authenticated bounded paid execution
+- `provider.describe`
+- `marketplace.describe`
+- `provider.register`
+- `provider.get`
+- `capability.get`
+- `capability.search`
+- `catalog.list`
+- `commerce.quote`
+- `creator.apply`
+- `offer.list`
+- `cost.estimate`
+- `result.preview`
+- `requirement.check`
+- `execution.preflight`
+- `credit.options`
+- `service.list`
+- `machine_capability.list`
+- `machine_capability.quote`
+- `payment.methods`
+- `purchase.status`
+- `entitlement.inspect`
+- `receipt.verify`
+- `system.health`
+- `payment.verify`
+- `xkey.validate`
 
-## x402 support
+Buyer, provider, and administrator controls are role-scoped and are not advertised in anonymous `tools/list`.
 
-CrossingKey MCP supports native x402 machine-commerce flows.
+Examples include:
 
-Current validated test-network profile:
+- `capability.purchase`
+- `capability.register`
+- `provider.set_status`
+- `capability.set_status`
+- `job.status`
+- `receipt.get`
+- `settlement.get_balance`
+- `settlement.list_allocations`
+- `settlement.mark_settled`
 
-- x402 generation: v2
-- Scheme: `exact`
-- Network: `eip155:84532`
-- Chain: Base Sepolia
-- Asset: Base Sepolia USDC
-- Receiver: locked by server configuration
-- Payment challenge: HTTP 402
-- Signed authorization: supported
-- Verification: supported
-- Settlement handling: supported
-- Purchase creation: supported
-- Entitlement issuance: supported
-- Receipt binding: supported
-- Replay protection: supported
-- Logical-request idempotency: supported
+## Machine commerce
 
-Base mainnet is not enabled by this public metadata.
+CrossingKey supports multiple commerce paths:
 
-No agent is granted unrestricted spending authority by CrossingKey MCP.
-
-## v2.4.0 discovery candidate
-
-The local v2.4.0 candidate adds official x402 Bazaar discovery metadata to every paid HTTP capability. Each v2 payment challenge declares a concrete POST request example, bounded JSON input schema, and representative output example. An unpaid request receives this discovery-bearing 402 challenge before execution-input validation; after a payment header is supplied, the server validates the bounded input before verification, settlement, execution, entitlement issuance, or receipt creation.
-
-The advertised paid capabilities are:
-
-- `x402.compatibility_audit`
-- `mcp.schema_audit`
-- `openapi.quality_audit`
-- `machine_commerce.readiness_audit`
-- `artifact.integrity_manifest`
-
-x402 v1 remains supported without changing its legacy challenge format. x402 v2 uses the official `@x402/extensions` Bazaar declaration implementation.
-
-## Execution model
-
-A typical paid machine-commerce flow is:
-
-Agent discovers capability
-→ agent evaluates price and requirements
-→ MCP returns payment requirements
-→ authorized payer signs payment authorization
-→ payment rail verifies and settles
-→ CrossingKey creates or resolves purchase
-→ entitlement is issued
-→ deterministic capability executes
-→ result hash is generated
-→ receipt binds payment, purchase, entitlement, execution, and result
-→ response is returned to the authorized client
-
-Logical retries using the same idempotency key should resolve to the original purchase/result rather than creating duplicate settlement or duplicate fulfillment.
-
-Replayed signed payment authorizations should be rejected.
-
-## XKEY
-
-CrossingKey XKEY execution is designed to be bounded and deterministic.
-
-The public surface may expose validation or execution capabilities, but it does not expose arbitrary shell access or unrestricted filesystem access.
-
-Deterministic result handling may include:
-
-- normalized input
-- bounded execution
-- result hashing
-- entitlement binding
-- receipt generation
-- fulfillment verification
-
-## Stripe and prepaid credits
-
-CrossingKey also supports separate commerce paths using Stripe-hosted checkout and prepaid credits.
-
-These are distinct from native x402 payment authorization and settlement.
-
-Discovery remains free unless a capability explicitly declares otherwise.
-
-Paid execution requires authorization.
-
-## Fulfillment integrity
-
-Digital fulfillment readiness requires expected artifacts and machine-readable integrity evidence.
-
-Where applicable, SHA-256 digests are used to verify artifact integrity against fulfillment manifests.
-
-Paid/private artifacts are not stored in this public repository unless intentionally published.
-
-## Security model
-
-The system is designed around:
-
-- bounded capabilities
-- explicit authorization
-- locked payment receiver configuration
-- idempotency
-- replay resistance
-- entitlement checks
-- deterministic execution
-- result hashing
-- receipt binding
-- sanitized responses
-- separation of public metadata from private credentials
-
-No private keys, wallet secrets, Stripe secrets, API keys, seed phrases, or mnemonics belong in this repository.
-
-The deployment follows an NSA-aligned hardening approach where practical. This does not imply NSA certification, endorsement, or formal compliance.
-
-## Agent-discovery metadata
-
-Recommended discovery terms:
-
-- MCP
-- agent commerce
-- machine commerce
-- x402
+- Stripe-hosted payment links
+- prepaid request credits
+- x402 v1
 - x402 v2
-- Base
-- Base Sepolia
-- USDC
-- payments
-- paid execution
-- prepaid credits
-- entitlements
-- deterministic execution
-- XKEY
+- Base USDC machine payments
+
+The CrossingKey wallet boundary is receiver-only.
+
+The MCP does not grant agents unrestricted wallet signing, sending, swapping, bridging, or spending authority.
+
+Paid actions require appropriate authorization.
+
+## Marketplace
+
+The v3 marketplace supports:
+
+- provider intake
+- creator intake
+- capability registration
+- rights and provenance records
+- public capability search
+- exact machine-readable quotes
+- buyer-authorized purchases
+- x402 payment settlement
+- deterministic jobs
 - receipts
-- fulfillment
-- replay protection
-- idempotency
-- machine-readable verification
+- entitlements
+- provider revenue allocation
+- settlement accounting
+
+Creator ownership remains with the creator/provider unless separately agreed.
+
+AI-training permission defaults to false.
+
+## Role-scoped authority
+
+Anonymous agents can discover and evaluate public inventory.
+
+Authenticated buyers can access purchase, receipt, and job functions appropriate to their identity.
+
+Authenticated providers can register capabilities and inspect their authorized accounting records.
+
+Authenticated administrators can approve provider/capability state and record externally authorized settlement evidence.
+
+Administrative MCP tools do not themselves move treasury funds.
+
+## Security properties
+
+The system includes:
+
+- bounded JSON input validation
+- strict capability schemas
+- SSRF protections
+- DNS/address validation
+- response-size limits
+- role-scoped credentials
+- credential expiry and revocation
+- idempotent purchase handling
+- signed-payment replay protection
+- deterministic result hashing
+- entitlement binding
+- receipt verification
+- digital-asset hash verification
+- receiver-only wallet policy
+
+No private keys, wallet secrets, Stripe secrets, API keys, seed phrases, mnemonics, or private customer data belong in this repository.
+
+## x402
+
+CrossingKey supports both x402 v1 and v2 payment requirements.
+
+The machine-commerce flow is:
+
+```text
+discover
+→ evaluate
+→ quote
+→ authorize
+→ pay
+→ verify
+→ settle
+→ execute
+→ issue entitlement
+→ bind receipt
+→ return verified result
+```
+
+Logical retries use idempotency keys to avoid duplicate purchases.
+
+Signed payment replays are rejected.
+
+## Verification
+
+The v3 release test suite contains 84 tests covering the server, marketplace, x402 flows, authorization boundaries, replay protection, receipt/entitlement behavior, SSRF protection, digital delivery, settlement accounting, and MCP transport.
+
+Release verification:
+
+```text
+tests 84
+pass 84
+fail 0
+```
+
+## Agent discovery
+
+Recommended entry tool:
+
+`provider.describe`
 
 Canonical endpoint:
 
 `https://mcp.crossingkeyintelligence.com/mcp`
 
-Canonical registry identity:
+Canonical identity:
 
 `com.crossingkeyintelligence/crossingkey-mcp`
+
+Well-known MCP metadata:
+
+`https://mcp.crossingkeyintelligence.com/.well-known/mcp.json`
 
 ## CrossingKey Intelligence
 
