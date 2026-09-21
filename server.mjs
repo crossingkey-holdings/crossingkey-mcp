@@ -386,6 +386,15 @@ app.get('/health', (_req, res) => {
   });
 });
 
+app.get('/.well-known/glama.json', (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.set('X-Content-Type-Options', 'nosniff');
+  return res.json({
+    $schema: 'https://glama.ai/mcp/schemas/connector.json',
+    claim: 'glama_claim_Yw8qE-pDyMcKiUgcV_zgQSEwTLUsXGcV'
+  });
+});
+
 app.get('/.well-known/x402',(_req,res)=>res.json({
   x402Version:2,
   ingress:[{version:1,requestHeader:'X-PAYMENT',responseHeader:'X-PAYMENT-RESPONSE'},{version:2,requestHeader:'PAYMENT-SIGNATURE',challengeHeader:'PAYMENT-REQUIRED',responseHeader:'PAYMENT-RESPONSE'}],
