@@ -7,8 +7,8 @@ import {createMachineCommerce, BASE_USDC, RECEIVER} from '../lib/machine-commerc
 
 test('x402 v1/v2, settlement, idempotency, replay, receipt, entitlement and receiver-only policy', async()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ck-mcp-')); let calls=0;
-  const fetchImpl=async(url,init)=>{calls++; const op=String(url).endsWith('/verify')?'verify':'settle'; return new Response(JSON.stringify(op==='verify'?{isValid:true}:{success:true,transaction:'0xsettled'}),{status:200});};
-  const core=createMachineCommerce({dataFile:path.join(dir,'state.json'),receiver:RECEIVER,network:'eip155:8453',mainnetEnabled:true,publicBaseUrl:'https://mcp.test',facilitatorUrl:'https://fac.test',kennekarteSecret:'k'.repeat(64),fetchImpl});
+  const fetchImpl=async(url,init)=>{const request=JSON.parse(init.body);if(String(url)==='https://rpc.test')return new Response(JSON.stringify({jsonrpc:'2.0',id:1,result:request.method==='eth_chainId'?'0x2105':'0x100'}));calls++; const op=String(url).endsWith('/verify')?'verify':'settle'; return new Response(JSON.stringify(op==='verify'?{isValid:true}:{success:true,transaction:'0x'+'a'.repeat(64)}),{status:200});};
+  const core=createMachineCommerce({dataFile:path.join(dir,'state.json'),receiver:RECEIVER,network:'eip155:8453',mainnetEnabled:true,rpcUrl:'https://rpc.test',publicBaseUrl:'https://mcp.test',facilitatorUrl:'https://fac.test',kennekarteSecret:'k'.repeat(64),fetchImpl});
   assert.equal(core.paymentRequired('artifact.integrity_manifest',1).body.accepts[0].network,'base');
   const v2=JSON.parse(Buffer.from(core.paymentRequired('artifact.integrity_manifest',2).headers['PAYMENT-REQUIRED'],'base64').toString()); assert.equal(v2.accepts[0].network,'eip155:8453'); assert.equal(v2.accepts[0].asset,BASE_USDC);
   const auth={from:'0x1111111111111111111111111111111111111111',to:RECEIVER,value:'100000',validAfter:'1',validBefore:'999999',nonce:'0x'+'a'.repeat(64)};
@@ -32,5 +32,5 @@ test('receipt state has receipts namespace',()=>{const src=fs.readFileSync('lib/
 test('entitlement state has entitlements namespace',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/entitlements/);});
 test('result hashing remains in receipt path',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/resultHash:sha256\(result\)/);});
 test('Kennekarte remains HMAC-bound',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/crossingkey-kennekarte/);});
-test('receiver-only status reports no send authority',()=>{const src=fs.readFileSync('server.mjs','utf8'); assert.match(src,/send:false/);});
+test('receiver-only status reports no spend authority',()=>{const src=fs.readFileSync('server.mjs','utf8'); assert.match(src,/autonomousSellerSpend: false/);});
 test('no facilitator is contacted by free quote generation',()=>{const src=fs.readFileSync('server.mjs','utf8'); const quote=src.slice(src.indexOf("registerTool('capability.quote"),src.indexOf("registerTool('capability.quote")+1300); assert.doesNotMatch(quote,/facilitatorCall/);});

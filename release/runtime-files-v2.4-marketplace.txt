@@ -1,4 +1,6 @@
 lib/discovery.mjs
+lib/gate1b-production-adapter.mjs
+lib/gate1b-store.mjs
 lib/machine-commerce.mjs
 lib/marketplace-adapters.mjs
 lib/marketplace-schema.mjs
@@ -6,4 +8,5 @@ lib/marketplace-storage.mjs
 lib/marketplace-tools.mjs
 lib/marketplace.mjs
 lib/onchain-verifier.mjs
+lib/paid-capability-catalog.mjs
 server.mjs

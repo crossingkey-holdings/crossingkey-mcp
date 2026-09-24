@@ -447,7 +447,7 @@ candidate_boot_gate() {
     PUBLIC_BASE_URL="http://127.0.0.1:$port" \
     MACHINE_COMMERCE_FILE="$commerce_file" \
     CK_ENABLE_MAINNET=false \
-    CLAIM_SECRET="candidate-boot-test-secret-0123456789" \
+    CLAIM_SECRET="$(node -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("hex"))')" \
     NODE_ENV=test \
     nohup node server.mjs >"$stdout_log" 2>"$stderr_log" < /dev/null &
   pid=$!
