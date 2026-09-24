@@ -1,48 +1,40 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {X402_CAPABILITIES,PREPAID_CAPABILITIES,assertPaidCatalog} from '../lib/paid-capability-catalog.mjs';
 
 const source=fs.readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
 
-test('server registers canonical v3 MCP initialize identity',()=>{
+test('canonical v3 identity and streamable HTTP transport remain configured',()=>{
   assert.match(source,/name:'crossingkey-mcp',version:'3\.0\.0'/);
+  assert.match(source,/StreamableHTTPServerTransport/);
+  assert.match(source,/app\.listen\(PORT,'127\.0\.0\.1'/);
 });
-test('server registers canonical payment.verify tool',()=>{
-  assert.match(source,/registerTool\('payment\.verify'/);
+
+test('paid catalog is complete and exposes exact x402 pricing',()=>{
+  assert.equal(assertPaidCatalog(),true);
+  assert.equal(X402_CAPABILITIES.length,5);
+  assert.equal(PREPAID_CAPABILITIES[0].name,'xkey.validate');
+  assert.match(source,/const paidX402Tools = X402_CAPABILITIES/);
+  assert.match(source,/machineCommerce\.paymentRequired\(paid\.name,2\)/);
 });
-test('payment.verify registration is free and read-only',()=>{
-  const start=source.indexOf("registerTool('payment.verify'");
-  const end=source.indexOf("});",start);
-  assert.ok(start>=0 && end>start);
-  assert.match(source.slice(start,end+3),/readOnlyHint:true/);
+
+test('free discovery and health do not expose free MCP computation',()=>{
+  for(const endpoint of ['/.well-known/mcp.json','/.well-known/x402','/health'])assert.ok(source.includes(`app.get('${endpoint}'`));
+  assert.match(source,/freeMcpTools:0/);
+  assert.match(source,/walletMode:'receiver-only'/);
+  assert.match(source,/autonomousSellerSpend: false/);
+  assert.ok(!source.includes("registerTool('payment.verify'"));
 });
-test('server exposes provider.describe as canonical discovery entry',()=>assert.match(source,/registerTool\('provider\.describe'/));
-test('server exposes payment.methods',()=>assert.match(source,/registerTool\('payment\.methods'/));
-test('server exposes system.health tool',()=>assert.match(source,/registerTool\('system\.health'/));
-test('server exposes machine_capability.quote',()=>assert.match(source,/registerTool\('machine_capability\.quote'/));
-test('server exposes canonical execution.preflight',()=>assert.match(source,/registerTool\('execution\.preflight'/));
-test('legacy aliases are not registered as canonical tools',()=>{
-  for(const name of ['discover_provider','list_capabilities','list_offers','get_offer','estimate_cost','preview_result_schema','check_requirements','execution_preflight','crossingkey.describe','payment.verify_onchain']){
-    assert.ok(!source.includes(`registerTool('${name}'`),`legacy registration present: ${name}`);
-  }
-});
-test('server preserves receiver-only authority',()=>assert.match(source,/agent_spend:false/));
-test('server HTTP discovery surfaces report 3.0.0',()=>{
-  assert.match(source,/version:'3\.0\.0'/);
-});
-test('marketplace integration remains active',()=>{
-  assert.match(source,/registerMarketplaceTools\(/);
+
+test('marketplace HTTP purchase and delivery remain wired',()=>{
+  assert.match(source,/createMarketplace\(\{core:machineCommerce/);
   assert.match(source,/app\.post\('\/api\/marketplace\/purchase'/);
   assert.match(source,/app\.get\('\/api\/marketplace\/delivery\/:id'/);
   assert.match(source,/marketplaceSessionPrincipals/);
 });
-test('marketplace registration precedes canonical direct tool registrations',()=>{
-  const marketplace=source.indexOf('registerMarketplaceTools(s,{');
-  const canonical=source.indexOf("s.registerTool('provider.describe'");
-  assert.ok(marketplace>=0 && canonical>marketplace);
+
+test('retired aliases are not advertised as paid tools',()=>{
+  const names=new Set([...X402_CAPABILITIES,...PREPAID_CAPABILITIES].map(x=>x.name));
+  for(const name of ['list_capabilities','get_offer','get_stripe_checkout_link','crossingkey.describe'])assert.equal(names.has(name),false);
 });
-test('server binds only to loopback',()=>{
-  assert.match(source,/app\.listen\(PORT,'127\.0\.0\.1'/);
-  assert.doesNotMatch(source,/app\.listen\(PORT,'0\.0\.0\.0'/);
-});
-test('server MCP endpoint remains streamable HTTP',()=>assert.match(source,/StreamableHTTPServerTransport/));

@@ -20,8 +20,10 @@ const rights={ownershipRepresentation:'LOCAL TEST FIXTURE generated input',distr
 async function fixture(t,{execute=({input})=>input,timeoutMs=100,settle,version=2}={}) {
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ck-marketplace-test-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
   let calls=[];
-  const core=createMachineCommerce({dataFile:path.join(dir,'core.json'),network:'eip155:84532',kennekarteSecret:'local-fixture-only'.repeat(4),facilitatorUrl:'https://facilitator.invalid',publicBaseUrl:'https://local.invalid',fetchImpl:async(url,init)=>{
-    const op=String(url).split('/').pop();calls.push(op);const request=JSON.parse(init.body);assert.equal(request.paymentRequirements.payTo,RECEIVER);
+  const core=createMachineCommerce({dataFile:path.join(dir,'core.json'),network:'eip155:8453',mainnetEnabled:true,rpcUrl:'https://rpc.invalid',kennekarteSecret:'local-fixture-only'.repeat(4),facilitatorUrl:'https://facilitator.invalid',publicBaseUrl:'https://local.invalid',fetchImpl:async(url,init)=>{
+    const request=JSON.parse(init.body);
+    if(String(url)==='https://rpc.invalid')return new Response(JSON.stringify({jsonrpc:'2.0',id:1,result:request.method==='eth_chainId'?'0x2105':'0x100'}));
+    const op=String(url).split('/').pop();calls.push(op);assert.equal(request.paymentRequirements.payTo,RECEIVER);
     return new Response(JSON.stringify(op==='verify'?{isValid:true}:settle?await settle():{success:true,transaction:'0x'+'1'.repeat(64)}));
   }});
   const bindings={},adapters=createAdapters({bindings,local:{echo:execute},timeoutMs});
@@ -29,13 +31,13 @@ async function fixture(t,{execute=({input})=>input,timeoutMs=100,settle,version=
   const p=await mp.registerProvider(providerInput);assert.equal(p.status,'pending');
   await mp.setProviderStatus(p.providerId,'active',admin);
   const principal={role:'provider',providerId:p.providerId};
-  const cap=await mp.registerCapability({providerId:p.providerId,name:'marketplace.echo',slug:'marketplace-echo',description:'LOCAL TEST FIXTURE echoes bounded input.',category:'test',version:'1.0.0',inputSchema:schema,outputSchema:schema,deliveryType:'mcp_tool',price:'100001',currency:'USDC',network:'eip155:84532',license:'Test only',visibility:'public',rights,sourceProvenance:'LOCAL TEST FIXTURE'},principal);
+  const cap=await mp.registerCapability({providerId:p.providerId,name:'marketplace.echo',slug:'marketplace-echo',description:'LOCAL TEST FIXTURE echoes bounded input.',category:'test',version:'1.0.0',inputSchema:schema,outputSchema:schema,deliveryType:'mcp_tool',price:'100001',currency:'USDC',network:'eip155:8453',license:'Test only',visibility:'public',rights,sourceProvenance:'LOCAL TEST FIXTURE'},principal);
   bindings[cap.capabilityId]={type:'local',adapter:'echo'};
   await mp.setCapabilityStatus(cap.capabilityId,'active',admin);
   const input={message:'hello marketplace'},idempotencyKey='sandbox-purchase-0001';
   const approval=await mp.approvePurchase({capabilityId:cap.capabilityId,buyerReference:buyer.buyerReference,idempotencyKey,input,expiresAt:new Date(Date.now()+60000).toISOString()},admin);
   const q=mp.quote(cap.capabilityId),requirement=q.paymentRequirement[`v${version}`];
-  const paymentPayload={x402Version:version,...(version===2?{accepted:requirement}:{scheme:'exact',network:'base-sepolia'}),payload:{signature:'sandbox-facilitator-fixture-not-a-signature',authorization:{from:'0x'+'2'.repeat(40),to:RECEIVER,value:cap.price,validAfter:'1',validBefore:'9999999999',nonce:'0x'+'3'.repeat(64)}}};
+  const paymentPayload={x402Version:version,...(version===2?{accepted:requirement}:{scheme:'exact',network:'base'}),payload:{signature:'sandbox-facilitator-fixture-not-a-signature',authorization:{from:'0x'+'2'.repeat(40),to:RECEIVER,value:cap.price,validAfter:'1',validBefore:'9999999999',nonce:'0x'+'3'.repeat(64)}}};
   const args={capabilityId:cap.capabilityId,approvalId:approval.approvalId,idempotencyKey,input,paymentPayload};
   return {dir,mp,core,p,principal,cap,args,calls,bindings,adapters};
 }
@@ -99,10 +101,13 @@ test('uncertain settlement is retained and never automatically charged again',as
   assert.equal(result.status,'disputed');assert.equal(result.paymentStatus,'settlement_pending');assert.equal(result.receipt,undefined);
   await f.mp.purchase(f.args,buyer);assert.equal(f.calls.length,2);
 });
-test('concurrent purchase fails closed before second settlement',async t=>{
+test('concurrent purchase fails closed before a second settlement',async t=>{
   let release;const gate=new Promise(r=>{release=r;});const f=await fixture(t,{execute:async({input})=>{await gate;return input;},timeoutMs:1000});
   const first=f.mp.purchase(f.args,buyer);
-  await new Promise(r=>setTimeout(r,10));await assert.rejects(()=>f.mp.purchase(f.args,buyer),/STORE_BUSY/);release();await first;assert.equal(f.calls.length,2);
+  for(let i=0;i<100&&f.calls.filter(x=>x==='settle').length===0;i++)await new Promise(r=>setTimeout(r,10));
+  assert.equal(f.calls.filter(x=>x==='settle').length,1);
+  await assert.rejects(()=>f.mp.purchase(f.args,buyer),/STORE_BUSY/);
+  release();await first;assert.equal(f.calls.filter(x=>x==='settle').length,1);
 });
 test('cross-path replay reservation protects legacy x402 invoke',async t=>{
   const f=await fixture(t);await f.mp.purchase(f.args,buyer);

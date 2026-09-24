@@ -11,7 +11,7 @@ test('marketplace control plane is intentionally included',()=>{
     "from './lib/marketplace-adapters.mjs'",
     "from './lib/marketplace-storage.mjs'",
     "from './lib/marketplace-tools.mjs'",
-    "registerMarketplaceTools(",
+    "createMarketplace({core:machineCommerce",
     "app.post('/api/marketplace/purchase'",
     "app.get('/api/marketplace/delivery/:id'",
     'marketplaceSessionPrincipals'
@@ -20,7 +20,7 @@ test('marketplace control plane is intentionally included',()=>{
 test('marketplace-aware machine commerce remains coupled and locked',()=>{
   assert.ok(machine.includes("marketplace-storage.mjs"));
   assert.ok(machine.includes("export async function facilitatorCall"));
-  assert.ok(machine.includes("withFileLock(config.dataFile"));
+  assert.ok(machine.includes("createProductionGate1B({dataFile:config.dataFile"));
 });
 test('canonical core public names survive marketplace ownership resolution',()=>{
   const ownership=JSON.parse(fs.readFileSync(new URL('../release/tool-registration-ownership-v2.4-marketplace.json',import.meta.url),'utf8'));
