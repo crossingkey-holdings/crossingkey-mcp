@@ -1,8 +1,10 @@
-# crossingkey-mcp
+# CrossingKey MCP
 
-Public source, protocol metadata, and release record for the CrossingKey MCP machine-commerce server.
+Agent-native MCP for governed commerce, x402 payments, paid capabilities, and verifiable receipts.
 
-**Production endpoint**
+## Production
+
+**Endpoint**
 
 `https://mcp.crossingkeyintelligence.com/mcp`
 
@@ -14,181 +16,152 @@ Public source, protocol metadata, and release record for the CrossingKey MCP mac
 
 `3.0.0`
 
-**Protocol**
+**Transport**
 
-MCP Streamable HTTP  
-Protocol version `2025-11-25`
+MCP Streamable HTTP
 
-## CrossingKey MCP v3
+## CrossingKey MCP v3.0.0
 
-CrossingKey MCP is a machine-commerce control plane for AI agents and authorized software clients.
+CrossingKey MCP is a governed machine-commerce interface for AI agents and authorized software clients.
 
-It allows agents to discover offers and capabilities, inspect pricing and requirements, obtain bounded authorization, purchase approved capabilities, receive entitlements, verify receipts, and interact with creator/provider marketplace infrastructure through one machine-readable interface.
+The current anonymous MCP surface contains **12 tools**:
 
-The design principle is:
+- **6 free discovery and commercial-navigation tools**
+- **6 paid or credit-gated execution tools**
+
+The operating principle is:
 
 > Discovery is free. Evaluation is safe. Payment is explicit. Authority stays bounded. Execution is deterministic. Fulfillment is verifiable.
 
-## v3 public surface
+## Free discovery
 
-The anonymous MCP surface contains 25 public tools using the canonical `resource.action` naming convention.
-
-Public discovery includes:
+These six tools can be used anonymously to understand the provider, available offers, requirements, price, expected result, and authorization state without spending money:
 
 - `provider.describe`
-- `marketplace.describe`
-- `provider.register`
-- `provider.get`
-- `capability.get`
-- `capability.search`
-- `catalog.list`
-- `commerce.quote`
-- `creator.apply`
-- `offer.list`
+- `offers.list`
+- `requirements.check`
 - `cost.estimate`
 - `result.preview`
-- `requirement.check`
 - `execution.preflight`
-- `credit.options`
-- `service.list`
-- `machine_capability.list`
-- `machine_capability.quote`
-- `payment.methods`
-- `purchase.status`
-- `entitlement.inspect`
-- `receipt.verify`
-- `system.health`
-- `payment.verify`
+
+The normal discovery sequence is:
+
+```text
+provider.describe
+→ offers.list
+→ requirements.check
+→ cost.estimate
+→ result.preview
+→ execution.preflight
+```
+
+A valid commercial flow may reach:
+
+```text
+READY_FOR_HUMAN_AUTHORIZATION
+```
+
+and then stop at:
+
+```text
+STOPPED_BEFORE_PAYMENT
+```
+
+until the required buyer authorization and payment conditions are satisfied.
+
+## Paid and gated execution
+
+These six tools perform valuable computation, validation, or artifact generation and are payment- or credit-gated:
+
+- `x402.compatibility_audit`
+- `mcp.schema_audit`
+- `openapi.quality_audit`
+- `machine_commerce.readiness_audit`
+- `artifact.integrity_manifest`
 - `xkey.validate`
 
-Buyer, provider, and administrator controls are role-scoped and are not advertised in anonymous `tools/list`.
+Current payment models include x402 Base USDC exact-payment flows and prepaid request credits where applicable.
 
-Examples include:
+Free discovery does not consume paid execution credits.
 
-- `capability.purchase`
-- `capability.register`
-- `provider.set_status`
-- `capability.set_status`
-- `job.status`
-- `receipt.get`
-- `settlement.get_balance`
-- `settlement.list_allocations`
-- `settlement.mark_settled`
+## Commercial flow
 
-## Machine commerce
-
-CrossingKey supports multiple commerce paths:
-
-- Stripe-hosted payment links
-- prepaid request credits
-- x402 v1
-- x402 v2
-- Base USDC machine payments
-
-The CrossingKey wallet boundary is receiver-only.
-
-The MCP does not grant agents unrestricted wallet signing, sending, swapping, bridging, or spending authority.
-
-Paid actions require appropriate authorization.
-
-## Marketplace
-
-The v3 marketplace supports:
-
-- provider intake
-- creator intake
-- capability registration
-- rights and provenance records
-- public capability search
-- exact machine-readable quotes
-- buyer-authorized purchases
-- x402 payment settlement
-- deterministic jobs
-- receipts
-- entitlements
-- provider revenue allocation
-- settlement accounting
-
-Creator ownership remains with the creator/provider unless separately agreed.
-
-AI-training permission defaults to false.
-
-## Role-scoped authority
-
-Anonymous agents can discover and evaluate public inventory.
-
-Authenticated buyers can access purchase, receipt, and job functions appropriate to their identity.
-
-Authenticated providers can register capabilities and inspect their authorized accounting records.
-
-Authenticated administrators can approve provider/capability state and record externally authorized settlement evidence.
-
-Administrative MCP tools do not themselves move treasury funds.
-
-## Security properties
-
-The system includes:
-
-- bounded JSON input validation
-- strict capability schemas
-- SSRF protections
-- DNS/address validation
-- response-size limits
-- role-scoped credentials
-- credential expiry and revocation
-- idempotent purchase handling
-- signed-payment replay protection
-- deterministic result hashing
-- entitlement binding
-- receipt verification
-- digital-asset hash verification
-- receiver-only wallet policy
-
-No private keys, wallet secrets, Stripe secrets, API keys, seed phrases, mnemonics, or private customer data belong in this repository.
-
-## x402
-
-CrossingKey supports both x402 v1 and v2 payment requirements.
-
-The machine-commerce flow is:
+The governed machine-commerce path is:
 
 ```text
 discover
-→ evaluate
-→ quote
+→ inspect requirements
+→ estimate cost
+→ preview result
+→ preflight
 → authorize
 → pay
-→ verify
-→ settle
+→ verify settlement
 → execute
-→ issue entitlement
-→ bind receipt
-→ return verified result
+→ issue result
+→ bind entitlement
+→ issue verifiable receipt
 ```
 
-Logical retries use idempotency keys to avoid duplicate purchases.
+Payment alone does not create unrestricted authority.
 
-Signed payment replays are rejected.
+Authorization, payment verification, execution, fulfillment, entitlement creation, and receipt generation remain separate governed stages.
 
-## Verification
+## Human authorization
 
-The v3 release test suite contains 84 tests covering the server, marketplace, x402 flows, authorization boundaries, replay protection, receipt/entitlement behavior, SSRF protection, digital delivery, settlement accounting, and MCP transport.
+CrossingKey does not treat an LLM-supplied boolean such as `approved: true` as buyer authorization.
 
-Release verification:
+Where human authorization is required, approval is bound to the relevant commercial context, including the buyer, capability, inputs, quote, idempotency state, and expiration conditions.
 
-```text
-tests 84
-pass 84
-fail 0
-```
+Paid execution does not occur merely because an agent asks for it.
+
+## Machine commerce
+
+CrossingKey supports governed machine-payment infrastructure including:
+
+- x402 v1
+- x402 v2
+- Base USDC
+- prepaid request credits where supported
+- settlement verification
+- entitlements
+- result-bound receipts
+- idempotent execution
+- replay protection
+
+The CrossingKey seller wallet boundary is **receiver-only**.
+
+Agents are not granted unrestricted wallet signing, sending, swapping, bridging, or autonomous seller-spend authority.
+
+## Security properties
+
+The production design includes:
+
+- bounded input validation
+- strict capability schemas
+- SSRF protections
+- DNS and address validation
+- response-size controls
+- authorization boundaries
+- approval binding
+- idempotency protection
+- payment replay protection
+- duplicate-settlement protection
+- deterministic result hashing
+- entitlement binding
+- receipt verification
+- receiver-only seller wallet policy
+- explicit uncertain-settlement handling
+
+No private keys, wallet secrets, Stripe secrets, API keys, seed phrases, mnemonics, or private customer information belong in this repository.
 
 ## Agent discovery
 
-Recommended entry tool:
+Recommended entry point:
 
 `provider.describe`
 
-Canonical endpoint:
+Canonical MCP endpoint:
 
 `https://mcp.crossingkeyintelligence.com/mcp`
 
@@ -196,9 +169,13 @@ Canonical identity:
 
 `com.crossingkeyintelligence/crossingkey-mcp`
 
-Well-known MCP metadata:
+Official MCP Registry identity:
 
-`https://mcp.crossingkeyintelligence.com/.well-known/mcp.json`
+`com.crossingkeyintelligence/crossingkey-mcp`
+
+Website:
+
+`https://www.crossingkeyintelligence.com`
 
 ## CrossingKey Intelligence
 
