@@ -1,0 +1,12 @@
+{
+  "classification": "PRODUCTION_IMPLEMENTED_FOR_CONTROLLED_CAPABILITY",
+  "candidates": [
+    {"file":"lib/gate1b-production-adapter.mjs","symbol":"createProductionGate1B.invoke/finalizeRecoveredOperation","reachable_from_production":true,"durable":true,"automatic_or_manual":"explicit recovery callback; startup wiring exists but full startup sweep is not yet verified","external_effect_aware":"settlement_unknown/pending_fulfillment reconciliation is external-effect aware; execution uncertainty is not resolved automatically","idempotent":true,"receipt_aware":true,"restart_reachable":true,"evidence":"finalization_pending durable result, integrity check, canonical finalizer callback"},
+    {"file":"lib/gate1b-production-adapter.mjs","symbol":"reconcileProduction","reachable_from_production":true,"durable":true,"automatic_or_manual":"manual invocation retry","external_effect_aware":true,"idempotent":true,"receipt_aware":"settlement/reconciliation context; not receipt regeneration","restart_reachable":false,"evidence":"called only from Gate1B invoke when durable state is settlement_unknown/unresolved"},
+    {"file":"lib/gate1b-store.mjs","symbol":"durableWrite/withProcessLock","reachable_from_production":true,"durable":true,"automatic_or_manual":"automatic atomic write/lock","external_effect_aware":"lock ownership only","idempotent":true,"receipt_aware":false,"restart_reachable":true,"evidence":"atomic fsync+rename; kernel-held guardian lock"},
+    {"file":"server.mjs","symbol":"ckConsumeDurableRevenueEvents","reachable_from_production":true,"durable":true,"automatic_or_manual":"startup/runtime funnel accounting cursor","external_effect_aware":"accounting events only","idempotent":true,"receipt_aware":true,"restart_reachable":true,"evidence":"consumes machineCommerce.revenueEvents; not execution recovery"}
+  ],
+  "missing": ["capability-specific witness wiring for every externally effectful production capability", "live production startup scan policy", "zero-side-effect dependency-injected MCP factory"],
+  "final_recovery_classification": "PARTIALLY_IMPLEMENTED",
+  "production_feature_gap": "RECOVERY is partial and not sufficient for all four thesis recovery invariants"
+}

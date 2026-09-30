@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import { createMachineCommerce, RECEIVER } from '../../lib/machine-commerce.mjs';
+import { startHttpsRpcFixture, createFixtureFetch } from '../../tests/fixtures/https-rpc-fixture.mjs';
+import { createExternalEffectAdapter } from './external-effect-adapter.mjs';
+const c=JSON.parse(process.env.CK_COMBINED_CONFIG);const rpc=await startHttpsRpcFixture();const effect=createExternalEffectAdapter(c.effectFile);const bump=k=>{const s=fs.existsSync(c.counterFile)?JSON.parse(fs.readFileSync(c.counterFile,'utf8')):{};s[k]=(s[k]||0)+1;fs.writeFileSync(c.counterFile,JSON.stringify(s));};
+const facilitator=async(url,init)=>{const op=String(url).endsWith('/verify')?'verify':'settle';bump(`initial_${op}`);return new Response(JSON.stringify(op==='verify'?{isValid:true}:{success:true,transaction:'fixture:'+c.idempotencyKey}),{status:200,headers:{'content-type':'application/json'}});};
+const fetchImpl=createFixtureFetch(rpc,facilitator);const ack=x=>process.send?.({checkpoint:x,pid:process.pid});const pause=()=>new Promise(()=>{});const barrier=async x=>{if(x===c.checkpoint){ack(x);await pause();}};
+const nonce='0x'+crypto.createHash('sha256').update(c.idempotencyKey).digest('hex');
+const payment={x402Version:1,scheme:'exact',network:'base-sepolia',payload:{signature:'0x'+'f'.repeat(128),authorization:{from:'0x1111111111111111111111111111111111111111',to:RECEIVER,value:'100000',validAfter:'1',validBefore:'9999999999',nonce}}};
+const injectedExecute=async({capabilityName,input,idempotencyKey})=>{const result=await effect.execute(idempotencyKey,{capabilityName,...input});if(c.checkpoint==='REC03_POST_EFFECT_PRE_DURABLE_RESULT'){ack(c.checkpoint);await pause();}return result;};
+const core=createMachineCommerce({dataFile:c.dataFile,receiver:RECEIVER,network:'eip155:84532',mainnetEnabled:false,publicBaseUrl:'https://mcp.example.test',facilitatorUrl:'https://facilitator.example.test',rpcUrl:rpc.url,kennekarteSecret:'x'.repeat(64),fetchImpl,executionDependencies:{execute:injectedExecute},gate1bBarrier:barrier});
+await core.invoke({capabilityName:'artifact.integrity_manifest',input:{artifacts:[{name:'combined.txt',content:'combined'}]},idempotencyKey:c.idempotencyKey,paymentPayload:payment});

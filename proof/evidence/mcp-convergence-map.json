@@ -1,0 +1,18 @@
+{
+  "status": "FRESH_EXECUTION",
+  "direct": "createMachineCommerce.invoke",
+  "mcp": "server.mjs makeMcpServer paid tool handler",
+  "convergenceFile": "lib/machine-commerce.mjs",
+  "convergenceFunction": "machineCommerce.invoke",
+  "idempotencyConflict": {
+    "file": "lib/gate1b-production-adapter.mjs",
+    "function": "invoke",
+    "cause": "requestHash/paymentHash mismatch"
+  },
+  "nonceReplay": {
+    "file": "lib/gate1b-production-adapter.mjs",
+    "function": "invoke",
+    "cause": "state.replayKeys[context.replayKey]"
+  },
+  "sameResultHash": true
+}

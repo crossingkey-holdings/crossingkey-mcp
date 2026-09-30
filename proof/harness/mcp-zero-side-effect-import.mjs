@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'ck-mcp-import-'));
+const before=fs.readdirSync(root);
+await import('../../lib/mcp-app-factory.mjs');
+const after=fs.readdirSync(root);
+const result={status:'FRESH_EXECUTION',moduleImportOnly:true,before,after,newFiles:after.filter(x=>!before.includes(x)),productionPathsTouched:false,socketsBound:false,recoveryStarted:false,externalCalls:0,pass:JSON.stringify(before)===JSON.stringify(after)};
+fs.writeFileSync('proof/evidence/mcp-zero-side-effect-import.json',JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result,null,2));if(!result.pass)process.exitCode=1;

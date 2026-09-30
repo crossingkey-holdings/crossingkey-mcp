@@ -1,0 +1,27 @@
+{
+  "case_id": "REC-04",
+  "status": "PASS",
+  "fresh_execution": "FRESH_EXECUTION",
+  "mode": "REC04",
+  "childPid": 307,
+  "checkpoint": {
+    "type": "checkpoint",
+    "checkpoint": "AFTER_DURABLE_KNOWLEDGE",
+    "pid": 307
+  },
+  "termination": {
+    "code": null,
+    "signal": "SIGKILL"
+  },
+  "witnessMode": "normal",
+  "firstAction": "FINALIZE_LOCAL_STATE",
+  "secondAction": "ALREADY_TERMINAL",
+  "executionCount": 1,
+  "externalEffectCount": 1,
+  "receiptCount": 1,
+  "entitlementCount": 1,
+  "revenueEventCount": 1,
+  "durableResult": true,
+  "finalState": "fulfilled",
+  "pass": true
+}

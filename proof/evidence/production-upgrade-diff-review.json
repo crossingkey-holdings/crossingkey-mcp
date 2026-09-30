@@ -1,0 +1,12 @@
+{
+  "classification": "IMPLEMENTED_WITH_LIMITATIONS",
+  "files": [
+    {"file":"lib/recovery/recovery-orchestrator.mjs","reason":"new conservative durable-operation classifier and reconciliation coordinator","behavior_changed":"not wired into default production startup; explicit caller only","public_api_impact":"new internal module exports","payment_impact":"none","wallet_impact":"none","state_schema_impact":"none; read-only classification in current implementation","migration_requirement":"none","rollback_method":"remove module and its import","security_impact":"uses existing Gate1B lock/read state; does not convert unknown to success"},
+    {"file":"server.mjs","reason":"export actual app and explicit server start function; conditional listener startup","behavior_changed":"default listener behavior preserved unless CK_NO_LISTEN=true; explicit start can optionally invoke conservative recovery","public_api_impact":"new internal exports; MCP protocol unchanged","payment_impact":"none","wallet_impact":"none","state_schema_impact":"none","migration_requirement":"none","rollback_method":"restore listener block and remove import/exports","security_impact":"no auth/TLS/payment changes"},
+    {"file":"tests/fixtures/https-rpc-fixture.mjs","reason":"test-only HTTPS dependency fixture","behavior_changed":"tests only","public_api_impact":"none","payment_impact":"none","wallet_impact":"none","state_schema_impact":"none","migration_requirement":"none","rollback_method":"delete test fixture","security_impact":"localhost-only, rejectUnauthorized true"}
+  ],
+  "production_runtime_restart": false,
+  "production_state_touch_finding": "Import smoke test of monolithic server emitted existing funnel restoration log and may update its configured SQLite snapshot; this is why no production MCP instance was started.",
+  "deployment_status": "NOT_DEPLOYED",
+  "latest_change": {"file":"lib/gate1b-production-adapter.mjs","reason":"additive durable verified-result staging, canonical finalization callback, and witness-driven recovery continuation seam","state_schema":"new optional gate1b.durableResult and finalization_pending fields; witness evidence may be nested under durableResult","tests":"npm run check, npm test, witness contract, and isolated child-process recovery matrix pass; authority is capability-scoped and MCP remains out of scope"}
+}

@@ -1,0 +1,36 @@
+{
+  "archive": "crossingkey_core_deterministic_phase32.zip",
+  "actual_source_paths": [
+    "crossingkey_core/orchestration",
+    "crossingkey_core/security",
+    "crossingkey_core/execution",
+    "crossingkey_core/commerce",
+    "crossingkey_core/memory",
+    "crossingkey_core/interoperability",
+    "crossingkey_core/recovery",
+    "crossingkey_core/governance",
+    "crossingkey_core/intelligence",
+    "crossingkey_core/portable",
+    "crossingkey_core/rights"
+  ],
+  "labels_observed": [
+    "Phase I",
+    "Phase II",
+    "Phase III",
+    "Phase VIII",
+    "Phase IX",
+    "Phase X",
+    "Phase XI",
+    "Phase XIII",
+    "Phase XIV",
+    "Phase XVII",
+    "Phase XX",
+    "Phase XXIII-XXVIII",
+    "Phase XXXI-XXXII"
+  ],
+  "gaps": [
+    "XXIX-XXX not supplied in archive README sequence"
+  ],
+  "duplicate_or_unverified_continuity": true,
+  "historical_baseline": "122 tests expected and now freshly observed"
+}

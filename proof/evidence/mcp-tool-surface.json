@@ -1,0 +1,18 @@
+{
+  "status": 200,
+  "count": 12,
+  "names": [
+    "provider.describe",
+    "offers.list",
+    "requirements.check",
+    "cost.estimate",
+    "result.preview",
+    "execution.preflight",
+    "x402.compatibility_audit",
+    "mcp.schema_audit",
+    "openapi.quality_audit",
+    "machine_commerce.readiness_audit",
+    "artifact.integrity_manifest",
+    "xkey.validate"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "status":"IMPLEMENTED_PRODUCTION_CONTRACT_WITH_CONTINUATION_SEAM",
+  "fresh_execution":"PARTIAL",
+  "production_module":"lib/recovery/external-effect-witness.mjs",
+  "outcomes":["EFFECT_CONFIRMED","EFFECT_NOT_OBSERVED","EFFECT_UNKNOWN"],
+  "rules":[
+    "UNKNOWN is never treated as NOT_OBSERVED",
+    "confirmed requires capability-specific evidence supplied by the witness",
+    "absence is not authoritative unless the capability adapter says it is",
+    "execution identity is derived from durable transaction identity and is never invented during recovery"
+  ],
+  "limitations":[
+    "The current Gate1B capabilities do not yet provide a complete execution-effect witness implementation.",
+    "The Gate1B recovery continuation now stages confirmed witness result evidence and accepts a canonical resume executor for NOT_OBSERVED; full capability-specific wiring and process-death execution remain unproven."
+  ]
+}

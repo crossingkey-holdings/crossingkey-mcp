@@ -1,0 +1,23 @@
+{
+  "status":"OBSERVED_CURRENT_SOURCE",
+  "source":"lib/machine-commerce.mjs",
+  "fields":{
+    "x402Version":["PUBLIC_IDENTIFIER","REQUIRED_FOR_VERIFY","REQUIRED_FOR_SETTLE"],
+    "scheme":["PUBLIC_IDENTIFIER","REQUIRED_FOR_VERIFY","REQUIRED_FOR_SETTLE"],
+    "network":["PUBLIC_IDENTIFIER","REPLAY_SENSITIVE","REQUIRED_FOR_VERIFY","REQUIRED_FOR_SETTLE"],
+    "accepted":["PUBLIC_IDENTIFIER","REQUIRED_FOR_VERIFY","REQUIRED_FOR_SETTLE"],
+    "resource":["PUBLIC_IDENTIFIER","REQUIRED_FOR_VERIFY"],
+    "payload.signature":["SIGNED_AUTHORIZATION_MATERIAL","REPLAY_SENSITIVE","REQUIRED_FOR_VERIFY","REQUIRED_FOR_SETTLE"],
+    "payload.authorization.from":["PUBLIC_IDENTIFIER","SIGNED_AUTHORIZATION_MATERIAL","REPLAY_SENSITIVE","REQUIRED_FOR_VERIFY","REQUIRED_FOR_SETTLE"],
+    "payload.authorization.to":["PUBLIC_IDENTIFIER","SIGNED_AUTHORIZATION_MATERIAL","REQUIRED_FOR_VERIFY","REQUIRED_FOR_SETTLE"],
+    "payload.authorization.value":["PUBLIC_IDENTIFIER","SIGNED_AUTHORIZATION_MATERIAL","REPLAY_SENSITIVE","REQUIRED_FOR_VERIFY","REQUIRED_FOR_SETTLE"],
+    "payload.authorization.validAfter":["PUBLIC_IDENTIFIER","SIGNED_AUTHORIZATION_MATERIAL","REPLAY_SENSITIVE","REQUIRED_FOR_VERIFY"],
+    "payload.authorization.validBefore":["PUBLIC_IDENTIFIER","SIGNED_AUTHORIZATION_MATERIAL","REPLAY_SENSITIVE","REQUIRED_FOR_VERIFY"],
+    "payload.authorization.nonce":["PUBLIC_IDENTIFIER","SIGNED_AUTHORIZATION_MATERIAL","REPLAY_SENSITIVE","REQUIRED_FOR_VERIFY","REQUIRED_FOR_SETTLE"],
+    "payload.extensions":["EPHEMERAL_TRANSPORT_ONLY","NOT_REQUIRED_FOR_RECOVERY"]
+  },
+  "already_durable":"Sanitized payer, receiver, network, asset, amount, nonce, validity window, request/payment hashes, and replay key are stored in gate1b.context.",
+  "missing_before_change":"Original signed payment envelope required by facilitatorCall('verify', paymentPayload, requirements).",
+  "excluded":"private keys, seed phrases, wallet signing capability, facilitator credentials, and custodial secrets are not present in paymentPayload and are not persisted.",
+  "authority_conclusion":"The signed envelope is evidence of the original request-specific authorization; it does not create a new signing capability. Replay remains bound by nonce, replay key, idempotency, policy, expiry, and facilitator verification."
+}

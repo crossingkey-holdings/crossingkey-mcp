@@ -1,0 +1,11 @@
+{
+  "classification": "FRESH_IMPLEMENTATION",
+  "schema": "ck/gate1b-result/1",
+  "location": "idempotency[request].gate1b.durableResult",
+  "fields": ["schema", "result", "resultHash", "verified", "verifiedAt", "executionIdentity"],
+  "purpose": "Persist canonical verified execution evidence before entitlement/receipt/response/revenue finalization.",
+  "sensitive_material": "No payment credentials, private keys, authorization signatures, or secrets are persisted by this field.",
+  "backward_compatibility": "Records without durableResult remain readable and are not inferred as verified.",
+  "rollback": "Revert the additive gate change; existing records remain readable.",
+  "terminology": "durable staged-finalization protocol, not distributed two-phase commit"
+}

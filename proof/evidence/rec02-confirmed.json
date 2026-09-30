@@ -1,0 +1,27 @@
+{
+  "case_id": "REC-02A",
+  "status": "PASS",
+  "fresh_execution": "FRESH_EXECUTION",
+  "mode": "REC02_CONFIRMED",
+  "childPid": 229,
+  "checkpoint": {
+    "type": "checkpoint",
+    "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
+    "pid": 229
+  },
+  "termination": {
+    "code": null,
+    "signal": "SIGKILL"
+  },
+  "witnessMode": "normal",
+  "firstAction": "FINALIZE_LOCAL_STATE",
+  "secondAction": "ALREADY_TERMINAL",
+  "executionCount": 1,
+  "externalEffectCount": 1,
+  "receiptCount": 1,
+  "entitlementCount": 1,
+  "revenueEventCount": 1,
+  "durableResult": true,
+  "finalState": "fulfilled",
+  "pass": true
+}

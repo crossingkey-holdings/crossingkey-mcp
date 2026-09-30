@@ -1,0 +1,28 @@
+{
+  "status": "FRESH_EXECUTION",
+  "productionEntrypoint": "server.mjs",
+  "canonicalFactory": "lib/mcp-app-factory.mjs:createCrossingKeyApp",
+  "explicitNoListen": true,
+  "factoryConsumedByEntrypoint": true,
+  "startExported": true,
+  "temporaryStateRoot": "/tmp/ck-production-entrypoint-Fnwje8",
+  "preexistingFiles": [
+    "credit_links.json",
+    "fulfillment_map.json",
+    "request_services.json",
+    "state.json",
+    "stripe_catalog.json"
+  ],
+  "filesAfterConstruction": [
+    "credit_links.json",
+    "fulfillment_map.json",
+    "funnel.sqlite3",
+    "funnel.sqlite3-shm",
+    "funnel.sqlite3-wal",
+    "request_services.json",
+    "state.json",
+    "stripe_catalog.json"
+  ],
+  "productionDefaultsUntouched": true,
+  "pass": true
+}

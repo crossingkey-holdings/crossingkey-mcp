@@ -1,0 +1,93 @@
+{
+  "classification": "FRESH_EXECUTION",
+  "cases": [
+    {
+      "case_id": "RPC-NEG-01",
+      "input_condition": {
+        "chainId": "0x14a34"
+      },
+      "expected_boundary": "rejected_before_anchor",
+      "actual_boundary": "Reconciliation authority network mismatch",
+      "anchor_created": false,
+      "state_changed": false,
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "RPC-NEG-02",
+      "input_condition": {
+        "blockNumber": "not-hex"
+      },
+      "expected_boundary": "rejected_before_anchor",
+      "actual_boundary": "Invalid reconciliation anchor",
+      "anchor_created": false,
+      "state_changed": false,
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "RPC-NEG-03",
+      "input_condition": {
+        "responseMode": "malformed"
+      },
+      "expected_boundary": "rejected_before_anchor",
+      "actual_boundary": "Expected property name or '}' in JSON at position 1 (line 1 column 2)",
+      "anchor_created": false,
+      "state_changed": false,
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "RPC-NEG-04",
+      "input_condition": {
+        "responseMode": "invalid-envelope"
+      },
+      "expected_boundary": "rejected_before_anchor",
+      "actual_boundary": "RPC response rejected",
+      "anchor_created": false,
+      "state_changed": false,
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "RPC-NEG-05",
+      "input_condition": {
+        "responseMode": "error"
+      },
+      "expected_boundary": "rejected_before_anchor",
+      "actual_boundary": "RPC response rejected",
+      "anchor_created": false,
+      "state_changed": false,
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "RPC-NEG-06",
+      "input_condition": {
+        "responseMode": "http-failure"
+      },
+      "expected_boundary": "rejected_before_anchor",
+      "actual_boundary": "RPC authority unavailable",
+      "anchor_created": false,
+      "state_changed": false,
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "RPC-NEG-07",
+      "input_condition": {
+        "delayMs": 9000
+      },
+      "expected_boundary": "rejected_before_anchor",
+      "actual_boundary": "The operation was aborted",
+      "anchor_created": false,
+      "state_changed": false,
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "RPC-NEG-08",
+      "input_condition": "untrusted TLS CA",
+      "expected_boundary": "TLS verification failure",
+      "actual_boundary": "DEPTH_ZERO_SELF_SIGNED_CERT",
+      "anchor_created": false,
+      "state_changed": false,
+      "verdict": "PASS"
+    }
+  ],
+  "passed": 8,
+  "executed": 8
+}

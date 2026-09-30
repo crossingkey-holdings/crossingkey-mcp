@@ -1,0 +1,8 @@
+{
+  "classification": "NOT_PROVEN",
+  "fresh_paths": 1,
+  "second_path": "NOT_SAFE_TO_ISOLATE",
+  "reason": "server.mjs module initialization touches configured funnel state and has fixed state-file coupling; app factory exports exist but dependency injection is incomplete.",
+  "direct_path": "FRESH_EXECUTION",
+  "mcp_path": "NOT_TESTED"
+}

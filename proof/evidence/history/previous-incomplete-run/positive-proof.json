@@ -1,0 +1,50 @@
+{
+  "proof_id": "proof-a5ed2887062fd6f8",
+  "request_id": "proof-positive-0001",
+  "interface": "direct production machine-commerce adapter",
+  "capability": "artifact.integrity_manifest",
+  "proposal_hash": "1ba2ee11829a88c8756181356ceffdad23e1716c0011ca79e8275c237319dedf",
+  "state_before_hash": "635598449149d66336039ae65c76c88d9b89ee1201467dbed37c7efa64bed57c",
+  "preconditions": {
+    "input_schema": "production capability schema",
+    "network": "isolated Base Sepolia-shaped fixture",
+    "ai_required": false
+  },
+  "authority": {
+    "boundary": "x402 payment authorization verified by isolated facilitator fixture",
+    "human_or_external_authority": "NOT independently proven in this local run"
+  },
+  "idempotency": {
+    "first": "committed",
+    "duplicate": true,
+    "changed_payload_collision": "PASS"
+  },
+  "execution": {
+    "status": "fulfilled",
+    "result": {
+      "capability": "artifact.integrity_manifest",
+      "manifest": [
+        {
+          "name": "crossingkey-proof.txt",
+          "bytes": 24,
+          "sha256": "9395dd1988e341e098b7d7967edc864f397f44db9fdaf6557393f976e4449fdc"
+        }
+      ],
+      "manifestSha256": "6c959cff4058dbe9cd445abe6cb3c1461a8a65cab643e752f6a411fd2ad2a394"
+    },
+    "execution_started": true
+  },
+  "verification": {
+    "receipt_hash_valid": true,
+    "facilitator_verification": "fixture response only; external settlement NOT proven"
+  },
+  "state_after_hash": "52a071a902b9a141a7790fe2e7ec2654cd646d8a3e12bb2995c6732e7a860828",
+  "evidence_hash": "8f2fe1bc7611f908bcfee3af0a2298308ccd481bf37af026dfdef3b13636b869",
+  "receipt_id": "ck_rcpt_1e298951-0104-4e46-b639-1271b214799c",
+  "receipt_verification": true,
+  "external_effects": "none independently verified; isolated fixture only",
+  "model_required": false,
+  "started_at": "2026-09-29T21:10:47.325Z",
+  "completed_at": "2026-09-29T21:10:47.484Z",
+  "replay_boundary": "PASS"
+}

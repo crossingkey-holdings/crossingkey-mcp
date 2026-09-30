@@ -1,0 +1,19 @@
+{
+  "status":"OBSERVED_CURRENT_SOURCE",
+  "canonical_invocation":"lib/machine-commerce.mjs:createMachineCommerce -> gate.invoke",
+  "authorities":[
+    {"concern":"capability existence","file":"lib/machine-commerce.mjs","symbol":"capability","classification":"PRODUCTION_AUTHORITATIVE"},
+    {"concern":"payment shape and signed authorization validation","file":"lib/machine-commerce.mjs","symbol":"canonicalizePayment","classification":"PRODUCTION_AUTHORITATIVE"},
+    {"concern":"payment policy/network/asset/receiver/amount/mainnet gate","file":"lib/machine-commerce.mjs","symbol":"enforcePolicy","classification":"PRODUCTION_AUTHORITATIVE"},
+    {"concern":"RPC chain/block authority anchor","file":"lib/gate1b-production-adapter.mjs","symbol":"captureReconciliationAnchor/rpcAuthority","classification":"PRODUCTION_AUTHORITATIVE"},
+    {"concern":"facilitator authorization verification","file":"lib/machine-commerce.mjs","symbol":"facilitatorCall(config,'verify',...)","classification":"PRODUCTION_AUTHORITATIVE"},
+    {"concern":"settlement verification","file":"lib/machine-commerce.mjs; lib/gate1b-production-adapter.mjs","symbol":"facilitatorCall('settle')/reconcileProduction","classification":"PRODUCTION_AUTHORITATIVE"},
+    {"concern":"idempotency and replay","file":"lib/gate1b-production-adapter.mjs","symbol":"createProductionGate1B.invoke","classification":"PRODUCTION_AUTHORITATIVE"},
+    {"concern":"execution admission and execution","file":"lib/gate1b-production-adapter.mjs; lib/machine-commerce.mjs","symbol":"invoke -> execute","classification":"PRODUCTION_AUTHORITATIVE"},
+    {"concern":"durable result and finalization","file":"lib/gate1b-production-adapter.mjs","symbol":"durableResult/finalization_pending/finalizeRecoveredOperation","classification":"PRODUCTION_AUTHORITATIVE"}
+  ],
+  "recovery_call_path_observed":"recoverExecutionOutcome -> witness -> durableResult/finalization_pending or execution_unknown; finalizeRecoveredOperation -> canonical finalizer",
+  "durable_recovery_change":"gate1b.context.recoveryAuthorization now retains the original signed payment envelope after canonicalizePayment/enforcePolicy pass; no private key or signing capability is retained.",
+  "strict_gap":"Direct authority re-entry is now executable in an isolated machine-commerce test, but the child-process REC-01/REC-02B runner still uses the deterministic external test capability rather than the full payment-backed machine-commerce capability. Production-authority negative recovery cases remain to be executed.",
+  "no_fixture_substitution_claim":true
+}

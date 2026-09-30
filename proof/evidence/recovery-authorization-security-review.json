@@ -1,0 +1,7 @@
+{
+  "classification":"LIMITED_SIGNED_EVIDENCE",
+  "risk":"The signed x402 envelope is bearer authorization material and must be protected as sensitive local state.",
+  "mitigations":["canonical Gate1B file permissions","atomic durable writes","operation binding","nonce/replay protection","expiry and policy checks","facilitator VERIFY before resume","no settlement call during revalidation","not copied into receipts or public evidence"],
+  "excluded_capabilities":["private keys","seed phrases","wallet signing sessions","custodial secrets"],
+  "logs_and_evidence":"Do not print recoveryAuthorization; evidence stores field classifications and hashes/metadata only."
+}

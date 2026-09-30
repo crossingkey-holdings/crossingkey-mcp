@@ -1,0 +1,1 @@
+{"status":"SKIPPED_FOR_SAFETY","reason":"An unauthenticated paid tools/call could increment production telemetry and the requested proof counters are production state. No paid capability, payment challenge invocation, settlement, receipt, entitlement, revenue event, or executor call was attempted."}

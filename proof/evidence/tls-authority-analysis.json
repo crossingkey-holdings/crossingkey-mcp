@@ -1,0 +1,18 @@
+{
+  "status": "INCOMPLETE",
+  "transport_authentication": {
+    "mechanism": "Gate 1B requires an HTTPS RPC authority before reconciliation",
+    "observed_enforcement": "lib/gate1b-production-adapter.mjs rejects missing or non-HTTPS RPC authority",
+    "tls_mtls_status": "The requested ephemeral CA/mTLS fixture is absent from this checkout and no authoritative copy was found in the searched local repositories/archives",
+    "proves": ["a configured HTTPS RPC authority is required by the production adapter"],
+    "does_not_prove": ["certificate chain validation", "localhost SAN validation", "peer fingerprint validation"]
+  },
+  "request_application_authority": {
+    "observed_production_test": "x402-shaped payment authorization and nonce/idempotency checks",
+    "issuer_subject_audience_resource_expiration": "NOT_APPLICABLE_TO_IDENTIFIED_PRODUCTION_CALL_GRAPH; claimed JWT verifier is absent and not recoverable from searched local sources",
+    "nonce_replay": "Covered by the existing isolated machine-commerce assertions, not by the missing TLS/JWT fixture"
+  },
+  "exact_failure": "TLS RPC authority is required",
+  "no_bypass_added": true,
+  "no_tls_verification_disabled": true
+}

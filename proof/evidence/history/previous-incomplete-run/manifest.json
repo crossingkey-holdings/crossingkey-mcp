@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-09-29T20:56:35.115Z",
+  "verdict": "CROSSINGKEY_SYSTEM_PROOF_INCOMPLETE",
+  "files": [
+    "adversarial-matrix.json",
+    "crossingkey-proof-contract.json",
+    "interface-invariance.json",
+    "manifest.json",
+    "positive-proof.json",
+    "recovery-proof.json",
+    "regression-results.json",
+    "system-map.json",
+    "system-map.md"
+  ],
+  "scope": {
+    "production_modified": false,
+    "production_restarted": false,
+    "payments": false,
+    "blockchain_transactions": false
+  }
+}

@@ -1,0 +1,1 @@
+{"status":"SKIPPED_FOR_SAFETY","reason":"The server middleware increments persistent funnel/request telemetry for MCP requests; this pass is prohibited from modifying production state. Discovery was required and performed; additional informational tool calls were not run because non-mutation could not be established at implementation level."}

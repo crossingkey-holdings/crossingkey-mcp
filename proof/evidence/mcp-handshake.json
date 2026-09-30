@@ -1,0 +1,91 @@
+{
+  "status": "FRESH_EXECUTION",
+  "transport": "Streamable HTTP",
+  "protocolVersion": "2025-11-25",
+  "initialize": {
+    "status": 200,
+    "sessionEstablished": true
+  },
+  "secondSession": {
+    "status": 200,
+    "independent": true
+  },
+  "toolsList": {
+    "status": 200,
+    "count": 12,
+    "names": [
+      "provider.describe",
+      "offers.list",
+      "requirements.check",
+      "cost.estimate",
+      "result.preview",
+      "execution.preflight",
+      "x402.compatibility_audit",
+      "mcp.schema_audit",
+      "openapi.quality_audit",
+      "machine_commerce.readiness_audit",
+      "artifact.integrity_manifest",
+      "xkey.validate"
+    ]
+  },
+  "challenge": {
+    "status": 200,
+    "containsPaymentRequired": true
+  },
+  "authorized": {
+    "status": 200,
+    "canonicalMarker": true,
+    "resultHash": "sha256:35d6ae4791ca4b17ca003f95368cd69b6a315521d935c80fb88c99441fc41a4a"
+  },
+  "direct": {
+    "capability": "artifact.integrity_manifest",
+    "resultHash": "sha256:35d6ae4791ca4b17ca003f95368cd69b6a315521d935c80fb88c99441fc41a4a"
+  },
+  "directToMcp": {
+    "sameOperationReplay": true
+  },
+  "mcpToDirect": {
+    "sameOperationReplay": true
+  },
+  "changedPayload": {
+    "directToMcp": {
+      "first": "direct success",
+      "secondStatus": 200,
+      "secondConflict": true
+    },
+    "mcpToDirect": {
+      "firstStatus": 200,
+      "second": {
+        "error": "Idempotency key conflict"
+      }
+    }
+  },
+  "nonceReplay": {
+    "directToMcp": {
+      "first": "direct success",
+      "secondStatus": 200,
+      "secondRejected": true
+    },
+    "mcpToDirect": {
+      "firstStatus": 200,
+      "second": {
+        "error": "Replay detected"
+      }
+    }
+  },
+  "malformed": {
+    "status": 200,
+    "body": "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"MCP error -32602: Tool not.a.real.tool not found\"}],\"isError\":true},\"jsonrpc\":\"2.0\",\"id\":5}\n\n"
+  },
+  "invalidArgs": {
+    "status": 200,
+    "body": "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"MCP error -32602: Input validation error: Invalid arguments for tool artifact.integrity_manifest: Array must contain at least 1 element(s) at artifacts\"}],\"isError\":true},\"jsonrpc\":\"2.0\",\"id\":7}\n\n"
+  },
+  "convergence": {
+    "sameCanonicalMarker": true,
+    "sameCapability": true,
+    "independentIngress": true,
+    "sameResultHash": true
+  },
+  "productionStateUntouched": true
+}

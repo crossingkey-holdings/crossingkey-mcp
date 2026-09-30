@@ -1,0 +1,11 @@
+{
+  "status": "FRESH_EXECUTION",
+  "unknownTool": {
+    "status": 200,
+    "body": "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"MCP error -32602: Tool not.a.real.tool not found\"}],\"isError\":true},\"jsonrpc\":\"2.0\",\"id\":5}\n\n"
+  },
+  "invalidArguments": {
+    "status": 200,
+    "body": "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"MCP error -32602: Input validation error: Invalid arguments for tool artifact.integrity_manifest: Array must contain at least 1 element(s) at artifacts\"}],\"isError\":true},\"jsonrpc\":\"2.0\",\"id\":7}\n\n"
+  }
+}

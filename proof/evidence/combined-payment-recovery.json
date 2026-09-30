@@ -1,0 +1,306 @@
+{
+  "status": "FRESH_EXECUTION",
+  "results": [
+    {
+      "name": "REC01",
+      "checkpoint": {
+        "checkpoint": "FULFILLMENT_CLAIMED",
+        "pid": 231
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "recoveryError": null,
+      "first": {
+        "action": "FINALIZE_LOCAL_STATE",
+        "witness": {
+          "outcome": "EFFECT_NOT_OBSERVED",
+          "evidence": {
+            "authoritative": true,
+            "operationId": "combined-rec01"
+          }
+        }
+      },
+      "second": {
+        "action": "ALREADY_TERMINAL"
+      },
+      "counters": {
+        "initial_verify": 1,
+        "initial_settle": 1,
+        "recovery_verify": 1
+      },
+      "effectCount": 1,
+      "stateSummary": {
+        "version": 1,
+        "operationState": "fulfilled",
+        "durableResult": true,
+        "receiptCount": 1,
+        "entitlementCount": 1
+      },
+      "pass": true
+    },
+    {
+      "name": "REC01_REJECT",
+      "checkpoint": {
+        "checkpoint": "FULFILLMENT_CLAIMED",
+        "pid": 273
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "recoveryError": "RECOVERY_AUTHORIZATION_REJECTED",
+      "first": null,
+      "second": {
+        "action": "NOT_ELIGIBLE"
+      },
+      "counters": {
+        "initial_verify": 1,
+        "initial_settle": 1,
+        "recovery_verify": 1
+      },
+      "effectCount": 0,
+      "stateSummary": {
+        "version": 1,
+        "operationState": "claimed",
+        "durableResult": false,
+        "receiptCount": 0,
+        "entitlementCount": 0
+      },
+      "pass": true
+    },
+    {
+      "name": "REC02B",
+      "checkpoint": {
+        "checkpoint": "EXECUTION_STARTED",
+        "pid": 307
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "recoveryError": null,
+      "first": {
+        "action": "FINALIZE_LOCAL_STATE",
+        "witness": {
+          "outcome": "EFFECT_NOT_OBSERVED",
+          "evidence": {
+            "authoritative": true,
+            "operationId": "combined-rec02b"
+          }
+        }
+      },
+      "second": {
+        "action": "ALREADY_TERMINAL"
+      },
+      "counters": {
+        "initial_verify": 1,
+        "initial_settle": 1,
+        "recovery_verify": 1
+      },
+      "effectCount": 1,
+      "stateSummary": {
+        "version": 1,
+        "operationState": "fulfilled",
+        "durableResult": true,
+        "receiptCount": 1,
+        "entitlementCount": 1
+      },
+      "pass": true
+    },
+    {
+      "name": "REC02B_REJECT",
+      "checkpoint": {
+        "checkpoint": "EXECUTION_STARTED",
+        "pid": 349
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "recoveryError": "RECOVERY_AUTHORIZATION_REJECTED",
+      "first": null,
+      "second": {
+        "action": "NOT_ELIGIBLE"
+      },
+      "counters": {
+        "initial_verify": 1,
+        "initial_settle": 1,
+        "recovery_verify": 1
+      },
+      "effectCount": 0,
+      "stateSummary": {
+        "version": 1,
+        "operationState": "executing",
+        "durableResult": false,
+        "receiptCount": 0,
+        "entitlementCount": 0
+      },
+      "pass": true
+    },
+    {
+      "name": "REC02_CONFIRMED",
+      "checkpoint": {
+        "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
+        "pid": 383
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "recoveryError": null,
+      "first": {
+        "action": "FINALIZE_LOCAL_STATE",
+        "witness": {
+          "outcome": "EFFECT_CONFIRMED",
+          "evidence": {
+            "operationId": "combined-rec02_confirmed",
+            "result": {
+              "operationId": "combined-rec02_confirmed",
+              "message": "",
+              "sha256": "7b3b0ce9973dee2acfb69b3f00f5cc5aca1998df309ae4e286180e4ea440c970"
+            }
+          }
+        }
+      },
+      "second": {
+        "action": "ALREADY_TERMINAL"
+      },
+      "counters": {
+        "initial_verify": 1,
+        "initial_settle": 1
+      },
+      "effectCount": 1,
+      "stateSummary": {
+        "version": 1,
+        "operationState": "fulfilled",
+        "durableResult": true,
+        "receiptCount": 1,
+        "entitlementCount": 1
+      },
+      "pass": true
+    },
+    {
+      "name": "REC02_UNKNOWN",
+      "checkpoint": {
+        "checkpoint": "EXECUTION_STARTED",
+        "pid": 425
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "recoveryError": null,
+      "first": {
+        "action": "REMAIN_EXECUTION_UNKNOWN",
+        "witness": {
+          "outcome": "EFFECT_UNKNOWN"
+        }
+      },
+      "second": {
+        "action": "REMAIN_EXECUTION_UNKNOWN",
+        "witness": {
+          "outcome": "EFFECT_UNKNOWN"
+        }
+      },
+      "counters": {
+        "initial_verify": 1,
+        "initial_settle": 1
+      },
+      "effectCount": 0,
+      "stateSummary": {
+        "version": 1,
+        "operationState": "execution_unknown",
+        "durableResult": false,
+        "receiptCount": 0,
+        "entitlementCount": 0
+      },
+      "pass": true
+    },
+    {
+      "name": "REC03",
+      "checkpoint": {
+        "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
+        "pid": 459
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "recoveryError": null,
+      "first": {
+        "action": "FINALIZE_LOCAL_STATE",
+        "witness": {
+          "outcome": "EFFECT_CONFIRMED",
+          "evidence": {
+            "operationId": "combined-rec03",
+            "result": {
+              "operationId": "combined-rec03",
+              "message": "",
+              "sha256": "7b3b0ce9973dee2acfb69b3f00f5cc5aca1998df309ae4e286180e4ea440c970"
+            }
+          }
+        }
+      },
+      "second": {
+        "action": "ALREADY_TERMINAL"
+      },
+      "counters": {
+        "initial_verify": 1,
+        "initial_settle": 1
+      },
+      "effectCount": 1,
+      "stateSummary": {
+        "version": 1,
+        "operationState": "fulfilled",
+        "durableResult": true,
+        "receiptCount": 1,
+        "entitlementCount": 1
+      },
+      "pass": true
+    },
+    {
+      "name": "REC04",
+      "checkpoint": {
+        "checkpoint": "AFTER_DURABLE_KNOWLEDGE",
+        "pid": 501
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "recoveryError": null,
+      "first": {
+        "action": "FINALIZE_LOCAL_STATE",
+        "witness": {
+          "outcome": "EFFECT_CONFIRMED",
+          "evidence": {
+            "operationId": "combined-rec04",
+            "result": {
+              "operationId": "combined-rec04",
+              "message": "",
+              "sha256": "7b3b0ce9973dee2acfb69b3f00f5cc5aca1998df309ae4e286180e4ea440c970"
+            }
+          }
+        }
+      },
+      "second": {
+        "action": "ALREADY_TERMINAL"
+      },
+      "counters": {
+        "initial_verify": 1,
+        "initial_settle": 1
+      },
+      "effectCount": 1,
+      "stateSummary": {
+        "version": 1,
+        "operationState": "fulfilled",
+        "durableResult": true,
+        "receiptCount": 1,
+        "entitlementCount": 1
+      },
+      "pass": true
+    }
+  ]
+}

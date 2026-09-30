@@ -1,0 +1,185 @@
+{
+  "generated_at": "2026-09-29T21:10:47.325Z",
+  "cases": [
+    {
+      "case_id": "valid-authorized-request",
+      "expected_boundary": "RESULT_COMMITTED",
+      "actual_boundary": "RESULT_COMMITTED",
+      "execution_started": true,
+      "state_changed": true,
+      "receipt_created": true,
+      "external_effect": "none",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "duplicate-identical-request",
+      "expected_boundary": "CACHED_DUPLICATE",
+      "actual_boundary": "CACHED_DUPLICATE",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": true,
+      "external_effect": "none",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "idempotency-key-collision",
+      "expected_boundary": "REJECTED_BEFORE_EXECUTION",
+      "actual_boundary": "REJECTED_BEFORE_EXECUTION",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "none",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "replayed-nonce",
+      "expected_boundary": "REJECTED_BEFORE_EXECUTION",
+      "actual_boundary": "REJECTED_BEFORE_EXECUTION",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "none",
+      "verdict": "PASS"
+    },
+    {
+      "case_id": "expired-authority",
+      "expected_boundary": "REJECTED_BEFORE_EXECUTION",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "requires dedicated fixture",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "wrong-resource-audience",
+      "expected_boundary": "REJECTED_BEFORE_EXECUTION",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "requires dedicated fixture",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "revoked-authority",
+      "expected_boundary": "REJECTED_BEFORE_EXECUTION",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "no production revocation adapter identified",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "missing-precondition",
+      "expected_boundary": "REJECTED_BEFORE_EXECUTION",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "no echo adapter",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "malformed-input",
+      "expected_boundary": "REJECTED_BEFORE_EXECUTION",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "not exercised in this harness",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "unauthorized-request",
+      "expected_boundary": "REJECTED_BEFORE_EXECUTION",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "direct adapter requires payment-shaped input",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "execution-exception",
+      "expected_boundary": "RECOVERY_PATH_ENTERED",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "no safe injection seam without changing production",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "execution-timeout",
+      "expected_boundary": "RECOVERY_PATH_ENTERED",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "no safe injection seam without changing production",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "verification-failure",
+      "expected_boundary": "RESULT_NOT_COMMITTED",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "not exercised",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "state-tampering",
+      "expected_boundary": "REJECTED_OR_RECOVERED",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "not exercised",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "corrupted-durable-evidence",
+      "expected_boundary": "RECEIPT_INVALID",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "not exercised",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "corrupted-receipt",
+      "expected_boundary": "RECEIPT_INVALID",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "not exercised",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "fake-settlement-evidence",
+      "expected_boundary": "SETTLEMENT_NOT_VERIFIED",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "external settlement not available",
+      "verdict": "NOT_TESTED"
+    },
+    {
+      "case_id": "interrupted-execution",
+      "expected_boundary": "RECOVERY_PATH_ENTERED",
+      "actual_boundary": "NOT_TESTED",
+      "execution_started": false,
+      "state_changed": false,
+      "receipt_created": false,
+      "external_effect": "production not interrupted per safety boundary",
+      "verdict": "NOT_TESTED"
+    }
+  ]
+}

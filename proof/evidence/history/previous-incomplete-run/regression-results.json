@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-09-29T20:56:35.115Z",
+  "production": {
+    "npm_test": {
+      "command": "npm test",
+      "exit_code": 0,
+      "status": "PASS_WITH_ZERO_TESTS_DISCOVERED",
+      "note": "Configured glob tests/*.test.mjs matched no files."
+    },
+    "machine_commerce": {
+      "command": "node --test tests/test-machine-commerce.mjs",
+      "exit_code": 1,
+      "status": "FAIL",
+      "failure": "TLS RPC authority is required"
+    }
+  },
+  "core": {
+    "command": "python3 -m pytest -q crossingkey_core/tests",
+    "exit_code": 1,
+    "status": "BLOCKED",
+    "failure": "No module named pytest",
+    "expected_baseline": 122,
+    "observed": "not executed"
+  },
+  "scope": {
+    "production_modified": false,
+    "production_restarted": false,
+    "payments": false,
+    "blockchain_transactions": false
+  }
+}

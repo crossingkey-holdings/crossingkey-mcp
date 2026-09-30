@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test tests/*.test.mjs",
+    "test": "node --test tests/test-*.mjs",
     "test:integration": "node tests/base-rpc.integration.mjs",
     "check": "node --check server.mjs",
-    "scan:files": "node scripts/scan-marketplace-secrets.mjs",
+    "proof:verify": "./scripts/ck-proof-verify.sh",
+    "proof:stamp": "./scripts/ck-proof-stamp.sh",
+    "scan:files": "node scripts/scan-safe-files.mjs",
     "stripe:sync": "node scripts/sync-stripe-links.mjs",
     "stripe:webhook:create": "node scripts/create-webhook-endpoint.mjs",
     "stripe:credits:redirect": "node scripts/activate-credit-redirects.mjs"

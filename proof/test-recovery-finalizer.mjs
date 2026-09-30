@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { createMachineCommerce, sha256 } from '../lib/machine-commerce.mjs';
+import { recoverInterruptedOperations } from '../lib/recovery/recovery-orchestrator.mjs';
+
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ck-recovery-finalizer-'));
+const dataFile=path.join(dir,'machine.json');
+const result={capability:'artifact.integrity_manifest',manifest:[],manifestSha256:'fixture'};
+const resultHash=crypto.createHash('sha256').update(JSON.stringify(result)).digest('hex');
+const context={capabilityName:'artifact.integrity_manifest',input:{artifacts:[{name:'x',content:'y'}]},idempotencyKey:'recovery-finalizer-1',replayKey:'eip155:84532:fixture',payment:{network:'eip155:84532',asset:'0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',amount:'1',payTo:'0x6D1CCe697B145E6D8DB31B038F5D7fbc4Fe27B28',payer:'0x1111111111111111111111111111111111111111',receivedVersion:2,authorization:{nonce:'fixture',from:'0x1111111111111111111111111111111111111111',to:'0x6D1CCe697B145E6D8DB31B038F5D7fbc4Fe27B28',value:'1',validAfter:'0',validBefore:'9999999999'}}};
+const tx={state:'finalization_pending',generation:3,context,purchaseId:'ck_purchase_fixture',entitlementId:'ck_ent_fixture',receiptId:'ck_rcpt_fixture',createdAt:new Date().toISOString(),settlement:{success:true,transaction:'0xfixture'},durableResult:{schema:'ck/gate1b-result/1',result,resultHash,verified:true,verifiedAt:new Date().toISOString(),executionIdentity:'fixture'}};
+fs.writeFileSync(dataFile,JSON.stringify({version:1,idempotency:{[context.idempotencyKey]:{requestHash:'fixture',paymentHash:'fixture',gate1b:tx}},replayKeys:{[context.replayKey]:{purchaseId:tx.purchaseId,status:'reserved'}},entitlements:{},receipts:{},revenueEvents:{}},null,2));
+const machine=createMachineCommerce({dataFile,network:'eip155:84532',receiver:context.payment.payTo,publicBaseUrl:'http://127.0.0.1',facilitatorUrl:'http://127.0.0.1',kennekarteSecret:'x'.repeat(48)});
+const first=await recoverInterruptedOperations({dataFile,finalizeLocalState:machine.finalizeRecoveredOperation});
+const second=await recoverInterruptedOperations({dataFile,finalizeLocalState:machine.finalizeRecoveredOperation});
+const state=JSON.parse(fs.readFileSync(dataFile,'utf8'));
+const record=state.idempotency[context.idempotencyKey];
+if(record.gate1b.state!=='fulfilled'||!record.response||Object.keys(state.receipts).length!==1||Object.keys(state.entitlements).length!==1||Object.keys(state.revenueEvents).length!==1) throw new Error('RECOVERY_FINALIZATION_INVARIANT_FAILED');
+console.log(JSON.stringify({case_id:'REC-04',status:'FRESH_EXECUTION',first,second,execution_count:0,receipt_count:Object.keys(state.receipts).length,entitlement_count:Object.keys(state.entitlements).length,revenue_event_count:Object.keys(state.revenueEvents).length,final_state:record.gate1b.state,receipt_verified:machine.verifyReceipt(record.response.receipt),verdict:'PASS'}));

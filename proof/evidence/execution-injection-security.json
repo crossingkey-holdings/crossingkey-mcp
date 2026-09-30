@@ -1,0 +1,30 @@
+{
+  "status": "FRESH_EXECUTION",
+  "results": [
+    {
+      "case": "invalid executor rejected",
+      "error": "executionDependencies.execute must be a function",
+      "pass": true
+    },
+    {
+      "case": "unknown capability",
+      "error": "Unknown capability",
+      "pass": true
+    },
+    {
+      "case": "missing payment authority",
+      "error": "Unsupported or missing x402Version",
+      "pass": true
+    },
+    {
+      "case": "executor cannot receive finalization authority",
+      "pass": true
+    },
+    {
+      "case": "protected executor not reached before authority",
+      "pass": true,
+      "calls": 0
+    }
+  ],
+  "pass": true
+}

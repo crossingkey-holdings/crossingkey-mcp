@@ -1,0 +1,24 @@
+{
+  "status": "NOT_TESTED",
+  "isolated_state_directory": "/tmp/crossingkey-proof-iDzDxH",
+  "production_interrupted": false,
+  "cases": [
+    {
+      "boundary": "before execution",
+      "status": "NOT_TESTED"
+    },
+    {
+      "boundary": "pending execution",
+      "status": "NOT_TESTED"
+    },
+    {
+      "boundary": "after execution before durable result",
+      "status": "NOT_TESTED"
+    },
+    {
+      "boundary": "after verification before receipt",
+      "status": "NOT_TESTED"
+    }
+  ],
+  "reason": "No production restart or SIGKILL; no isolated recovery adapter was identified without modifying production."
+}

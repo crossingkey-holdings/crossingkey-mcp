@@ -1,0 +1,12 @@
+{
+  "status": "FRESH_EXECUTION",
+  "entrypoint": "server.mjs",
+  "constructionAuthority": "lib/mcp-app-factory.mjs:createCrossingKeyApp",
+  "independentProductionConstruction": false,
+  "listenerStartup": "explicit entrypoint operation",
+  "productionDefaults": "preserved through existing environment/default resolution",
+  "publicRoutesChanged": false,
+  "publicMcpSurfaceChanged": false,
+  "productionServiceRestarted": false,
+  "productionStateModified": false
+}

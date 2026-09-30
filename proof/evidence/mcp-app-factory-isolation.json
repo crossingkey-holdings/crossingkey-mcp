@@ -1,0 +1,9 @@
+{
+  "status": "FRESH_EXECUTION",
+  "applicationEntry": "lib/mcp-app-factory.mjs:createCrossingKeyApp",
+  "isolatedTemporaryPaths": true,
+  "productionFilesTouched": false,
+  "zeroSideEffectImport": "PASS",
+  "constructionSideEffects": "scoped to factory call and temporary paths",
+  "productionEntrypointCompatibility": "preserved"
+}

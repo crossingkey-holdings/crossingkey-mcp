@@ -1,0 +1,22 @@
+{
+  "status": "INCOMPLETE",
+  "interfaces": [
+    {
+      "name": "direct production machine-commerce adapter",
+      "exercised": true,
+      "model_required": false,
+      "evidence": "positive-proof.json"
+    },
+    {
+      "name": "MCP-compatible request path",
+      "exercised": false,
+      "reason": "would target running production; proof capability is not registered"
+    },
+    {
+      "name": "direct Phase XXXII Python core",
+      "exercised": false,
+      "reason": "core archive is separate and has no integration adapter for this capability"
+    }
+  ],
+  "convergence": "NOT_PROVEN"
+}

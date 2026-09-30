@@ -1,0 +1,1 @@
+{"status":"FRESH_READ_ONLY","endpoint":"http://127.0.0.1:3000/health","httpStatus":200,"body":{"ok":true,"service":"crossingkey-mcp","version":"3.0.0"},"productionStateMutationRequested":false}

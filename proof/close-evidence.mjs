@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+const evidence = path.resolve(new URL('.', import.meta.url).pathname, 'evidence');
+const manifestPath = path.join(evidence, 'manifest.json');
+const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+manifest.generated_at = new Date().toISOString();
+manifest.verdict = 'CROSSINGKEY_SYSTEM_PROOF_INCOMPLETE';
+manifest.closure = { status: 'BLOCKED', blocker: 'Referenced authority harness and fixtures are absent; npm test still fails at TLS RPC authority requirement.' };
+manifest.files = fs.readdirSync(evidence).filter(f => f !== 'SHA256SUMS' && f !== 'manifest.json' && fs.statSync(path.join(evidence, f)).isFile()).sort();
+fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+const sums = fs.readdirSync(evidence).filter(f => f !== 'SHA256SUMS' && fs.statSync(path.join(evidence, f)).isFile()).sort().map(f => `${crypto.createHash('sha256').update(fs.readFileSync(path.join(evidence, f))).digest('hex')}  ${f}`).join('\n') + '\n';
+fs.writeFileSync(path.join(evidence, 'SHA256SUMS'), sums);
+console.log(crypto.createHash('sha256').update(fs.readFileSync(manifestPath)).digest('hex'));
