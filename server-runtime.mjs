@@ -641,8 +641,18 @@ ckConsumeDurableRevenueEvents();
 app.use((req,res,next)=>{
   CK_FUNNEL.requests++;
 
+  const observationalMcpDiscovery =
+    req.path === '/mcp' &&
+    req.method === 'POST' &&
+    ['initialize', 'tools/list', 'notifications/initialized']
+      .includes(req.body?.method);
+
   res.once('finish', () => {
-    ckSchedulePersistentFunnelSave();
+    // MCP discovery is observational. Keep its process-local counters for
+    // diagnostics, but do not turn initialize/tools/list traffic into durable
+    // commercial/application-state mutations. Paid calls and all other
+    // lifecycle requests retain the existing persistence behavior.
+    if (!observationalMcpDiscovery) ckSchedulePersistentFunnelSave();
   });
 
   const path = req.path || '';
