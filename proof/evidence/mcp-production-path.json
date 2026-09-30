@@ -1,0 +1,17 @@
+{
+  "classification": "FRESH_STATIC_TRACE",
+  "path": [
+    "POST /mcp",
+    "isInitializeRequest(req.body)",
+    "new StreamableHTTPServerTransport",
+    "makeMcpServer(authContext, marketplace resolver, rate key)",
+    "McpServer.connect(transport)",
+    "transport.handleRequest(req,res,req.body)",
+    "registered MCP tool handler"
+  ],
+  "paid_x402_tool_behavior": "MCP tool returns a payment challenge and execution URL; it does not directly invoke machineCommerce.invoke.",
+  "direct_machine_commerce_route": "POST /api/x402/:capability invokes machineCommerce.invoke after payment payload validation.",
+  "same_authoritative_lifecycle": "The MCP paid tool path is discovery/challenge ingress; the direct x402 HTTP path reaches machineCommerce.invoke. A paid MCP request with actual payment was not executed.",
+  "state_receipt_path": "MCP xkey.validate uses a separate prepaid-credit bridge; x402 MCP tools stop at payment challenge.",
+  "production_files": ["server.mjs:1299-1354","server.mjs:1098-1181","server.mjs:929-1008"]
+}

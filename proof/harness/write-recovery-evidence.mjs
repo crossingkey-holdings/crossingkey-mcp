@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+const h=JSON.parse(fs.readFileSync('proof/evidence/process-death-harness.json','utf8'));
+const by=Object.fromEntries(h.summary.map(x=>[x.mode,x]));
+const write=(name,value)=>fs.writeFileSync(`proof/evidence/${name}`,JSON.stringify(value,null,2)+'\n');
+write('rec01.json',{case_id:'REC-01',status:by.REC01.pass?'PASS':'FAIL',fresh_execution:'FRESH_EXECUTION',...by.REC01});
+write('rec02-not-observed.json',{case_id:'REC-02B',status:by.REC02_NOT_OBSERVED.pass?'PASS':'FAIL',fresh_execution:'FRESH_EXECUTION',...by.REC02_NOT_OBSERVED});
+write('rec02-unknown.json',{case_id:'REC-02C',status:by.REC02_UNKNOWN.pass?'PASS':'FAIL',fresh_execution:'FRESH_EXECUTION',...by.REC02_UNKNOWN});
+write('rec02-confirmed.json',{case_id:'REC-02A',status:by.REC02_CONFIRMED.pass?'PASS':'FAIL',fresh_execution:'FRESH_EXECUTION',...by.REC02_CONFIRMED});
+write('rec03.json',{case_id:'REC-03',status:by.REC03.pass?'PASS':'FAIL',fresh_execution:'FRESH_EXECUTION',...by.REC03});
+write('rec04.json',{case_id:'REC-04',status:by.REC04.pass?'PASS':'FAIL',fresh_execution:'FRESH_EXECUTION',...by.REC04});
+write('recovery-proof.json',{classification:'RECOVERY_PROOF_INCOMPLETE',matrix_result:h.summary.every(x=>x.pass)?'CONTROLLED_CAPABILITY_MATRIX_PASS':'CONTROLLED_CAPABILITY_MATRIX_FAIL',fresh_execution:'FRESH_EXECUTION',cases:h.summary,production_signal:false,real_sigkill:true,blocker:'REC-01 and REC-02B use the isolated Gate1B fixture callbacks rather than the full current production authority/precondition implementation; capability-scoped process-death behavior is proven, universal production recovery is not.'});

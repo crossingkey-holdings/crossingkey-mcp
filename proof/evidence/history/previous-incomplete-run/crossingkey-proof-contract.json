@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "canonical_lifecycle": ["PROPOSAL", "CAPABILITY_DISCOVERY", "STATE", "PRECONDITIONS", "AUTHORITY", "IDEMPOTENCY", "EXECUTION", "VERIFICATION", "STATE_COMMIT", "EVIDENCE", "RECEIPT"],
+  "transitions": [
+    {"from":"PROPOSAL","to":"CAPABILITY_DISCOVERY","input":"proposal","required_evidence":["canonical proposal hash"],"prohibited_side_effects":["payment","execution"],"durable_evidence":"proposal hash"},
+    {"from":"CAPABILITY_DISCOVERY","to":"STATE","input":"capability identifier","required_evidence":["registered capability metadata"],"prohibited_side_effects":["execution"],"durable_evidence":"selected capability"},
+    {"from":"STATE","to":"PRECONDITIONS","input":"current state","required_evidence":["state hash","requirements result"],"prohibited_side_effects":["execution"],"durable_evidence":"precondition evaluation"},
+    {"from":"PRECONDITIONS","to":"AUTHORITY","input":"satisfied requirements","required_evidence":["authority bound to request/resource/audience/expiry"],"prohibited_side_effects":["execution without authority"],"durable_evidence":"authority decision"},
+    {"from":"AUTHORITY","to":"IDEMPOTENCY","input":"authorized request","required_evidence":["request hash","idempotency reservation","replay assertion result"],"prohibited_side_effects":["duplicate execution"],"durable_evidence":"reservation"},
+    {"from":"IDEMPOTENCY","to":"EXECUTION","input":"unique authorized request","required_evidence":["reservation committed"],"prohibited_side_effects":["caller-supplied success"],"durable_evidence":"execution start"},
+    {"from":"EXECUTION","to":"VERIFICATION","input":"execution result","required_evidence":["observed result"],"prohibited_side_effects":["commit unverified result"],"durable_evidence":"execution outcome"},
+    {"from":"VERIFICATION","to":"STATE_COMMIT","input":"verified result","required_evidence":["independent verification evidence"],"prohibited_side_effects":["false success"],"durable_evidence":"commit record"},
+    {"from":"STATE_COMMIT","to":"EVIDENCE","input":"committed state","required_evidence":["post-state hash","result hash"],"prohibited_side_effects":["mutating source evidence"],"durable_evidence":"evidence record"},
+    {"from":"EVIDENCE","to":"RECEIPT","input":"evidence record","required_evidence":["receipt bound to request/result/state"],"prohibited_side_effects":["claim external settlement without proof"],"durable_evidence":"receipt"}
+  ],
+  "recovery": {"required_for":"execution failure or interruption", "success_state":"RECOVERY_PATH_ENTERED", "prohibited_side_effects":["duplicate external effect","false success"],"durable_evidence":"recovery record"},
+  "negative_assertions": ["worker selected != task dispatched", "payment calculated != payment settled", "timeout detected != process terminated", "hash created != signature created", "receipt generated != external settlement verified"]
+}

@@ -1,0 +1,14 @@
+{
+  "status": "FRESH_EXECUTION",
+  "combined_createMachineCommerce_child_path": "PASS",
+  "rec01_positive": "PASS",
+  "rec01_authority_rejection": "PASS",
+  "rec02_not_observed_positive": "PASS",
+  "rec02_not_observed_authority_rejection": "PASS",
+  "initial_settlement_calls": 1,
+  "recovery_settlement_calls": 0,
+  "process_death": "SIGKILL observed for every combined case",
+  "raw_authorization_exposure_scan": "PASS",
+  "strict_recovery_verdict": "INCOMPLETE",
+  "remaining_strict_gate": "REC-02 confirmed/unknown, REC-03/REC-04 combined reruns, and complete system evidence remain separate from this combined payment-backed runner"
+}

@@ -1,0 +1,9 @@
+{
+  "classification": "FRESH_ANALYSIS",
+  "authority_correction": "0x2105 is Base mainnet (8453); 0x14a34 is Base Sepolia (84532). The fixture returns 0x2105 because that is the literal current production rpcAuthority contract.",
+  "components": {
+    "production": "authoritative for live machine-commerce lifecycle",
+    "core": "primitive suite; NOT_INTEGRATED",
+    "fixture": "NEW_TEST_INFRASTRUCTURE external RPC dependency only"
+  }
+}

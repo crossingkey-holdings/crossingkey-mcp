@@ -1,0 +1,27 @@
+{
+  "case_id": "REC-02C",
+  "status": "PASS",
+  "fresh_execution": "FRESH_EXECUTION",
+  "mode": "REC02_UNKNOWN",
+  "childPid": 198,
+  "checkpoint": {
+    "type": "checkpoint",
+    "checkpoint": "EXECUTION_STARTED",
+    "pid": 198
+  },
+  "termination": {
+    "code": null,
+    "signal": "SIGKILL"
+  },
+  "witnessMode": "unknown",
+  "firstAction": "REMAIN_EXECUTION_UNKNOWN",
+  "secondAction": "REMAIN_EXECUTION_UNKNOWN",
+  "executionCount": 0,
+  "externalEffectCount": 0,
+  "receiptCount": 0,
+  "entitlementCount": 0,
+  "revenueEventCount": 0,
+  "durableResult": false,
+  "finalState": "execution_unknown",
+  "pass": true
+}

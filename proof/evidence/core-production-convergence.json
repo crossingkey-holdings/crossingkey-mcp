@@ -1,0 +1,17 @@
+{
+  "classification": "FRESH_EXECUTION",
+  "production_authoritative": [
+    "preconditions",
+    "authority",
+    "idempotency",
+    "replay",
+    "execution",
+    "verification",
+    "state_commit",
+    "receipts"
+  ],
+  "core": "STANDALONE_VERIFIED_PRIMITIVE",
+  "recovery": "NOT_INTEGRATED",
+  "authority_conflicts": "NONE",
+  "duplicate_authorities": "NONE"
+}

@@ -1,0 +1,10 @@
+{
+  "status": "VERIFIED_FROM_SOURCE",
+  "source_paths": ["lib/gate1b-production-adapter.mjs:58-71", "lib/machine-commerce.mjs:151-153"],
+  "request": {"method":"POST","url_requirement":"HTTPS URL required","headers":{"content-type":"application/json"},"body":{"jsonrpc":"2.0","id":1,"method":"eth_chainId or eth_blockNumber","params":[]},"timeout_ms":8000},
+  "response_contract": {"http":"2xx required","jsonrpc":"must equal 2.0","error":"any body.error rejects","eth_chainId":"must equal 0x2105","eth_blockNumber":"must match /^0x[0-9a-f]+$/i"},
+  "required_methods": ["eth_chainId", "eth_blockNumber"],
+  "additional_methods": "Production reconcileProduction can require eth_getLogs, eth_getTransactionReceipt and onchain verification for mainnet reconciliation; the canonical test uses Base Sepolia and does not enter that path.",
+  "tls": {"production_default":"global fetch/default TLS behavior","test_injection":"existing fetchImpl option","verification":"fixture client uses rejectUnauthorized=true and fixture-scoped CA","downgrade":"prohibited and not used"},
+  "negative_semantics": {"wrong_chain":"Reconciliation authority network mismatch","invalid_block":"Invalid reconciliation anchor","malformed_or_error":"RPC response rejected","http_failure":"RPC authority unavailable","timeout":"AbortSignal timeout/error","untrusted_certificate":"TLS client error before JSON-RPC response"}
+}

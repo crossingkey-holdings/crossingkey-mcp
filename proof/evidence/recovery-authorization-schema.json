@@ -1,0 +1,9 @@
+{
+  "status":"ADDITIVE_IMPLEMENTED",
+  "field":"gate1b.context.recoveryAuthorization",
+  "value":"structured clone of the original paymentPayload after canonicalizePayment and enforcePolicy pass",
+  "purpose":"re-enter existing VERIFY path after process restart",
+  "not_used_for":"settlement, signing, wallet access, or new authorization creation",
+  "binding":"revalidateRecovery compares canonical payment identity to durable context and re-runs policy, RPC anchor, and facilitator verify",
+  "sensitive_exclusions":["private key","seed phrase","wallet signing capability","facilitator credential"]
+}

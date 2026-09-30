@@ -1,0 +1,9 @@
+{
+  "status": "FRESH_EXECUTION",
+  "transport": "Streamable HTTP",
+  "initialize": {
+    "status": 200,
+    "sessionEstablished": true
+  },
+  "toolsCall": "PASS"
+}

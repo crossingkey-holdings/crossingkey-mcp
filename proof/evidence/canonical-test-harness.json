@@ -1,0 +1,29 @@
+{
+  "status": "BLOCKED",
+  "previous_failure": "npm test reached tests/test-machine-commerce.mjs and failed with TLS RPC authority is required",
+  "root_cause": "The referenced isolated authority harness and all referenced authority fixture/verifier files are absent from this checkout; the test file has no fixture bootstrap and constructs production machine commerce without rpcUrl.",
+  "fix_applied": "None. No safe shared setup could be extracted without inventing the missing authority implementation or weakening verification.",
+  "test_command": "npm test",
+  "test_command_exit_code": 1,
+  "test_files_discovered": ["tests/test-machine-commerce.mjs"],
+  "test_files_executed": ["tests/test-machine-commerce.mjs"],
+  "authority_requirements_preserved": {
+    "tls_rpc_authority_required": true,
+    "valid_test_ca": "NOT_VERIFIED_MISSING_FIXTURE",
+    "localhost_san": "NOT_VERIFIED_MISSING_FIXTURE",
+    "peer_fingerprint": "NOT_VERIFIED_MISSING_FIXTURE",
+    "jwt_signature": "NOT_VERIFIED_MISSING_FIXTURE",
+    "issuer": "NOT_VERIFIED_MISSING_FIXTURE",
+    "audience_resource": "NOT_VERIFIED_MISSING_FIXTURE",
+    "expiration": "NOT_VERIFIED_MISSING_FIXTURE",
+    "nonce_replay": "NOT_VERIFIED_MISSING_FIXTURE"
+  },
+  "expected_missing_paths": [
+    "proof/harness/run-machine-commerce-harness.mjs",
+    "tests/fixtures/test-authority-ca.pem",
+    "tests/fixtures/generate-ephemeral-authority-token.mjs",
+    "src/reconciliation/authority-verifier.mjs"
+  ],
+  "production_isolation": {"production_service_restarted": false, "production_port_8402_bound": false, "production_pid_touched": false, "public_mcp_modified": false},
+  "conclusion": "Canonical npm test cannot reproduce the claimed harness because the claimed harness and authority implementation are not present locally."
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "crossingkey.provenance.v1",
+  "version": "3.0.0",
+  "repository": "crossingkey-holdings/crossingkey-mcp",
+  "branch": "qualification/live-certification-2026-09-30",
+  "pull_request": "PENDING",
+  "merge_commit": "PENDING",
+  "release_tag": "PENDING",
+  "tag_verification": "NOT_CONFIGURED",
+  "release_artifact": "PENDING",
+  "release_artifact_sha256": "PENDING",
+  "sha256sums_sha256": "PENDING",
+  "qualification_manifest_sha256": "3dc4957c292ec5e183a4560756b2a772500eaeb3d68b596f51cdd41c903863af",
+  "github_attestation": "NOT_AVAILABLE",
+  "opentimestamps": {
+    "proof": "PENDING",
+    "status": "NOT_AVAILABLE",
+    "bitcoin_verification": "NOT_EXECUTED"
+  },
+  "verdicts": {
+    "isolated_system": "CROSSINGKEY_ISOLATED_SYSTEM_PROOF_PASS",
+    "recovery": "RECOVERY_PROOF_PASS",
+    "mcp_convergence": "MCP_CONVERGENCE_PASS",
+    "live_certification": "PENDING"
+  },
+  "known_limitations": [
+    "Live production certification remains pending.",
+    "Real payment and settlement were not certified.",
+    "Commit signing is not configured in the current operator environment.",
+    "OpenTimestamps client availability and Bitcoin verification are not yet established."
+  ]
+}

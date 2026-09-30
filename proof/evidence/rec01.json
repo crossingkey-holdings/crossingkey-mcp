@@ -1,0 +1,27 @@
+{
+  "case_id": "REC-01",
+  "status": "PASS",
+  "fresh_execution": "FRESH_EXECUTION",
+  "mode": "REC01",
+  "childPid": 120,
+  "checkpoint": {
+    "type": "checkpoint",
+    "checkpoint": "FULFILLMENT_CLAIMED",
+    "pid": 120
+  },
+  "termination": {
+    "code": null,
+    "signal": "SIGKILL"
+  },
+  "witnessMode": "not_observed",
+  "firstAction": "FINALIZE_LOCAL_STATE",
+  "secondAction": "ALREADY_TERMINAL",
+  "executionCount": 1,
+  "externalEffectCount": 1,
+  "receiptCount": 1,
+  "entitlementCount": 1,
+  "revenueEventCount": 1,
+  "durableResult": true,
+  "finalState": "fulfilled",
+  "pass": true
+}

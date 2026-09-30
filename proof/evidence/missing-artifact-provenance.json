@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-09-29",
+  "status": "RECONCILED_INCOMPLETE",
+  "search_scope": [
+    "current working tree",
+    "adjacent /home/founder/Downloads repositories",
+    "adjacent /home/founder/Projects repositories",
+    "adjacent /home/founder/Documents/Codex repositories",
+    "preserved proof/evidence/history",
+    "available archives with CrossingKey/proof/authority naming"
+  ],
+  "repository_history": {
+    "git_metadata_present": false,
+    "git_status": "not a git repository",
+    "branches_tags_stashes_reflog": "unavailable because .git is absent",
+    "conclusion": "No repository history was available for recovery."
+  },
+  "artifacts": [
+    {"path":"proof/harness/run-machine-commerce-harness.mjs","found":false,"location":null,"commit":null,"branch_or_tag":null,"content_hash":null,"historical_evidence":"Referenced by the user and prior report only; not present in preserved evidence as executable content.","authoritative":false,"safe_to_restore":false},
+    {"path":"tests/fixtures/test-authority-ca.pem","found":false,"location":null,"commit":null,"branch_or_tag":null,"content_hash":null,"historical_evidence":"Referenced by the user and prior report only; no file found.","authoritative":false,"safe_to_restore":false},
+    {"path":"tests/fixtures/generate-ephemeral-authority-token.mjs","found":false,"location":null,"commit":null,"branch_or_tag":null,"content_hash":null,"historical_evidence":"Referenced by the user and prior report only; no file found.","authoritative":false,"safe_to_restore":false},
+    {"path":"src/reconciliation/authority-verifier.mjs","found":false,"location":null,"commit":null,"branch_or_tag":null,"content_hash":null,"historical_evidence":"Referenced by the user and prior report only; no source or equivalent symbol found.","authoritative":false,"safe_to_restore":false}
+  ],
+  "distinctive_symbol_search": {
+    "searched": ["run-machine-commerce-harness","test-authority-ca","generate-ephemeral-authority-token","verifyRpcAuthorityContext","TLS_RPC_AUTHORITY_REQUIRED","AUTHORITY_ISSUER_CA_PEM","AUTHORITY_RPC_ENDPOINT","test_authority_issuer","local_test_harness"],
+    "matches": "Only current proof reports/evidence mention some missing path names; no implementation matches were found."
+  },
+  "contradiction_resolution": {
+    "classification": "D",
+    "statement": "The earlier report incorrectly treated user-supplied/reported artifact names as locally existing executable artifacts. Current evidence does not establish that they existed in this checkout, repository history, another branch, tag, worktree, or adjacent local repository.",
+    "status_of_prior_artifact_claim": "SUPERSEDED / UNSUPPORTED_BY_CURRENT_REPOSITORY_EVIDENCE",
+    "transient_uncommitted_claim": "NOT_PROVEN",
+    "equivalent_functionality": "No equivalent CA/JWT/fingerprint authority fixture was found. The actual production authority is HTTPS RPC URL and chain-id/anchor validation in lib/gate1b-production-adapter.mjs."
+  },
+  "restoration_decision": "STOPPED_BEFORE_RECREATION",
+  "reason": "No authoritative implementation was found; creating replacements would be invention, not recovery."
+}

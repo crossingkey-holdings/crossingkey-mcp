@@ -1,0 +1,9 @@
+{
+  "status": "FRESH_EXECUTION",
+  "unauthorizedChallenge": {
+    "status": 200,
+    "containsPaymentRequired": true
+  },
+  "authorizedCanonicalMarker": true,
+  "facilitatorVerificationShared": true
+}

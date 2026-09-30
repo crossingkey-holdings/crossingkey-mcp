@@ -1,0 +1,9 @@
+{
+  "status": "FRESH_EXECUTION",
+  "directToMcp": {
+    "sameOperationReplay": true
+  },
+  "mcpToDirect": {
+    "sameOperationReplay": true
+  }
+}

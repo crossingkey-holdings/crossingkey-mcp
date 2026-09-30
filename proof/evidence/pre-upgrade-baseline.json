@@ -1,0 +1,8 @@
+{
+  "classification": "FRESH_EXECUTION",
+  "check": "PASS",
+  "npm_test": "PASS",
+  "core": "122/122 PASS",
+  "rpc_negative": "8/8 PASS",
+  "prior_manifest": "6d73719cea053012881d5b5e8bf7a6c64be766a740f58af290e2bd2e445efd31a"
+}

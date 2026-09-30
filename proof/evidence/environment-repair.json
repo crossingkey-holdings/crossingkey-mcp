@@ -1,0 +1,9 @@
+{
+  "status": "EXECUTED",
+  "test_glob": "node --test tests/test-*.mjs",
+  "python_venv": "proof/.venv",
+  "new_fixture": "tests/fixtures/https-rpc-fixture.mjs",
+  "production_code_changed": false,
+  "previous_failure": "TLS RPC authority is required",
+  "resolution": "test-scoped HTTPS RPC fixture injected through existing fetchImpl and rpcUrl options"
+}

@@ -1,0 +1,11 @@
+{
+  "status":"IMPLEMENTED",
+  "seam":"createMachineCommerce(options.executionDependencies.execute)",
+  "insertion_point":"existing Gate1B execute callback in lib/machine-commerce.mjs",
+  "allowed_scope":"execution implementation for an already selected existing capability",
+  "unchanged":"capability lookup, pricing, payment requirements, canonicalizePayment, enforcePolicy, RPC anchor, facilitator verify/settle, Gate1B, idempotency, replay, recoveryAuthorization, durableResult, finalization, receipts, entitlements, revenue events",
+  "public_catalog_changed":false,
+  "public_api_changed":false,
+  "default_behavior":"existing execute(capabilityName,input,fetchImpl) when no dependency is supplied",
+  "validation":"constructor rejects executionDependencies without a callable execute function; selected capability is checked through existing capability() before injection"
+}

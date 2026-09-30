@@ -1,0 +1,14 @@
+{
+  "status": "FRESH_EXECUTION",
+  "module": "server.mjs",
+  "mcpRoute": "app.post(/mcp)",
+  "transport": "StreamableHTTPServerTransport",
+  "handler": "makeMcpServer",
+  "canonicalContinuation": "machineCommerce.invoke",
+  "moduleSideEffects": [
+    "machineCommerce construction",
+    "funnel DatabaseSync construction",
+    "Express app construction"
+  ],
+  "productionStateUntouched": true
+}

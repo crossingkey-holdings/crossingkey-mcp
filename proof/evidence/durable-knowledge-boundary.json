@@ -1,0 +1,7 @@
+{
+  "classification": "IMPLEMENTED_AND_TESTED_BY_REGRESSION",
+  "boundary": "AFTER_DURABLE_KNOWLEDGE",
+  "order": ["execution_started_durable", "execute", "durable_result_hash_and_verified_flag", "finalization_pending_durable", "entitlement", "receipt", "response", "fulfilled", "revenue_event"],
+  "property": "After the boundary, protected execution is not required merely to reconstruct the staged result.",
+  "recovery_status": "REC-04 recovery consumer not yet complete"
+}

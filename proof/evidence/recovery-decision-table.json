@@ -1,0 +1,13 @@
+{
+  "status":"IMPLEMENTED_DECISION_BOUNDARIES_PARTIAL_EXECUTION",
+  "rows":[
+    {"state":"fulfilled","witness":"any","disposition":"ALREADY_TERMINAL"},
+    {"state":"finalization_pending","witness":"durableResult.verified","disposition":"FINALIZE_LOCAL_STATE"},
+    {"state":"executing_or_execution_unknown","witness":"EFFECT_CONFIRMED","disposition":"EFFECT_CONFIRMED_REQUIRES_CANONICAL_RESULT_RECONSTRUCTION"},
+    {"state":"executing_or_execution_unknown","witness":"EFFECT_NOT_OBSERVED","disposition":"SAFE_TO_RESUME_REQUIRES_PRECONDITION_REVALIDATION"},
+    {"state":"executing_or_execution_unknown","witness":"EFFECT_UNKNOWN","disposition":"REMAIN_EXECUTION_UNKNOWN"}
+  ],
+  "critical_invariant":"EFFECT_UNKNOWN never authorizes retry",
+  "implementation":"lib/recovery/recovery-orchestrator.mjs",
+  "remaining":"capability-specific witness wiring and child-process execution proof remain incomplete"
+}

@@ -1,0 +1,154 @@
+{
+  "classification": "RECOVERY_PROOF_INCOMPLETE",
+  "matrix_result": "CONTROLLED_CAPABILITY_MATRIX_PASS",
+  "fresh_execution": "FRESH_EXECUTION",
+  "cases": [
+    {
+      "mode": "REC01",
+      "childPid": 120,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "FULFILLMENT_CLAIMED",
+        "pid": 120
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "not_observed",
+      "firstAction": "FINALIZE_LOCAL_STATE",
+      "secondAction": "ALREADY_TERMINAL",
+      "executionCount": 1,
+      "externalEffectCount": 1,
+      "receiptCount": 1,
+      "entitlementCount": 1,
+      "revenueEventCount": 1,
+      "durableResult": true,
+      "finalState": "fulfilled",
+      "pass": true
+    },
+    {
+      "mode": "REC02_NOT_OBSERVED",
+      "childPid": 159,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "EXECUTION_STARTED",
+        "pid": 159
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "not_observed",
+      "firstAction": "FINALIZE_LOCAL_STATE",
+      "secondAction": "ALREADY_TERMINAL",
+      "executionCount": 1,
+      "externalEffectCount": 1,
+      "receiptCount": 1,
+      "entitlementCount": 1,
+      "revenueEventCount": 1,
+      "durableResult": true,
+      "finalState": "fulfilled",
+      "pass": true
+    },
+    {
+      "mode": "REC02_UNKNOWN",
+      "childPid": 198,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "EXECUTION_STARTED",
+        "pid": 198
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "unknown",
+      "firstAction": "REMAIN_EXECUTION_UNKNOWN",
+      "secondAction": "REMAIN_EXECUTION_UNKNOWN",
+      "executionCount": 0,
+      "externalEffectCount": 0,
+      "receiptCount": 0,
+      "entitlementCount": 0,
+      "revenueEventCount": 0,
+      "durableResult": false,
+      "finalState": "execution_unknown",
+      "pass": true
+    },
+    {
+      "mode": "REC02_CONFIRMED",
+      "childPid": 229,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
+        "pid": 229
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "normal",
+      "firstAction": "FINALIZE_LOCAL_STATE",
+      "secondAction": "ALREADY_TERMINAL",
+      "executionCount": 1,
+      "externalEffectCount": 1,
+      "receiptCount": 1,
+      "entitlementCount": 1,
+      "revenueEventCount": 1,
+      "durableResult": true,
+      "finalState": "fulfilled",
+      "pass": true
+    },
+    {
+      "mode": "REC03",
+      "childPid": 268,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
+        "pid": 268
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "normal",
+      "firstAction": "FINALIZE_LOCAL_STATE",
+      "secondAction": "ALREADY_TERMINAL",
+      "executionCount": 1,
+      "externalEffectCount": 1,
+      "receiptCount": 1,
+      "entitlementCount": 1,
+      "revenueEventCount": 1,
+      "durableResult": true,
+      "finalState": "fulfilled",
+      "pass": true
+    },
+    {
+      "mode": "REC04",
+      "childPid": 307,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "AFTER_DURABLE_KNOWLEDGE",
+        "pid": 307
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "normal",
+      "firstAction": "FINALIZE_LOCAL_STATE",
+      "secondAction": "ALREADY_TERMINAL",
+      "executionCount": 1,
+      "externalEffectCount": 1,
+      "receiptCount": 1,
+      "entitlementCount": 1,
+      "revenueEventCount": 1,
+      "durableResult": true,
+      "finalState": "fulfilled",
+      "pass": true
+    }
+  ],
+  "production_signal": false,
+  "real_sigkill": true,
+  "blocker": "Direct production authority re-entry is freshly proven, but REC-01 and REC-02B child-process positive/rejection cases have not yet been rerun through the full payment-backed machine-commerce capability."
+}

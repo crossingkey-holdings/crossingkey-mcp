@@ -1,0 +1,14 @@
+{
+  "classification": "ARCHITECTURAL_COUPLING_PREVENTS_ISOLATION",
+  "actual_server": "server.mjs",
+  "bind": "127.0.0.1 only at listen, configurable PORT",
+  "temporary_port": "possible via PORT",
+  "temporary_machine_commerce_db": "possible via MACHINE_COMMERCE_FILE",
+  "temporary_marketplace_db": "possible via MARKETPLACE_FILE",
+  "temporary_state_json": "not configurable; STATE_FILE is hard-coded to data/state.json",
+  "temporary_funnel_db": "environment-configurable but startup opens SQLite and other fixed data files remain",
+  "production_credentials": "startup reads .env/process environment and creates marketplace/Stripe/runtime dependencies",
+  "safe_to_isolate_existing_mcp": false,
+  "minimal_configuration_seam_required": ["STATE_FILE/data state path injection", "isolated marketplace/fulfillment/catalog dependencies", "disable or fixture external adapters", "test-only app factory instead of module-level production startup"],
+  "classification_reason": "No safe isolated app factory exists; starting server.mjs would be an actual production implementation process coupled to production files/configuration. No second path was invoked."
+}

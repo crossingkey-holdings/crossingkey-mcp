@@ -1,0 +1,13 @@
+{
+  "status": "PASS_WITH_SCOPE_LIMITS",
+  "classification": "NEW_TEST_INFRASTRUCTURE",
+  "implementation": "tests/fixtures/https-rpc-fixture.mjs",
+  "transport": "in-process HTTPS server bound to 127.0.0.1 on an ephemeral port",
+  "certificate": "runtime-generated self-signed certificate with SAN localhost and 127.0.0.1; fixture certificate is supplied only to the test client as CA",
+  "client_verification": {"rejectUnauthorized": true, "servername":"localhost", "agent":false, "global_tls_override":false},
+  "methods_exercised": {"eth_chainId":"0x2105", "eth_blockNumber":"0x20"},
+  "production_behavior_changed": false,
+  "cleanup": "explicit close after test completion; temporary TLS material removed",
+  "negative_response_matrix": {"wrong_chain":"contract documented, not separately run in canonical suite", "invalid_block":"contract documented, not separately run in canonical suite", "malformed_jsonrpc":"contract documented, not separately run in canonical suite", "jsonrpc_error":"contract documented, not separately run in canonical suite", "http_failure":"contract documented, not separately run in canonical suite", "timeout":"contract documented, not separately run in canonical suite", "untrusted_tls":"real certificate verification is active; negative probe not separately run"},
+  "live_network_claim": "NOT_YET_LIVE_CERTIFIED"
+}

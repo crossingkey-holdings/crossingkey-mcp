@@ -1,0 +1,1 @@
+{"case_id":"REC-01-REVALIDATION-REJECT","status":"NOT_EXECUTED","reason":"Durable recovery authorization is now present and direct authority re-entry passes in isolation, but a child-process rejection case using a real production policy failure has not yet been executed."}

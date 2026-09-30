@@ -1,0 +1,1 @@
+{"status":"NOT_EXECUTED","reason":"No CK_BASE_RPC_URL was present in the readable local .env; no live RPC endpoint was inferred or queried. No credentials or endpoint secrets were printed."}

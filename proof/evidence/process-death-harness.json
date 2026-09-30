@@ -1,0 +1,1168 @@
+{
+  "status": "FRESH_EXECUTION",
+  "test_infrastructure": "isolated child processes and independent external-effect adapter",
+  "root": "/tmp/ck-process-recovery-D3ITNo",
+  "summary": [
+    {
+      "mode": "REC01",
+      "childPid": 38,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "FULFILLMENT_CLAIMED",
+        "pid": 38
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "not_observed",
+      "firstAction": "FINALIZE_LOCAL_STATE",
+      "secondAction": "ALREADY_TERMINAL",
+      "executionCount": 1,
+      "externalEffectCount": 1,
+      "receiptCount": 1,
+      "entitlementCount": 1,
+      "revenueEventCount": 1,
+      "durableResult": true,
+      "finalState": "fulfilled",
+      "pass": true
+    },
+    {
+      "mode": "REC02_NOT_OBSERVED",
+      "childPid": 77,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "EXECUTION_STARTED",
+        "pid": 77
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "not_observed",
+      "firstAction": "FINALIZE_LOCAL_STATE",
+      "secondAction": "ALREADY_TERMINAL",
+      "executionCount": 1,
+      "externalEffectCount": 1,
+      "receiptCount": 1,
+      "entitlementCount": 1,
+      "revenueEventCount": 1,
+      "durableResult": true,
+      "finalState": "fulfilled",
+      "pass": true
+    },
+    {
+      "mode": "REC02_UNKNOWN",
+      "childPid": 116,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "EXECUTION_STARTED",
+        "pid": 116
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "unknown",
+      "firstAction": "REMAIN_EXECUTION_UNKNOWN",
+      "secondAction": "REMAIN_EXECUTION_UNKNOWN",
+      "executionCount": 0,
+      "externalEffectCount": 0,
+      "receiptCount": 0,
+      "entitlementCount": 0,
+      "revenueEventCount": 0,
+      "durableResult": false,
+      "finalState": "execution_unknown",
+      "pass": true
+    },
+    {
+      "mode": "REC02_CONFIRMED",
+      "childPid": 147,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
+        "pid": 147
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "normal",
+      "firstAction": "FINALIZE_LOCAL_STATE",
+      "secondAction": "ALREADY_TERMINAL",
+      "executionCount": 1,
+      "externalEffectCount": 1,
+      "receiptCount": 1,
+      "entitlementCount": 1,
+      "revenueEventCount": 1,
+      "durableResult": true,
+      "finalState": "fulfilled",
+      "pass": true
+    },
+    {
+      "mode": "REC03",
+      "childPid": 186,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
+        "pid": 186
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "normal",
+      "firstAction": "FINALIZE_LOCAL_STATE",
+      "secondAction": "ALREADY_TERMINAL",
+      "executionCount": 1,
+      "externalEffectCount": 1,
+      "receiptCount": 1,
+      "entitlementCount": 1,
+      "revenueEventCount": 1,
+      "durableResult": true,
+      "finalState": "fulfilled",
+      "pass": true
+    },
+    {
+      "mode": "REC04",
+      "childPid": 225,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "AFTER_DURABLE_KNOWLEDGE",
+        "pid": 225
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "witnessMode": "normal",
+      "firstAction": "FINALIZE_LOCAL_STATE",
+      "secondAction": "ALREADY_TERMINAL",
+      "executionCount": 1,
+      "externalEffectCount": 1,
+      "receiptCount": 1,
+      "entitlementCount": 1,
+      "revenueEventCount": 1,
+      "durableResult": true,
+      "finalState": "fulfilled",
+      "pass": true
+    }
+  ],
+  "raw_results": [
+    {
+      "mode": "REC01",
+      "childPid": 38,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "FULFILLMENT_CLAIMED",
+        "pid": 38
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "first": {
+        "action": "FINALIZE_LOCAL_STATE",
+        "witness": {
+          "outcome": "EFFECT_NOT_OBSERVED",
+          "evidence": {
+            "authoritative": true,
+            "operationId": "recovery-rec01"
+          }
+        },
+        "finalization": {
+          "action": "FINALIZE_LOCAL_STATE",
+          "response": {
+            "status": "fulfilled",
+            "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
+            "entitlementId": "ck_ent_86628a4c-f549-438f-82c1-d367d45cd518",
+            "result": {
+              "operationId": "recovery-rec01",
+              "result": {
+                "operationId": "recovery-rec01",
+                "message": "recovery",
+                "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+              },
+              "duplicate": false
+            },
+            "receipt": {
+              "id": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
+              "result": {
+                "operationId": "recovery-rec01",
+                "result": {
+                  "operationId": "recovery-rec01",
+                  "message": "recovery",
+                  "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                },
+                "duplicate": false
+              },
+              "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d7265633031222c"
+            },
+            "settlement": {
+              "success": true,
+              "transaction": "fixture:recovery-rec01"
+            }
+          }
+        }
+      },
+      "second": {
+        "action": "ALREADY_TERMINAL"
+      },
+      "effectCount": 1,
+      "state": {
+        "version": 1,
+        "idempotency": {
+          "recovery-rec01": {
+            "requestHash": "request:recovery-rec01",
+            "paymentHash": "payment:recovery-rec01",
+            "gate1b": {
+              "state": "fulfilled",
+              "generation": 5,
+              "context": {
+                "capabilityName": "crossingkey.proof.external_echo",
+                "input": {
+                  "message": "recovery"
+                },
+                "idempotencyKey": "recovery-rec01",
+                "replayKey": "replay:recovery-rec01",
+                "payment": {
+                  "network": "fixture",
+                  "asset": "fixture",
+                  "amount": "1",
+                  "payTo": "fixture",
+                  "payer": "fixture",
+                  "authorization": {
+                    "nonce": "recovery-rec01",
+                    "validAfter": "0",
+                    "validBefore": "9999999999"
+                  }
+                }
+              },
+              "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
+              "entitlementId": "ck_ent_86628a4c-f549-438f-82c1-d367d45cd518",
+              "receiptId": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
+              "createdAt": "2026-09-30T06:54:03.548Z",
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec01"
+              },
+              "owner": {
+                "pid": 38,
+                "token": "0a9bcaa4-0d11-49f4-8071-25caf2587318"
+              },
+              "durableResult": {
+                "schema": "ck/gate1b-result/1",
+                "result": {
+                  "operationId": "recovery-rec01",
+                  "result": {
+                    "operationId": "recovery-rec01",
+                    "message": "recovery",
+                    "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                  },
+                  "duplicate": false
+                },
+                "resultHash": "b57a8576de01c11c65095f638fdf431291dd75c0086b526fd85a141f35b800ef",
+                "verified": true,
+                "verifiedAt": "2026-09-30T06:54:03.606Z",
+                "executionIdentity": "0a9bcaa4-0d11-49f4-8071-25caf2587318"
+              }
+            },
+            "response": {
+              "status": "fulfilled",
+              "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
+              "entitlementId": "ck_ent_86628a4c-f549-438f-82c1-d367d45cd518",
+              "result": {
+                "operationId": "recovery-rec01",
+                "result": {
+                  "operationId": "recovery-rec01",
+                  "message": "recovery",
+                  "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                },
+                "duplicate": false
+              },
+              "receipt": {
+                "id": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
+                "result": {
+                  "operationId": "recovery-rec01",
+                  "result": {
+                    "operationId": "recovery-rec01",
+                    "message": "recovery",
+                    "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                  },
+                  "duplicate": false
+                },
+                "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d7265633031222c"
+              },
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec01"
+              }
+            }
+          }
+        },
+        "replayKeys": {
+          "replay:recovery-rec01": {
+            "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
+            "transaction": "fixture:recovery-rec01"
+          }
+        },
+        "entitlements": {
+          "ck_ent_86628a4c-f549-438f-82c1-d367d45cd518": {
+            "id": "ck_ent_86628a4c-f549-438f-82c1-d367d45cd518",
+            "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
+            "status": "consumed"
+          }
+        },
+        "receipts": {
+          "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7": {
+            "id": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
+            "result": {
+              "operationId": "recovery-rec01",
+              "result": {
+                "operationId": "recovery-rec01",
+                "message": "recovery",
+                "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+              },
+              "duplicate": false
+            },
+            "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d7265633031222c"
+          }
+        },
+        "revenueEvents": {
+          "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7": {
+            "id": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
+            "receiptId": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
+            "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
+            "transaction": "fixture:recovery-rec01",
+            "capability": "crossingkey.proof.external_echo",
+            "network": "fixture",
+            "amountAtomic": "1"
+          }
+        }
+      },
+      "witnessMode": "not_observed"
+    },
+    {
+      "mode": "REC02_NOT_OBSERVED",
+      "childPid": 77,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "EXECUTION_STARTED",
+        "pid": 77
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "first": {
+        "action": "FINALIZE_LOCAL_STATE",
+        "witness": {
+          "outcome": "EFFECT_NOT_OBSERVED",
+          "evidence": {
+            "authoritative": true,
+            "operationId": "recovery-rec02_not_observed"
+          }
+        },
+        "finalization": {
+          "action": "FINALIZE_LOCAL_STATE",
+          "response": {
+            "status": "fulfilled",
+            "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
+            "entitlementId": "ck_ent_a8dc0ea2-08d1-49a0-832f-8e76818061e2",
+            "result": {
+              "operationId": "recovery-rec02_not_observed",
+              "result": {
+                "operationId": "recovery-rec02_not_observed",
+                "message": "recovery",
+                "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+              },
+              "duplicate": false
+            },
+            "receipt": {
+              "id": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
+              "result": {
+                "operationId": "recovery-rec02_not_observed",
+                "result": {
+                  "operationId": "recovery-rec02_not_observed",
+                  "message": "recovery",
+                  "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                },
+                "duplicate": false
+              },
+              "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d72656330325f6e"
+            },
+            "settlement": {
+              "success": true,
+              "transaction": "fixture:recovery-rec02_not_observed"
+            }
+          }
+        }
+      },
+      "second": {
+        "action": "ALREADY_TERMINAL"
+      },
+      "effectCount": 1,
+      "state": {
+        "version": 1,
+        "idempotency": {
+          "recovery-rec02_not_observed": {
+            "requestHash": "request:recovery-rec02_not_observed",
+            "paymentHash": "payment:recovery-rec02_not_observed",
+            "gate1b": {
+              "state": "fulfilled",
+              "generation": 5,
+              "context": {
+                "capabilityName": "crossingkey.proof.external_echo",
+                "input": {
+                  "message": "recovery"
+                },
+                "idempotencyKey": "recovery-rec02_not_observed",
+                "replayKey": "replay:recovery-rec02_not_observed",
+                "payment": {
+                  "network": "fixture",
+                  "asset": "fixture",
+                  "amount": "1",
+                  "payTo": "fixture",
+                  "payer": "fixture",
+                  "authorization": {
+                    "nonce": "recovery-rec02_not_observed",
+                    "validAfter": "0",
+                    "validBefore": "9999999999"
+                  }
+                }
+              },
+              "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
+              "entitlementId": "ck_ent_a8dc0ea2-08d1-49a0-832f-8e76818061e2",
+              "receiptId": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
+              "createdAt": "2026-09-30T06:54:03.887Z",
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec02_not_observed"
+              },
+              "owner": {
+                "pid": 77,
+                "token": "04d53cfb-03fd-488a-9e4e-837f949960e8"
+              },
+              "durableResult": {
+                "schema": "ck/gate1b-result/1",
+                "result": {
+                  "operationId": "recovery-rec02_not_observed",
+                  "result": {
+                    "operationId": "recovery-rec02_not_observed",
+                    "message": "recovery",
+                    "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                  },
+                  "duplicate": false
+                },
+                "resultHash": "ada9e0f5d5345e4dec2226fdbaf5e0537da3dc5b3773c1c5867ed5b41c0c7159",
+                "verified": true,
+                "verifiedAt": "2026-09-30T06:54:03.932Z",
+                "executionIdentity": "04d53cfb-03fd-488a-9e4e-837f949960e8"
+              }
+            },
+            "response": {
+              "status": "fulfilled",
+              "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
+              "entitlementId": "ck_ent_a8dc0ea2-08d1-49a0-832f-8e76818061e2",
+              "result": {
+                "operationId": "recovery-rec02_not_observed",
+                "result": {
+                  "operationId": "recovery-rec02_not_observed",
+                  "message": "recovery",
+                  "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                },
+                "duplicate": false
+              },
+              "receipt": {
+                "id": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
+                "result": {
+                  "operationId": "recovery-rec02_not_observed",
+                  "result": {
+                    "operationId": "recovery-rec02_not_observed",
+                    "message": "recovery",
+                    "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                  },
+                  "duplicate": false
+                },
+                "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d72656330325f6e"
+              },
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec02_not_observed"
+              }
+            }
+          }
+        },
+        "replayKeys": {
+          "replay:recovery-rec02_not_observed": {
+            "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
+            "transaction": "fixture:recovery-rec02_not_observed"
+          }
+        },
+        "entitlements": {
+          "ck_ent_a8dc0ea2-08d1-49a0-832f-8e76818061e2": {
+            "id": "ck_ent_a8dc0ea2-08d1-49a0-832f-8e76818061e2",
+            "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
+            "status": "consumed"
+          }
+        },
+        "receipts": {
+          "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9": {
+            "id": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
+            "result": {
+              "operationId": "recovery-rec02_not_observed",
+              "result": {
+                "operationId": "recovery-rec02_not_observed",
+                "message": "recovery",
+                "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+              },
+              "duplicate": false
+            },
+            "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d72656330325f6e"
+          }
+        },
+        "revenueEvents": {
+          "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9": {
+            "id": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
+            "receiptId": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
+            "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
+            "transaction": "fixture:recovery-rec02_not_observed",
+            "capability": "crossingkey.proof.external_echo",
+            "network": "fixture",
+            "amountAtomic": "1"
+          }
+        }
+      },
+      "witnessMode": "not_observed"
+    },
+    {
+      "mode": "REC02_UNKNOWN",
+      "childPid": 116,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "EXECUTION_STARTED",
+        "pid": 116
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "first": {
+        "action": "REMAIN_EXECUTION_UNKNOWN",
+        "witness": {
+          "outcome": "EFFECT_UNKNOWN"
+        }
+      },
+      "second": {
+        "action": "REMAIN_EXECUTION_UNKNOWN",
+        "witness": {
+          "outcome": "EFFECT_UNKNOWN"
+        }
+      },
+      "effectCount": 0,
+      "state": {
+        "version": 1,
+        "idempotency": {
+          "recovery-rec02_unknown": {
+            "requestHash": "request:recovery-rec02_unknown",
+            "paymentHash": "payment:recovery-rec02_unknown",
+            "gate1b": {
+              "state": "execution_unknown",
+              "generation": 3,
+              "context": {
+                "capabilityName": "crossingkey.proof.external_echo",
+                "input": {
+                  "message": "recovery"
+                },
+                "idempotencyKey": "recovery-rec02_unknown",
+                "replayKey": "replay:recovery-rec02_unknown",
+                "payment": {
+                  "network": "fixture",
+                  "asset": "fixture",
+                  "amount": "1",
+                  "payTo": "fixture",
+                  "payer": "fixture",
+                  "authorization": {
+                    "nonce": "recovery-rec02_unknown",
+                    "validAfter": "0",
+                    "validBefore": "9999999999"
+                  }
+                }
+              },
+              "purchaseId": "ck_purchase_a2c05a3f-2dd3-43b6-8ec9-6a3e44b24d31",
+              "entitlementId": "ck_ent_b3e7ee28-1190-4073-8dd6-c62241573a33",
+              "receiptId": "ck_rcpt_a9a5b12b-03a6-4426-a819-dbdcad4dd9c3",
+              "createdAt": "2026-09-30T06:54:04.222Z",
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec02_unknown"
+              },
+              "owner": {
+                "pid": 116,
+                "token": "1f637a33-6bb5-4253-8ea9-6882a0e3bfec"
+              },
+              "reconciliation": {
+                "outcome": "EFFECT_UNKNOWN"
+              }
+            }
+          }
+        },
+        "replayKeys": {
+          "replay:recovery-rec02_unknown": {
+            "purchaseId": "ck_purchase_a2c05a3f-2dd3-43b6-8ec9-6a3e44b24d31",
+            "status": "reserved"
+          }
+        },
+        "entitlements": {},
+        "receipts": {},
+        "revenueEvents": {}
+      },
+      "witnessMode": "unknown"
+    },
+    {
+      "mode": "REC02_CONFIRMED",
+      "childPid": 147,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
+        "pid": 147
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "first": {
+        "action": "FINALIZE_LOCAL_STATE",
+        "witness": {
+          "outcome": "EFFECT_CONFIRMED",
+          "evidence": {
+            "operationId": "recovery-rec02_confirmed",
+            "result": {
+              "operationId": "recovery-rec02_confirmed",
+              "message": "recovery",
+              "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+            }
+          }
+        },
+        "finalization": {
+          "action": "FINALIZE_LOCAL_STATE",
+          "response": {
+            "status": "fulfilled",
+            "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
+            "entitlementId": "ck_ent_80f54ebe-5d3d-45dc-a803-3f042110f189",
+            "result": {
+              "operationId": "recovery-rec02_confirmed",
+              "message": "recovery",
+              "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+            },
+            "receipt": {
+              "id": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
+              "result": {
+                "operationId": "recovery-rec02_confirmed",
+                "message": "recovery",
+                "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+              },
+              "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d72656330325f63"
+            },
+            "settlement": {
+              "success": true,
+              "transaction": "fixture:recovery-rec02_confirmed"
+            }
+          }
+        }
+      },
+      "second": {
+        "action": "ALREADY_TERMINAL"
+      },
+      "effectCount": 1,
+      "state": {
+        "version": 1,
+        "idempotency": {
+          "recovery-rec02_confirmed": {
+            "requestHash": "request:recovery-rec02_confirmed",
+            "paymentHash": "payment:recovery-rec02_confirmed",
+            "gate1b": {
+              "state": "fulfilled",
+              "generation": 5,
+              "context": {
+                "capabilityName": "crossingkey.proof.external_echo",
+                "input": {
+                  "message": "recovery"
+                },
+                "idempotencyKey": "recovery-rec02_confirmed",
+                "replayKey": "replay:recovery-rec02_confirmed",
+                "payment": {
+                  "network": "fixture",
+                  "asset": "fixture",
+                  "amount": "1",
+                  "payTo": "fixture",
+                  "payer": "fixture",
+                  "authorization": {
+                    "nonce": "recovery-rec02_confirmed",
+                    "validAfter": "0",
+                    "validBefore": "9999999999"
+                  }
+                }
+              },
+              "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
+              "entitlementId": "ck_ent_80f54ebe-5d3d-45dc-a803-3f042110f189",
+              "receiptId": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
+              "createdAt": "2026-09-30T06:54:04.482Z",
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec02_confirmed"
+              },
+              "owner": {
+                "pid": 147,
+                "token": "bde6f96a-0ff4-4a4d-8b6e-df6d2d952a66"
+              },
+              "durableResult": {
+                "schema": "ck/gate1b-result/1",
+                "result": {
+                  "operationId": "recovery-rec02_confirmed",
+                  "message": "recovery",
+                  "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                },
+                "resultHash": "b6a9c27c952ae3fe824a66adaed47f1705d64d1c11fa061d2a9de8a7620541b7",
+                "verified": true,
+                "verifiedAt": "2026-09-30T06:54:04.526Z",
+                "executionIdentity": "bde6f96a-0ff4-4a4d-8b6e-df6d2d952a66",
+                "witness": {
+                  "operationId": "recovery-rec02_confirmed",
+                  "result": {
+                    "operationId": "recovery-rec02_confirmed",
+                    "message": "recovery",
+                    "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                  }
+                }
+              }
+            },
+            "response": {
+              "status": "fulfilled",
+              "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
+              "entitlementId": "ck_ent_80f54ebe-5d3d-45dc-a803-3f042110f189",
+              "result": {
+                "operationId": "recovery-rec02_confirmed",
+                "message": "recovery",
+                "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+              },
+              "receipt": {
+                "id": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
+                "result": {
+                  "operationId": "recovery-rec02_confirmed",
+                  "message": "recovery",
+                  "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                },
+                "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d72656330325f63"
+              },
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec02_confirmed"
+              }
+            }
+          }
+        },
+        "replayKeys": {
+          "replay:recovery-rec02_confirmed": {
+            "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
+            "transaction": "fixture:recovery-rec02_confirmed"
+          }
+        },
+        "entitlements": {
+          "ck_ent_80f54ebe-5d3d-45dc-a803-3f042110f189": {
+            "id": "ck_ent_80f54ebe-5d3d-45dc-a803-3f042110f189",
+            "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
+            "status": "consumed"
+          }
+        },
+        "receipts": {
+          "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88": {
+            "id": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
+            "result": {
+              "operationId": "recovery-rec02_confirmed",
+              "message": "recovery",
+              "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+            },
+            "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d72656330325f63"
+          }
+        },
+        "revenueEvents": {
+          "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88": {
+            "id": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
+            "receiptId": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
+            "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
+            "transaction": "fixture:recovery-rec02_confirmed",
+            "capability": "crossingkey.proof.external_echo",
+            "network": "fixture",
+            "amountAtomic": "1"
+          }
+        }
+      },
+      "witnessMode": "normal"
+    },
+    {
+      "mode": "REC03",
+      "childPid": 186,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
+        "pid": 186
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "first": {
+        "action": "FINALIZE_LOCAL_STATE",
+        "witness": {
+          "outcome": "EFFECT_CONFIRMED",
+          "evidence": {
+            "operationId": "recovery-rec03",
+            "result": {
+              "operationId": "recovery-rec03",
+              "message": "recovery",
+              "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+            }
+          }
+        },
+        "finalization": {
+          "action": "FINALIZE_LOCAL_STATE",
+          "response": {
+            "status": "fulfilled",
+            "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
+            "entitlementId": "ck_ent_9ff23c82-25ce-4d72-8848-161b58026300",
+            "result": {
+              "operationId": "recovery-rec03",
+              "message": "recovery",
+              "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+            },
+            "receipt": {
+              "id": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
+              "result": {
+                "operationId": "recovery-rec03",
+                "message": "recovery",
+                "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+              },
+              "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d7265633033222c"
+            },
+            "settlement": {
+              "success": true,
+              "transaction": "fixture:recovery-rec03"
+            }
+          }
+        }
+      },
+      "second": {
+        "action": "ALREADY_TERMINAL"
+      },
+      "effectCount": 1,
+      "state": {
+        "version": 1,
+        "idempotency": {
+          "recovery-rec03": {
+            "requestHash": "request:recovery-rec03",
+            "paymentHash": "payment:recovery-rec03",
+            "gate1b": {
+              "state": "fulfilled",
+              "generation": 5,
+              "context": {
+                "capabilityName": "crossingkey.proof.external_echo",
+                "input": {
+                  "message": "recovery"
+                },
+                "idempotencyKey": "recovery-rec03",
+                "replayKey": "replay:recovery-rec03",
+                "payment": {
+                  "network": "fixture",
+                  "asset": "fixture",
+                  "amount": "1",
+                  "payTo": "fixture",
+                  "payer": "fixture",
+                  "authorization": {
+                    "nonce": "recovery-rec03",
+                    "validAfter": "0",
+                    "validBefore": "9999999999"
+                  }
+                }
+              },
+              "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
+              "entitlementId": "ck_ent_9ff23c82-25ce-4d72-8848-161b58026300",
+              "receiptId": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
+              "createdAt": "2026-09-30T06:54:04.773Z",
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec03"
+              },
+              "owner": {
+                "pid": 186,
+                "token": "65ffe175-dbe2-4503-aaa6-18429578ecfa"
+              },
+              "durableResult": {
+                "schema": "ck/gate1b-result/1",
+                "result": {
+                  "operationId": "recovery-rec03",
+                  "message": "recovery",
+                  "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                },
+                "resultHash": "effcf9f92cee2a9e4bde3b0cc30ff0475b9c9757ae8627585e6c1e533b3b5def",
+                "verified": true,
+                "verifiedAt": "2026-09-30T06:54:04.816Z",
+                "executionIdentity": "65ffe175-dbe2-4503-aaa6-18429578ecfa",
+                "witness": {
+                  "operationId": "recovery-rec03",
+                  "result": {
+                    "operationId": "recovery-rec03",
+                    "message": "recovery",
+                    "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                  }
+                }
+              }
+            },
+            "response": {
+              "status": "fulfilled",
+              "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
+              "entitlementId": "ck_ent_9ff23c82-25ce-4d72-8848-161b58026300",
+              "result": {
+                "operationId": "recovery-rec03",
+                "message": "recovery",
+                "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+              },
+              "receipt": {
+                "id": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
+                "result": {
+                  "operationId": "recovery-rec03",
+                  "message": "recovery",
+                  "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                },
+                "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d7265633033222c"
+              },
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec03"
+              }
+            }
+          }
+        },
+        "replayKeys": {
+          "replay:recovery-rec03": {
+            "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
+            "transaction": "fixture:recovery-rec03"
+          }
+        },
+        "entitlements": {
+          "ck_ent_9ff23c82-25ce-4d72-8848-161b58026300": {
+            "id": "ck_ent_9ff23c82-25ce-4d72-8848-161b58026300",
+            "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
+            "status": "consumed"
+          }
+        },
+        "receipts": {
+          "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b": {
+            "id": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
+            "result": {
+              "operationId": "recovery-rec03",
+              "message": "recovery",
+              "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+            },
+            "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d7265633033222c"
+          }
+        },
+        "revenueEvents": {
+          "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b": {
+            "id": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
+            "receiptId": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
+            "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
+            "transaction": "fixture:recovery-rec03",
+            "capability": "crossingkey.proof.external_echo",
+            "network": "fixture",
+            "amountAtomic": "1"
+          }
+        }
+      },
+      "witnessMode": "normal"
+    },
+    {
+      "mode": "REC04",
+      "childPid": 225,
+      "checkpoint": {
+        "type": "checkpoint",
+        "checkpoint": "AFTER_DURABLE_KNOWLEDGE",
+        "pid": 225
+      },
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "first": {
+        "action": "FINALIZE_LOCAL_STATE",
+        "response": {
+          "status": "fulfilled",
+          "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
+          "entitlementId": "ck_ent_fdd07710-5807-4a79-aa50-147bbd7dabd8",
+          "result": {
+            "operationId": "recovery-rec04",
+            "result": {
+              "operationId": "recovery-rec04",
+              "message": "recovery",
+              "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+            },
+            "duplicate": false
+          },
+          "receipt": {
+            "id": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
+            "result": {
+              "operationId": "recovery-rec04",
+              "result": {
+                "operationId": "recovery-rec04",
+                "message": "recovery",
+                "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+              },
+              "duplicate": false
+            },
+            "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d7265633034222c"
+          },
+          "settlement": {
+            "success": true,
+            "transaction": "fixture:recovery-rec04"
+          }
+        }
+      },
+      "second": {
+        "action": "ALREADY_TERMINAL"
+      },
+      "effectCount": 1,
+      "state": {
+        "version": 1,
+        "idempotency": {
+          "recovery-rec04": {
+            "requestHash": "request:recovery-rec04",
+            "paymentHash": "payment:recovery-rec04",
+            "gate1b": {
+              "state": "fulfilled",
+              "generation": 5,
+              "context": {
+                "capabilityName": "crossingkey.proof.external_echo",
+                "input": {
+                  "message": "recovery"
+                },
+                "idempotencyKey": "recovery-rec04",
+                "replayKey": "replay:recovery-rec04",
+                "payment": {
+                  "network": "fixture",
+                  "asset": "fixture",
+                  "amount": "1",
+                  "payTo": "fixture",
+                  "payer": "fixture",
+                  "authorization": {
+                    "nonce": "recovery-rec04",
+                    "validAfter": "0",
+                    "validBefore": "9999999999"
+                  }
+                }
+              },
+              "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
+              "entitlementId": "ck_ent_fdd07710-5807-4a79-aa50-147bbd7dabd8",
+              "receiptId": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
+              "createdAt": "2026-09-30T06:54:05.068Z",
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec04"
+              },
+              "owner": {
+                "pid": 225,
+                "token": "aecfbeea-0aca-44c3-ab65-c9840f468042"
+              },
+              "durableResult": {
+                "schema": "ck/gate1b-result/1",
+                "result": {
+                  "operationId": "recovery-rec04",
+                  "result": {
+                    "operationId": "recovery-rec04",
+                    "message": "recovery",
+                    "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                  },
+                  "duplicate": false
+                },
+                "resultHash": "63597c63d736f1a94621edcd95760dbc295ba9e45e37cae6784d351392cc006d",
+                "verified": true,
+                "verifiedAt": "2026-09-30T06:54:05.077Z",
+                "executionIdentity": "aecfbeea-0aca-44c3-ab65-c9840f468042"
+              }
+            },
+            "response": {
+              "status": "fulfilled",
+              "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
+              "entitlementId": "ck_ent_fdd07710-5807-4a79-aa50-147bbd7dabd8",
+              "result": {
+                "operationId": "recovery-rec04",
+                "result": {
+                  "operationId": "recovery-rec04",
+                  "message": "recovery",
+                  "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                },
+                "duplicate": false
+              },
+              "receipt": {
+                "id": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
+                "result": {
+                  "operationId": "recovery-rec04",
+                  "result": {
+                    "operationId": "recovery-rec04",
+                    "message": "recovery",
+                    "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+                  },
+                  "duplicate": false
+                },
+                "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d7265633034222c"
+              },
+              "settlement": {
+                "success": true,
+                "transaction": "fixture:recovery-rec04"
+              }
+            }
+          }
+        },
+        "replayKeys": {
+          "replay:recovery-rec04": {
+            "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
+            "transaction": "fixture:recovery-rec04"
+          }
+        },
+        "entitlements": {
+          "ck_ent_fdd07710-5807-4a79-aa50-147bbd7dabd8": {
+            "id": "ck_ent_fdd07710-5807-4a79-aa50-147bbd7dabd8",
+            "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
+            "status": "consumed"
+          }
+        },
+        "receipts": {
+          "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3": {
+            "id": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
+            "result": {
+              "operationId": "recovery-rec04",
+              "result": {
+                "operationId": "recovery-rec04",
+                "message": "recovery",
+                "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
+              },
+              "duplicate": false
+            },
+            "resultHash": "sha256:7b226f7065726174696f6e4964223a227265636f766572792d7265633034222c"
+          }
+        },
+        "revenueEvents": {
+          "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3": {
+            "id": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
+            "receiptId": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
+            "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
+            "transaction": "fixture:recovery-rec04",
+            "capability": "crossingkey.proof.external_echo",
+            "network": "fixture",
+            "amountAtomic": "1"
+          }
+        }
+      },
+      "witnessMode": "normal"
+    }
+  ]
+}

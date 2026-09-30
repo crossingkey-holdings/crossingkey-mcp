@@ -1,0 +1,12 @@
+{
+  "status": "FRESH_EXECUTION",
+  "moduleImportOnly": true,
+  "before": [],
+  "after": [],
+  "newFiles": [],
+  "productionPathsTouched": false,
+  "socketsBound": false,
+  "recoveryStarted": false,
+  "externalCalls": 0,
+  "pass": true
+}

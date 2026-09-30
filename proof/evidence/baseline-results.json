@@ -1,0 +1,33 @@
+{
+  "classification": "FRESH_EXECUTION",
+  "generated_at": "2026-09-29T22:44:22.189Z",
+  "commands": [
+    {
+      "command": "npm run check",
+      "exit_code": 0,
+      "status": "PASS"
+    },
+    {
+      "command": "npm test",
+      "exit_code": 0,
+      "status": "PASS",
+      "files_discovered": 1,
+      "files_executed": 1,
+      "tests_passed": 1,
+      "tests_failed": 0
+    },
+    {
+      "command": "PYTHONPATH=. proof/.venv/bin/python -m pytest -q crossingkey_core/tests",
+      "exit_code": 0,
+      "status": "PASS",
+      "passed": 122,
+      "failed": 0
+    }
+  ],
+  "rpc_positive": "PASS",
+  "rpc_negative": "8/8 PASS",
+  "production_service_restarted": false,
+  "public_mcp_modified": false,
+  "payments": 0,
+  "blockchain_transactions": 0
+}

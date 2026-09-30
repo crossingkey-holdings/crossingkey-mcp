@@ -1,0 +1,1 @@
+{"case_id":"REC-02","status":"PARTIAL","witness_contract":"FRESH_PASS","confirmed":"DECISION_ONLY","not_observed":"DECISION_ONLY","unknown":"UNCERTAINTY_PRESERVED","reason":"Production recovery does not yet reconstruct a canonical result or invoke safe resume from witness evidence."}

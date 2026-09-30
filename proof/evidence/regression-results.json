@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-09-29T21:12:18.526Z",
+  "production": {
+    "command": "npm test",
+    "exit_code": 1,
+    "status": "FAIL",
+    "failure": "TLS RPC authority is required"
+  },
+  "syntax": {
+    "command": "npm run check",
+    "exit_code": 0,
+    "status": "PASS"
+  },
+  "core": {
+    "command": "proof/.venv/bin/python -m pytest -q crossingkey_core/tests",
+    "exit_code": 0,
+    "status": "PASS",
+    "passed": 122,
+    "failed": 0
+  },
+  "prior_issue": "npm test previously discovered zero tests; package script repaired in this run"
+}

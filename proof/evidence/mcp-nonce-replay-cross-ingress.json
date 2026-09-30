@@ -1,0 +1,13 @@
+{
+  "directToMcp": {
+    "first": "direct success",
+    "secondStatus": 200,
+    "secondRejected": true
+  },
+  "mcpToDirect": {
+    "firstStatus": 200,
+    "second": {
+      "error": "Replay detected"
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "status": "FRESH_EXECUTION",
+  "results": [
+    {
+      "case": "TAMPER-01 capability",
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "verify": 0,
+      "settle": 0,
+      "error": "Unknown capability",
+      "effect": 0,
+      "receipts": 0,
+      "entitlements": 0,
+      "pass": true
+    },
+    {
+      "case": "TAMPER-02 amount",
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "verify": 0,
+      "settle": 0,
+      "error": "Payment amount mismatch",
+      "effect": 0,
+      "receipts": 0,
+      "entitlements": 0,
+      "pass": true
+    },
+    {
+      "case": "TAMPER-03 receiver",
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "verify": 0,
+      "settle": 0,
+      "error": "Payment destination mismatch",
+      "effect": 0,
+      "receipts": 0,
+      "entitlements": 0,
+      "pass": true
+    },
+    {
+      "case": "TAMPER-04 network",
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "verify": 0,
+      "settle": 0,
+      "error": "Payment network mismatch",
+      "effect": 0,
+      "receipts": 0,
+      "entitlements": 0,
+      "pass": true
+    },
+    {
+      "case": "TAMPER-05 nonce",
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "verify": 0,
+      "settle": 0,
+      "error": "RECOVERY_AUTHORIZATION_BINDING_MISMATCH",
+      "effect": 0,
+      "receipts": 0,
+      "entitlements": 0,
+      "pass": true
+    },
+    {
+      "case": "TAMPER-06 idempotency_identity",
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "verify": 0,
+      "settle": 0,
+      "error": "RECOVERY_IDEMPOTENCY_BINDING_MISMATCH",
+      "effect": 0,
+      "receipts": 0,
+      "entitlements": 0,
+      "pass": true
+    },
+    {
+      "case": "TAMPER-07 execution_identity",
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "verify": 0,
+      "settle": 0,
+      "error": "RECOVERY_EXECUTION_IDENTITY_MISMATCH",
+      "effect": 0,
+      "receipts": 0,
+      "entitlements": 0,
+      "pass": true
+    },
+    {
+      "case": "TAMPER-08 signed_authorization",
+      "termination": {
+        "code": null,
+        "signal": "SIGKILL"
+      },
+      "verify": 1,
+      "settle": 0,
+      "error": "RECOVERY_AUTHORIZATION_REJECTED",
+      "effect": 0,
+      "receipts": 0,
+      "entitlements": 0,
+      "pass": true
+    }
+  ],
+  "passCount": 8,
+  "total": 8
+}

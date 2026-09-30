@@ -1,0 +1,32 @@
+{
+  "status": "FRESH_QUALIFICATION",
+  "claim": "Bounded deterministic CrossingKey governance path from capability request through authority, execution, verification, durable state, recovery, and evidence production across direct and real MCP ingress.",
+  "scope": "Current JavaScript machine-commerce/Gate1B implementation, isolated HTTPS RPC/facilitator fixtures, selected artifact.integrity_manifest capability, controlled external-effect adapter, real Streamable HTTP MCP transport.",
+  "claims": [
+    {"component":"CAPABILITY DISCOVERY","owner":"lib/paid-capability-catalog.mjs; server-runtime.mjs","evidence":"mcp-tool-surface.json","fresh":"preserved and regression-tested","verdict":"PASS","limitations":"12-tool surface; not every future capability"},
+    {"component":"STATE","owner":"lib/machine-commerce.mjs; lib/gate1b-production-adapter.mjs","evidence":"recovery evidence; real MCP runner","fresh":"fresh regression","verdict":"PASS","limitations":"isolated state only"},
+    {"component":"PRECONDITIONS","owner":"lib/machine-commerce.mjs:prepare/revalidateRecovery","evidence":"production-recovery-authority-test.mjs","fresh":"fresh","verdict":"PASS","limitations":"fixture dependencies"},
+    {"component":"AUTHORITY","owner":"machine-commerce canonicalization/policy/facilitator verification","evidence":"production-recovery-authority-map.json; authority test","fresh":"fresh","verdict":"PASS","limitations":"controlled facilitator/RPC"},
+    {"component":"PAYMENT CANONICALIZATION","owner":"lib/machine-commerce.mjs:canonicalizePayment","evidence":"payment-authorization-field-analysis.json; authority test","fresh":"fresh/preserved","verdict":"PASS","limitations":"x402 fixture scope"},
+    {"component":"POLICY","owner":"lib/machine-commerce.mjs:enforcePolicy","evidence":"authority test; tamper suite","fresh":"fresh","verdict":"PASS","limitations":"tested policy cases"},
+    {"component":"IDEMPOTENCY","owner":"lib/gate1b-production-adapter.mjs:invoke","evidence":"mcp-idempotency-cross-ingress.json; real MCP runner","fresh":"fresh","verdict":"PASS","limitations":"tested identities/payloads"},
+    {"component":"REPLAY PROTECTION","owner":"lib/gate1b-production-adapter.mjs:invoke replayKeys","evidence":"mcp-nonce-replay-cross-ingress.json; tamper suite","fresh":"fresh","verdict":"PASS","limitations":"tested nonce reuse"},
+    {"component":"EXECUTION","owner":"lib/machine-commerce.mjs executor path; constructor executionDependencies adapter","evidence":"execution-injection-security.json; recovery runner","fresh":"fresh","verdict":"PASS","limitations":"selected capability/adapter"},
+    {"component":"VERIFICATION","owner":"facilitator verify plus production result validation","evidence":"authority test; recovery evidence","fresh":"fresh","verdict":"PASS","limitations":"controlled facilitator"},
+    {"component":"DURABLE RESULT","owner":"lib/gate1b-production-adapter.mjs durableResult","evidence":"durable-result-schema.json; rec04.json","fresh":"preserved and regression-tested","verdict":"PASS","limitations":"canonical state format"},
+    {"component":"DURABLE KNOWLEDGE BOUNDARY","owner":"Gate1B finalization_pending transition","evidence":"durable-knowledge-boundary.json; rec04.json","fresh":"preserved and regression-tested","verdict":"PASS","limitations":"durable staged-finalization protocol, not distributed 2PC"},
+    {"component":"FINALIZATION","owner":"lib/gate1b-production-adapter.mjs:commitFinalization/finalizeRecoveredOperation","evidence":"rec04.json; recovery runner","fresh":"fresh","verdict":"PASS","limitations":"tested local finalization"},
+    {"component":"RECEIPT","owner":"lib/machine-commerce.mjs receipt construction; Gate1B commit","evidence":"recovery-final-closure.json; MCP runner","fresh":"fresh/preserved","verdict":"PASS","limitations":"artifact receipt, not external settlement proof"},
+    {"component":"ENTITLEMENT","owner":"Gate1B commitFinalization","evidence":"recovery-final-closure.json","fresh":"fresh/preserved","verdict":"PASS","limitations":"isolated accounting state"},
+    {"component":"REVENUE EVENT","owner":"Gate1B commitFinalization","evidence":"recovery-final-closure.json","fresh":"fresh/preserved","verdict":"PASS","limitations":"accounting event, not real-world payment"},
+    {"component":"RECOVERY","owner":"lib/recovery/recovery-orchestrator.mjs; Gate1B recovery methods","evidence":"process-death-harness.json; rec01-rec04","fresh":"fresh","verdict":"PASS","limitations":"capability-dependent witness semantics"},
+    {"component":"EXTERNAL-EFFECT WITNESS","owner":"lib/recovery/external-effect-witness.mjs; test adapter","evidence":"external-effect-witness-contract.json; recovery runner","fresh":"fresh","verdict":"PASS","limitations":"not universal external exactly-once"},
+    {"component":"MCP INGRESS","owner":"server-runtime.mjs MCP handler; Streamable HTTP","evidence":"mcp-handshake.json; mcp-convergence-proof.json","fresh":"fresh","verdict":"PASS","limitations":"isolated transport"},
+    {"component":"DIRECT INGRESS","owner":"machineCommerce.invoke","evidence":"mcp-direct-path.json; Node tests","fresh":"fresh","verdict":"PASS","limitations":"selected capability"},
+    {"component":"CROSS-INGRESS CONVERGENCE","owner":"lib/machine-commerce.mjs:invoke","evidence":"mcp-convergence-map.json; cross-ingress evidence","fresh":"fresh","verdict":"PASS","limitations":"direct and MCP only; no A2A claim"},
+    {"component":"SESSION/AUTHORITY SEPARATION","owner":"MCP session handling plus canonical payment authority","evidence":"mcp-session-isolation.json; real MCP runner","fresh":"fresh","verdict":"PASS","limitations":"isolated sessions"},
+    {"component":"MALFORMED-INPUT FAILURE","owner":"MCP schema/dispatch plus canonical validation","evidence":"mcp-malformed-input.json; real MCP runner","fresh":"fresh","verdict":"PASS","limitations":"tested malformed cases"},
+    {"component":"TAMPER RESISTANCE","owner":"canonical payment binding/recovery authorization","evidence":"recovery-authorization-tampering.json; tamper suite","fresh":"fresh","verdict":"PASS","limitations":"8 mutation cases"},
+    {"component":"EVIDENCE INTEGRITY","owner":"SHA256SUMS and manifest","evidence":"SHA256SUMS","fresh":"fresh","verdict":"PASS","limitations":"local evidence integrity, not external notarization"}
+  ]
+}

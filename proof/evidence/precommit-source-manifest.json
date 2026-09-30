@@ -1,0 +1,20 @@
+{
+  "schema": "crossingkey.source-manifest.v1",
+  "repository": "crossingkey-holdings/crossingkey-mcp",
+  "parent_commit": "fff37a49ecd24edc3c0cca19a4e52e464dae449f",
+  "branch": "qualification/live-certification-2026-09-30",
+  "source_files": {
+    "server.mjs": "cfdb280319c371ef0083d98164d7f30e5622e07a5f4d89611fbf38b3975d0529",
+    "server-runtime.mjs": "ac56a3ebcdcc7b680e48d2b80ac4d239aedbd7acb059371c345ea1a5864ed600",
+    "lib/mcp-app-factory.mjs": "a4c649839825a87945388362100ad245eb76101fe7b91455094540228b8db839",
+    "lib/machine-commerce.mjs": "2ad912409889a482a032099116b49b5546fa1751a98ecfbe3d5ed75c8feb5ff8",
+    "lib/gate1b-production-adapter.mjs": "e602ead30e87f827109af5bd578154195cb1e15c09f503d47bffd8e7e1293395",
+    "lib/paid-capability-catalog.mjs": "6af7d05ac227b6d0f0717e27ac72499835b9ae974256e74cb9cad87f657d248e",
+    "lib/recovery/recovery-orchestrator.mjs": "af45e59b6da3eb1f88717bcb09922c7d796e3afba6b83daa0d70e3a5de6c652f",
+    "lib/recovery/external-effect-witness.mjs": "e89a0360fc238f1dee839a75584ff86a5ecf158b4caa604a3bf8d35e943eaa0b",
+    "lib/mcp-manifest.mjs": "63930d52435732e25e4f099534684c875a8520f4073f2f102609138c915aa9f1",
+    "lib/marketplace-tools.mjs": "bb63dcf52e57b685794a018fbcc0e2dc150c3f16dc55f5ae0903732688e552c9",
+    "package.json": "94ca70836624ea31b2aa72b8274074737de7c1e25d496eee28057c83bc7eb6ef",
+    "package-lock.json": "6a9a465aec6ff94e9f0eae27c16f947020dfd1e224c2b0a224b873b2f6c5059f"
+  }
+}
