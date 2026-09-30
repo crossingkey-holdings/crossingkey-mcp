@@ -5,7 +5,7 @@
       "name": "REC01",
       "checkpoint": {
         "checkpoint": "FULFILLMENT_CLAIMED",
-        "pid": 264
+        "pid": 231
       },
       "termination": {
         "code": null,
@@ -44,7 +44,7 @@
       "name": "REC01_REJECT",
       "checkpoint": {
         "checkpoint": "FULFILLMENT_CLAIMED",
-        "pid": 306
+        "pid": 273
       },
       "termination": {
         "code": null,
@@ -74,7 +74,7 @@
       "name": "REC02B",
       "checkpoint": {
         "checkpoint": "EXECUTION_STARTED",
-        "pid": 340
+        "pid": 307
       },
       "termination": {
         "code": null,
@@ -113,7 +113,7 @@
       "name": "REC02B_REJECT",
       "checkpoint": {
         "checkpoint": "EXECUTION_STARTED",
-        "pid": 382
+        "pid": 349
       },
       "termination": {
         "code": null,
@@ -143,7 +143,7 @@
       "name": "REC02_CONFIRMED",
       "checkpoint": {
         "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
-        "pid": 416
+        "pid": 383
       },
       "termination": {
         "code": null,
@@ -185,7 +185,7 @@
       "name": "REC02_UNKNOWN",
       "checkpoint": {
         "checkpoint": "EXECUTION_STARTED",
-        "pid": 458
+        "pid": 425
       },
       "termination": {
         "code": null,
@@ -222,7 +222,7 @@
       "name": "REC03",
       "checkpoint": {
         "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
-        "pid": 492
+        "pid": 459
       },
       "termination": {
         "code": null,
@@ -264,7 +264,7 @@
       "name": "REC04",
       "checkpoint": {
         "checkpoint": "AFTER_DURABLE_KNOWLEDGE",
-        "pid": 534
+        "pid": 501
       },
       "termination": {
         "code": null,

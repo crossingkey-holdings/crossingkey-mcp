@@ -1,15 +1,15 @@
 {
   "status": "FRESH_EXECUTION",
   "test_infrastructure": "isolated child processes and independent external-effect adapter",
-  "root": "/tmp/ck-process-recovery-D3ITNo",
+  "root": "/tmp/ck-process-recovery-NlJsVf",
   "summary": [
     {
       "mode": "REC01",
-      "childPid": 38,
+      "childPid": 9,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "FULFILLMENT_CLAIMED",
-        "pid": 38
+        "pid": 9
       },
       "termination": {
         "code": null,
@@ -29,11 +29,11 @@
     },
     {
       "mode": "REC02_NOT_OBSERVED",
-      "childPid": 77,
+      "childPid": 48,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "EXECUTION_STARTED",
-        "pid": 77
+        "pid": 48
       },
       "termination": {
         "code": null,
@@ -53,11 +53,11 @@
     },
     {
       "mode": "REC02_UNKNOWN",
-      "childPid": 116,
+      "childPid": 87,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "EXECUTION_STARTED",
-        "pid": 116
+        "pid": 87
       },
       "termination": {
         "code": null,
@@ -77,11 +77,11 @@
     },
     {
       "mode": "REC02_CONFIRMED",
-      "childPid": 147,
+      "childPid": 118,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
-        "pid": 147
+        "pid": 118
       },
       "termination": {
         "code": null,
@@ -101,11 +101,11 @@
     },
     {
       "mode": "REC03",
-      "childPid": 186,
+      "childPid": 157,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
-        "pid": 186
+        "pid": 157
       },
       "termination": {
         "code": null,
@@ -125,11 +125,11 @@
     },
     {
       "mode": "REC04",
-      "childPid": 225,
+      "childPid": 196,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "AFTER_DURABLE_KNOWLEDGE",
-        "pid": 225
+        "pid": 196
       },
       "termination": {
         "code": null,
@@ -151,11 +151,11 @@
   "raw_results": [
     {
       "mode": "REC01",
-      "childPid": 38,
+      "childPid": 9,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "FULFILLMENT_CLAIMED",
-        "pid": 38
+        "pid": 9
       },
       "termination": {
         "code": null,
@@ -174,8 +174,8 @@
           "action": "FINALIZE_LOCAL_STATE",
           "response": {
             "status": "fulfilled",
-            "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
-            "entitlementId": "ck_ent_86628a4c-f549-438f-82c1-d367d45cd518",
+            "purchaseId": "ck_purchase_97c08bce-3d66-4dd5-889e-837cf9afb565",
+            "entitlementId": "ck_ent_4f3515dd-dd63-42d1-bc45-c583f0ba455a",
             "result": {
               "operationId": "recovery-rec01",
               "result": {
@@ -186,7 +186,7 @@
               "duplicate": false
             },
             "receipt": {
-              "id": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
+              "id": "ck_rcpt_f8bad768-92ae-4bc7-a736-35ee128723a4",
               "result": {
                 "operationId": "recovery-rec01",
                 "result": {
@@ -238,17 +238,17 @@
                   }
                 }
               },
-              "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
-              "entitlementId": "ck_ent_86628a4c-f549-438f-82c1-d367d45cd518",
-              "receiptId": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
-              "createdAt": "2026-09-30T06:54:03.548Z",
+              "purchaseId": "ck_purchase_97c08bce-3d66-4dd5-889e-837cf9afb565",
+              "entitlementId": "ck_ent_4f3515dd-dd63-42d1-bc45-c583f0ba455a",
+              "receiptId": "ck_rcpt_f8bad768-92ae-4bc7-a736-35ee128723a4",
+              "createdAt": "2026-09-30T04:01:46.652Z",
               "settlement": {
                 "success": true,
                 "transaction": "fixture:recovery-rec01"
               },
               "owner": {
-                "pid": 38,
-                "token": "0a9bcaa4-0d11-49f4-8071-25caf2587318"
+                "pid": 9,
+                "token": "46069950-28bf-4def-828b-9bdf3c65e673"
               },
               "durableResult": {
                 "schema": "ck/gate1b-result/1",
@@ -263,14 +263,14 @@
                 },
                 "resultHash": "b57a8576de01c11c65095f638fdf431291dd75c0086b526fd85a141f35b800ef",
                 "verified": true,
-                "verifiedAt": "2026-09-30T06:54:03.606Z",
-                "executionIdentity": "0a9bcaa4-0d11-49f4-8071-25caf2587318"
+                "verifiedAt": "2026-09-30T04:01:46.701Z",
+                "executionIdentity": "46069950-28bf-4def-828b-9bdf3c65e673"
               }
             },
             "response": {
               "status": "fulfilled",
-              "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
-              "entitlementId": "ck_ent_86628a4c-f549-438f-82c1-d367d45cd518",
+              "purchaseId": "ck_purchase_97c08bce-3d66-4dd5-889e-837cf9afb565",
+              "entitlementId": "ck_ent_4f3515dd-dd63-42d1-bc45-c583f0ba455a",
               "result": {
                 "operationId": "recovery-rec01",
                 "result": {
@@ -281,7 +281,7 @@
                 "duplicate": false
               },
               "receipt": {
-                "id": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
+                "id": "ck_rcpt_f8bad768-92ae-4bc7-a736-35ee128723a4",
                 "result": {
                   "operationId": "recovery-rec01",
                   "result": {
@@ -302,20 +302,20 @@
         },
         "replayKeys": {
           "replay:recovery-rec01": {
-            "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
+            "purchaseId": "ck_purchase_97c08bce-3d66-4dd5-889e-837cf9afb565",
             "transaction": "fixture:recovery-rec01"
           }
         },
         "entitlements": {
-          "ck_ent_86628a4c-f549-438f-82c1-d367d45cd518": {
-            "id": "ck_ent_86628a4c-f549-438f-82c1-d367d45cd518",
-            "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
+          "ck_ent_4f3515dd-dd63-42d1-bc45-c583f0ba455a": {
+            "id": "ck_ent_4f3515dd-dd63-42d1-bc45-c583f0ba455a",
+            "purchaseId": "ck_purchase_97c08bce-3d66-4dd5-889e-837cf9afb565",
             "status": "consumed"
           }
         },
         "receipts": {
-          "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7": {
-            "id": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
+          "ck_rcpt_f8bad768-92ae-4bc7-a736-35ee128723a4": {
+            "id": "ck_rcpt_f8bad768-92ae-4bc7-a736-35ee128723a4",
             "result": {
               "operationId": "recovery-rec01",
               "result": {
@@ -329,10 +329,10 @@
           }
         },
         "revenueEvents": {
-          "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7": {
-            "id": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
-            "receiptId": "ck_rcpt_b1ecf064-d9d5-4dce-87cc-1c8b143ba7c7",
-            "purchaseId": "ck_purchase_0e74006a-bae6-4e66-9ead-40b4e9ac5f38",
+          "ck_rcpt_f8bad768-92ae-4bc7-a736-35ee128723a4": {
+            "id": "ck_rcpt_f8bad768-92ae-4bc7-a736-35ee128723a4",
+            "receiptId": "ck_rcpt_f8bad768-92ae-4bc7-a736-35ee128723a4",
+            "purchaseId": "ck_purchase_97c08bce-3d66-4dd5-889e-837cf9afb565",
             "transaction": "fixture:recovery-rec01",
             "capability": "crossingkey.proof.external_echo",
             "network": "fixture",
@@ -344,11 +344,11 @@
     },
     {
       "mode": "REC02_NOT_OBSERVED",
-      "childPid": 77,
+      "childPid": 48,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "EXECUTION_STARTED",
-        "pid": 77
+        "pid": 48
       },
       "termination": {
         "code": null,
@@ -367,8 +367,8 @@
           "action": "FINALIZE_LOCAL_STATE",
           "response": {
             "status": "fulfilled",
-            "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
-            "entitlementId": "ck_ent_a8dc0ea2-08d1-49a0-832f-8e76818061e2",
+            "purchaseId": "ck_purchase_b97966a3-5030-44a8-b9d2-3497713b48b8",
+            "entitlementId": "ck_ent_810c8bf9-038f-4439-8434-cf3274b628d8",
             "result": {
               "operationId": "recovery-rec02_not_observed",
               "result": {
@@ -379,7 +379,7 @@
               "duplicate": false
             },
             "receipt": {
-              "id": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
+              "id": "ck_rcpt_aa210a13-6458-46f4-800f-9d90c24c9300",
               "result": {
                 "operationId": "recovery-rec02_not_observed",
                 "result": {
@@ -431,17 +431,17 @@
                   }
                 }
               },
-              "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
-              "entitlementId": "ck_ent_a8dc0ea2-08d1-49a0-832f-8e76818061e2",
-              "receiptId": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
-              "createdAt": "2026-09-30T06:54:03.887Z",
+              "purchaseId": "ck_purchase_b97966a3-5030-44a8-b9d2-3497713b48b8",
+              "entitlementId": "ck_ent_810c8bf9-038f-4439-8434-cf3274b628d8",
+              "receiptId": "ck_rcpt_aa210a13-6458-46f4-800f-9d90c24c9300",
+              "createdAt": "2026-09-30T04:01:46.957Z",
               "settlement": {
                 "success": true,
                 "transaction": "fixture:recovery-rec02_not_observed"
               },
               "owner": {
-                "pid": 77,
-                "token": "04d53cfb-03fd-488a-9e4e-837f949960e8"
+                "pid": 48,
+                "token": "d7cc8e83-b426-4b82-b025-3a29b7c696c9"
               },
               "durableResult": {
                 "schema": "ck/gate1b-result/1",
@@ -456,14 +456,14 @@
                 },
                 "resultHash": "ada9e0f5d5345e4dec2226fdbaf5e0537da3dc5b3773c1c5867ed5b41c0c7159",
                 "verified": true,
-                "verifiedAt": "2026-09-30T06:54:03.932Z",
-                "executionIdentity": "04d53cfb-03fd-488a-9e4e-837f949960e8"
+                "verifiedAt": "2026-09-30T04:01:47.004Z",
+                "executionIdentity": "d7cc8e83-b426-4b82-b025-3a29b7c696c9"
               }
             },
             "response": {
               "status": "fulfilled",
-              "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
-              "entitlementId": "ck_ent_a8dc0ea2-08d1-49a0-832f-8e76818061e2",
+              "purchaseId": "ck_purchase_b97966a3-5030-44a8-b9d2-3497713b48b8",
+              "entitlementId": "ck_ent_810c8bf9-038f-4439-8434-cf3274b628d8",
               "result": {
                 "operationId": "recovery-rec02_not_observed",
                 "result": {
@@ -474,7 +474,7 @@
                 "duplicate": false
               },
               "receipt": {
-                "id": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
+                "id": "ck_rcpt_aa210a13-6458-46f4-800f-9d90c24c9300",
                 "result": {
                   "operationId": "recovery-rec02_not_observed",
                   "result": {
@@ -495,20 +495,20 @@
         },
         "replayKeys": {
           "replay:recovery-rec02_not_observed": {
-            "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
+            "purchaseId": "ck_purchase_b97966a3-5030-44a8-b9d2-3497713b48b8",
             "transaction": "fixture:recovery-rec02_not_observed"
           }
         },
         "entitlements": {
-          "ck_ent_a8dc0ea2-08d1-49a0-832f-8e76818061e2": {
-            "id": "ck_ent_a8dc0ea2-08d1-49a0-832f-8e76818061e2",
-            "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
+          "ck_ent_810c8bf9-038f-4439-8434-cf3274b628d8": {
+            "id": "ck_ent_810c8bf9-038f-4439-8434-cf3274b628d8",
+            "purchaseId": "ck_purchase_b97966a3-5030-44a8-b9d2-3497713b48b8",
             "status": "consumed"
           }
         },
         "receipts": {
-          "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9": {
-            "id": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
+          "ck_rcpt_aa210a13-6458-46f4-800f-9d90c24c9300": {
+            "id": "ck_rcpt_aa210a13-6458-46f4-800f-9d90c24c9300",
             "result": {
               "operationId": "recovery-rec02_not_observed",
               "result": {
@@ -522,10 +522,10 @@
           }
         },
         "revenueEvents": {
-          "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9": {
-            "id": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
-            "receiptId": "ck_rcpt_27f14b23-613a-4e7e-9db6-b6d6083210a9",
-            "purchaseId": "ck_purchase_9fd1111a-544c-4abf-879b-f7f7c1ec0f5a",
+          "ck_rcpt_aa210a13-6458-46f4-800f-9d90c24c9300": {
+            "id": "ck_rcpt_aa210a13-6458-46f4-800f-9d90c24c9300",
+            "receiptId": "ck_rcpt_aa210a13-6458-46f4-800f-9d90c24c9300",
+            "purchaseId": "ck_purchase_b97966a3-5030-44a8-b9d2-3497713b48b8",
             "transaction": "fixture:recovery-rec02_not_observed",
             "capability": "crossingkey.proof.external_echo",
             "network": "fixture",
@@ -537,11 +537,11 @@
     },
     {
       "mode": "REC02_UNKNOWN",
-      "childPid": 116,
+      "childPid": 87,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "EXECUTION_STARTED",
-        "pid": 116
+        "pid": 87
       },
       "termination": {
         "code": null,
@@ -589,17 +589,17 @@
                   }
                 }
               },
-              "purchaseId": "ck_purchase_a2c05a3f-2dd3-43b6-8ec9-6a3e44b24d31",
-              "entitlementId": "ck_ent_b3e7ee28-1190-4073-8dd6-c62241573a33",
-              "receiptId": "ck_rcpt_a9a5b12b-03a6-4426-a819-dbdcad4dd9c3",
-              "createdAt": "2026-09-30T06:54:04.222Z",
+              "purchaseId": "ck_purchase_32a8990d-9190-42e2-98c2-c47db4fbf08f",
+              "entitlementId": "ck_ent_1edc5f5b-c148-4004-a61c-9d36d743f4c5",
+              "receiptId": "ck_rcpt_af80730c-68dc-46f9-9c4f-854fec36f181",
+              "createdAt": "2026-09-30T04:01:47.374Z",
               "settlement": {
                 "success": true,
                 "transaction": "fixture:recovery-rec02_unknown"
               },
               "owner": {
-                "pid": 116,
-                "token": "1f637a33-6bb5-4253-8ea9-6882a0e3bfec"
+                "pid": 87,
+                "token": "8d35d155-a601-4d84-8633-2ca41b6281b9"
               },
               "reconciliation": {
                 "outcome": "EFFECT_UNKNOWN"
@@ -609,7 +609,7 @@
         },
         "replayKeys": {
           "replay:recovery-rec02_unknown": {
-            "purchaseId": "ck_purchase_a2c05a3f-2dd3-43b6-8ec9-6a3e44b24d31",
+            "purchaseId": "ck_purchase_32a8990d-9190-42e2-98c2-c47db4fbf08f",
             "status": "reserved"
           }
         },
@@ -621,11 +621,11 @@
     },
     {
       "mode": "REC02_CONFIRMED",
-      "childPid": 147,
+      "childPid": 118,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
-        "pid": 147
+        "pid": 118
       },
       "termination": {
         "code": null,
@@ -648,15 +648,15 @@
           "action": "FINALIZE_LOCAL_STATE",
           "response": {
             "status": "fulfilled",
-            "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
-            "entitlementId": "ck_ent_80f54ebe-5d3d-45dc-a803-3f042110f189",
+            "purchaseId": "ck_purchase_7d51030c-29f2-41ca-8fd2-717a531d69a8",
+            "entitlementId": "ck_ent_194b2f85-c932-4bc8-a3d4-3162d2d68780",
             "result": {
               "operationId": "recovery-rec02_confirmed",
               "message": "recovery",
               "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
             },
             "receipt": {
-              "id": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
+              "id": "ck_rcpt_50043e2a-ba0b-45a9-8af0-a77889b6f0ce",
               "result": {
                 "operationId": "recovery-rec02_confirmed",
                 "message": "recovery",
@@ -704,17 +704,17 @@
                   }
                 }
               },
-              "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
-              "entitlementId": "ck_ent_80f54ebe-5d3d-45dc-a803-3f042110f189",
-              "receiptId": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
-              "createdAt": "2026-09-30T06:54:04.482Z",
+              "purchaseId": "ck_purchase_7d51030c-29f2-41ca-8fd2-717a531d69a8",
+              "entitlementId": "ck_ent_194b2f85-c932-4bc8-a3d4-3162d2d68780",
+              "receiptId": "ck_rcpt_50043e2a-ba0b-45a9-8af0-a77889b6f0ce",
+              "createdAt": "2026-09-30T04:01:47.669Z",
               "settlement": {
                 "success": true,
                 "transaction": "fixture:recovery-rec02_confirmed"
               },
               "owner": {
-                "pid": 147,
-                "token": "bde6f96a-0ff4-4a4d-8b6e-df6d2d952a66"
+                "pid": 118,
+                "token": "a0cf41f6-5009-4c94-925e-b162eac2faaa"
               },
               "durableResult": {
                 "schema": "ck/gate1b-result/1",
@@ -725,8 +725,8 @@
                 },
                 "resultHash": "b6a9c27c952ae3fe824a66adaed47f1705d64d1c11fa061d2a9de8a7620541b7",
                 "verified": true,
-                "verifiedAt": "2026-09-30T06:54:04.526Z",
-                "executionIdentity": "bde6f96a-0ff4-4a4d-8b6e-df6d2d952a66",
+                "verifiedAt": "2026-09-30T04:01:47.711Z",
+                "executionIdentity": "a0cf41f6-5009-4c94-925e-b162eac2faaa",
                 "witness": {
                   "operationId": "recovery-rec02_confirmed",
                   "result": {
@@ -739,15 +739,15 @@
             },
             "response": {
               "status": "fulfilled",
-              "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
-              "entitlementId": "ck_ent_80f54ebe-5d3d-45dc-a803-3f042110f189",
+              "purchaseId": "ck_purchase_7d51030c-29f2-41ca-8fd2-717a531d69a8",
+              "entitlementId": "ck_ent_194b2f85-c932-4bc8-a3d4-3162d2d68780",
               "result": {
                 "operationId": "recovery-rec02_confirmed",
                 "message": "recovery",
                 "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
               },
               "receipt": {
-                "id": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
+                "id": "ck_rcpt_50043e2a-ba0b-45a9-8af0-a77889b6f0ce",
                 "result": {
                   "operationId": "recovery-rec02_confirmed",
                   "message": "recovery",
@@ -764,20 +764,20 @@
         },
         "replayKeys": {
           "replay:recovery-rec02_confirmed": {
-            "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
+            "purchaseId": "ck_purchase_7d51030c-29f2-41ca-8fd2-717a531d69a8",
             "transaction": "fixture:recovery-rec02_confirmed"
           }
         },
         "entitlements": {
-          "ck_ent_80f54ebe-5d3d-45dc-a803-3f042110f189": {
-            "id": "ck_ent_80f54ebe-5d3d-45dc-a803-3f042110f189",
-            "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
+          "ck_ent_194b2f85-c932-4bc8-a3d4-3162d2d68780": {
+            "id": "ck_ent_194b2f85-c932-4bc8-a3d4-3162d2d68780",
+            "purchaseId": "ck_purchase_7d51030c-29f2-41ca-8fd2-717a531d69a8",
             "status": "consumed"
           }
         },
         "receipts": {
-          "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88": {
-            "id": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
+          "ck_rcpt_50043e2a-ba0b-45a9-8af0-a77889b6f0ce": {
+            "id": "ck_rcpt_50043e2a-ba0b-45a9-8af0-a77889b6f0ce",
             "result": {
               "operationId": "recovery-rec02_confirmed",
               "message": "recovery",
@@ -787,10 +787,10 @@
           }
         },
         "revenueEvents": {
-          "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88": {
-            "id": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
-            "receiptId": "ck_rcpt_8d7df21a-f87e-413f-9bfe-2219367b1a88",
-            "purchaseId": "ck_purchase_2ab24f66-5eb6-4703-ac96-163c605b9a37",
+          "ck_rcpt_50043e2a-ba0b-45a9-8af0-a77889b6f0ce": {
+            "id": "ck_rcpt_50043e2a-ba0b-45a9-8af0-a77889b6f0ce",
+            "receiptId": "ck_rcpt_50043e2a-ba0b-45a9-8af0-a77889b6f0ce",
+            "purchaseId": "ck_purchase_7d51030c-29f2-41ca-8fd2-717a531d69a8",
             "transaction": "fixture:recovery-rec02_confirmed",
             "capability": "crossingkey.proof.external_echo",
             "network": "fixture",
@@ -802,11 +802,11 @@
     },
     {
       "mode": "REC03",
-      "childPid": 186,
+      "childPid": 157,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "REC03_POST_EFFECT_PRE_DURABLE_RESULT",
-        "pid": 186
+        "pid": 157
       },
       "termination": {
         "code": null,
@@ -829,15 +829,15 @@
           "action": "FINALIZE_LOCAL_STATE",
           "response": {
             "status": "fulfilled",
-            "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
-            "entitlementId": "ck_ent_9ff23c82-25ce-4d72-8848-161b58026300",
+            "purchaseId": "ck_purchase_1376a4b6-434a-44ae-ae39-f628df897f26",
+            "entitlementId": "ck_ent_a862aa4b-b0d3-4e8b-8572-b5563db25d50",
             "result": {
               "operationId": "recovery-rec03",
               "message": "recovery",
               "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
             },
             "receipt": {
-              "id": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
+              "id": "ck_rcpt_cb2b6a2f-5198-4afe-ba6b-2852aec9667a",
               "result": {
                 "operationId": "recovery-rec03",
                 "message": "recovery",
@@ -885,17 +885,17 @@
                   }
                 }
               },
-              "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
-              "entitlementId": "ck_ent_9ff23c82-25ce-4d72-8848-161b58026300",
-              "receiptId": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
-              "createdAt": "2026-09-30T06:54:04.773Z",
+              "purchaseId": "ck_purchase_1376a4b6-434a-44ae-ae39-f628df897f26",
+              "entitlementId": "ck_ent_a862aa4b-b0d3-4e8b-8572-b5563db25d50",
+              "receiptId": "ck_rcpt_cb2b6a2f-5198-4afe-ba6b-2852aec9667a",
+              "createdAt": "2026-09-30T04:01:48.082Z",
               "settlement": {
                 "success": true,
                 "transaction": "fixture:recovery-rec03"
               },
               "owner": {
-                "pid": 186,
-                "token": "65ffe175-dbe2-4503-aaa6-18429578ecfa"
+                "pid": 157,
+                "token": "aa1098ba-f75f-4279-afd3-61f71c06bb7a"
               },
               "durableResult": {
                 "schema": "ck/gate1b-result/1",
@@ -906,8 +906,8 @@
                 },
                 "resultHash": "effcf9f92cee2a9e4bde3b0cc30ff0475b9c9757ae8627585e6c1e533b3b5def",
                 "verified": true,
-                "verifiedAt": "2026-09-30T06:54:04.816Z",
-                "executionIdentity": "65ffe175-dbe2-4503-aaa6-18429578ecfa",
+                "verifiedAt": "2026-09-30T04:01:48.120Z",
+                "executionIdentity": "aa1098ba-f75f-4279-afd3-61f71c06bb7a",
                 "witness": {
                   "operationId": "recovery-rec03",
                   "result": {
@@ -920,15 +920,15 @@
             },
             "response": {
               "status": "fulfilled",
-              "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
-              "entitlementId": "ck_ent_9ff23c82-25ce-4d72-8848-161b58026300",
+              "purchaseId": "ck_purchase_1376a4b6-434a-44ae-ae39-f628df897f26",
+              "entitlementId": "ck_ent_a862aa4b-b0d3-4e8b-8572-b5563db25d50",
               "result": {
                 "operationId": "recovery-rec03",
                 "message": "recovery",
                 "sha256": "77188c6c21eec79291a4b0f195c235dd3793dc40ec5ef4cd107160fd56c054e1"
               },
               "receipt": {
-                "id": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
+                "id": "ck_rcpt_cb2b6a2f-5198-4afe-ba6b-2852aec9667a",
                 "result": {
                   "operationId": "recovery-rec03",
                   "message": "recovery",
@@ -945,20 +945,20 @@
         },
         "replayKeys": {
           "replay:recovery-rec03": {
-            "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
+            "purchaseId": "ck_purchase_1376a4b6-434a-44ae-ae39-f628df897f26",
             "transaction": "fixture:recovery-rec03"
           }
         },
         "entitlements": {
-          "ck_ent_9ff23c82-25ce-4d72-8848-161b58026300": {
-            "id": "ck_ent_9ff23c82-25ce-4d72-8848-161b58026300",
-            "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
+          "ck_ent_a862aa4b-b0d3-4e8b-8572-b5563db25d50": {
+            "id": "ck_ent_a862aa4b-b0d3-4e8b-8572-b5563db25d50",
+            "purchaseId": "ck_purchase_1376a4b6-434a-44ae-ae39-f628df897f26",
             "status": "consumed"
           }
         },
         "receipts": {
-          "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b": {
-            "id": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
+          "ck_rcpt_cb2b6a2f-5198-4afe-ba6b-2852aec9667a": {
+            "id": "ck_rcpt_cb2b6a2f-5198-4afe-ba6b-2852aec9667a",
             "result": {
               "operationId": "recovery-rec03",
               "message": "recovery",
@@ -968,10 +968,10 @@
           }
         },
         "revenueEvents": {
-          "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b": {
-            "id": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
-            "receiptId": "ck_rcpt_b7993486-e4a9-4163-8433-cc9b8dc4767b",
-            "purchaseId": "ck_purchase_22354bf2-620c-4275-a08f-bb665b52bb8d",
+          "ck_rcpt_cb2b6a2f-5198-4afe-ba6b-2852aec9667a": {
+            "id": "ck_rcpt_cb2b6a2f-5198-4afe-ba6b-2852aec9667a",
+            "receiptId": "ck_rcpt_cb2b6a2f-5198-4afe-ba6b-2852aec9667a",
+            "purchaseId": "ck_purchase_1376a4b6-434a-44ae-ae39-f628df897f26",
             "transaction": "fixture:recovery-rec03",
             "capability": "crossingkey.proof.external_echo",
             "network": "fixture",
@@ -983,11 +983,11 @@
     },
     {
       "mode": "REC04",
-      "childPid": 225,
+      "childPid": 196,
       "checkpoint": {
         "type": "checkpoint",
         "checkpoint": "AFTER_DURABLE_KNOWLEDGE",
-        "pid": 225
+        "pid": 196
       },
       "termination": {
         "code": null,
@@ -997,8 +997,8 @@
         "action": "FINALIZE_LOCAL_STATE",
         "response": {
           "status": "fulfilled",
-          "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
-          "entitlementId": "ck_ent_fdd07710-5807-4a79-aa50-147bbd7dabd8",
+          "purchaseId": "ck_purchase_d2537875-06e4-4398-8497-363ac47ebddf",
+          "entitlementId": "ck_ent_78f2209c-6940-4d94-8886-4960c26b5675",
           "result": {
             "operationId": "recovery-rec04",
             "result": {
@@ -1009,7 +1009,7 @@
             "duplicate": false
           },
           "receipt": {
-            "id": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
+            "id": "ck_rcpt_b4261c6d-82dc-451d-ae24-10bf4c4c1866",
             "result": {
               "operationId": "recovery-rec04",
               "result": {
@@ -1060,17 +1060,17 @@
                   }
                 }
               },
-              "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
-              "entitlementId": "ck_ent_fdd07710-5807-4a79-aa50-147bbd7dabd8",
-              "receiptId": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
-              "createdAt": "2026-09-30T06:54:05.068Z",
+              "purchaseId": "ck_purchase_d2537875-06e4-4398-8497-363ac47ebddf",
+              "entitlementId": "ck_ent_78f2209c-6940-4d94-8886-4960c26b5675",
+              "receiptId": "ck_rcpt_b4261c6d-82dc-451d-ae24-10bf4c4c1866",
+              "createdAt": "2026-09-30T04:01:48.356Z",
               "settlement": {
                 "success": true,
                 "transaction": "fixture:recovery-rec04"
               },
               "owner": {
-                "pid": 225,
-                "token": "aecfbeea-0aca-44c3-ab65-c9840f468042"
+                "pid": 196,
+                "token": "63e05ee9-d1a2-4aa1-916a-d7d7a21dbd39"
               },
               "durableResult": {
                 "schema": "ck/gate1b-result/1",
@@ -1085,14 +1085,14 @@
                 },
                 "resultHash": "63597c63d736f1a94621edcd95760dbc295ba9e45e37cae6784d351392cc006d",
                 "verified": true,
-                "verifiedAt": "2026-09-30T06:54:05.077Z",
-                "executionIdentity": "aecfbeea-0aca-44c3-ab65-c9840f468042"
+                "verifiedAt": "2026-09-30T04:01:48.365Z",
+                "executionIdentity": "63e05ee9-d1a2-4aa1-916a-d7d7a21dbd39"
               }
             },
             "response": {
               "status": "fulfilled",
-              "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
-              "entitlementId": "ck_ent_fdd07710-5807-4a79-aa50-147bbd7dabd8",
+              "purchaseId": "ck_purchase_d2537875-06e4-4398-8497-363ac47ebddf",
+              "entitlementId": "ck_ent_78f2209c-6940-4d94-8886-4960c26b5675",
               "result": {
                 "operationId": "recovery-rec04",
                 "result": {
@@ -1103,7 +1103,7 @@
                 "duplicate": false
               },
               "receipt": {
-                "id": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
+                "id": "ck_rcpt_b4261c6d-82dc-451d-ae24-10bf4c4c1866",
                 "result": {
                   "operationId": "recovery-rec04",
                   "result": {
@@ -1124,20 +1124,20 @@
         },
         "replayKeys": {
           "replay:recovery-rec04": {
-            "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
+            "purchaseId": "ck_purchase_d2537875-06e4-4398-8497-363ac47ebddf",
             "transaction": "fixture:recovery-rec04"
           }
         },
         "entitlements": {
-          "ck_ent_fdd07710-5807-4a79-aa50-147bbd7dabd8": {
-            "id": "ck_ent_fdd07710-5807-4a79-aa50-147bbd7dabd8",
-            "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
+          "ck_ent_78f2209c-6940-4d94-8886-4960c26b5675": {
+            "id": "ck_ent_78f2209c-6940-4d94-8886-4960c26b5675",
+            "purchaseId": "ck_purchase_d2537875-06e4-4398-8497-363ac47ebddf",
             "status": "consumed"
           }
         },
         "receipts": {
-          "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3": {
-            "id": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
+          "ck_rcpt_b4261c6d-82dc-451d-ae24-10bf4c4c1866": {
+            "id": "ck_rcpt_b4261c6d-82dc-451d-ae24-10bf4c4c1866",
             "result": {
               "operationId": "recovery-rec04",
               "result": {
@@ -1151,10 +1151,10 @@
           }
         },
         "revenueEvents": {
-          "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3": {
-            "id": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
-            "receiptId": "ck_rcpt_8aafaf14-02b4-4d23-b683-c6ad128fd8c3",
-            "purchaseId": "ck_purchase_aea611e2-6632-4341-9678-5d60e19845f2",
+          "ck_rcpt_b4261c6d-82dc-451d-ae24-10bf4c4c1866": {
+            "id": "ck_rcpt_b4261c6d-82dc-451d-ae24-10bf4c4c1866",
+            "receiptId": "ck_rcpt_b4261c6d-82dc-451d-ae24-10bf4c4c1866",
+            "purchaseId": "ck_purchase_d2537875-06e4-4398-8497-363ac47ebddf",
             "transaction": "fixture:recovery-rec04",
             "capability": "crossingkey.proof.external_echo",
             "network": "fixture",
