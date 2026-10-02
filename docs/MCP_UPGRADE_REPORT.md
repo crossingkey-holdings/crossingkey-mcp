@@ -1,5 +1,7 @@
 # CrossingKey MCP — Upgrade Report (v3.0.0)
 
+> **Historical upgrade record.** This report preserves the v3.0.0-based upgrade work from which the qualified v3.0.1 source release was later published. It does not state that v3.0.1 is deployed to production.
+
 Date: 2026-10-01
 Scope: upgrade of the owner-provided `crossingkey-mcp` 3.0.0 snapshot
 (SHA-256 `0529183c…b24`). Not a rewrite; all existing functionality and the

@@ -1,7 +1,7 @@
 # CrossingKey MCP — Capabilities
 
 Canonical identity: `com.crossingkeyintelligence/crossingkey-mcp`
-Package: `crossingkey-mcp` v3.0.0 (ESM). MCP protocol `2025-11-25`.
+Package: `crossingkey-mcp` v3.0.1 (ESM). MCP protocol `2025-11-25`.
 
 All tools use the `resource.action` naming convention. Every tool exposes an
 `outputSchema` and `structuredContent`; tool errors use the

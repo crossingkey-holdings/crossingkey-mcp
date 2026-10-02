@@ -1,5 +1,7 @@
 # MCP Upgrade Plan — CrossingKey MCP 3.0.0 → 3.1.0
 
+> **Historical planning record.** This document preserves the original v3.0.0 upgrade plan. The subsequently published qualified source release is v3.0.1. Production deployment remains separate.
+
 **Basis:** `docs/MCP_CURRENT_STATE.md` (inspect-only audit, 2026-10-01).
 **Scope:** upgrade, not rewrite. Preserve working functionality and the proven
 safety architecture (receiver-only wallet, server-side approvals, idempotency,

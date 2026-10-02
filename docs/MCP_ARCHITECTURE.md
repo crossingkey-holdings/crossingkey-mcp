@@ -2,7 +2,7 @@
 
 ## Process layout
 
-Single Node.js ESM process (`server.mjs`). Express serves:
+Single Node.js ESM process. `server.mjs` is the thin entrypoint; the HTTP and MCP runtime implementation lives in `server-runtime.mjs`. Express serves:
 
 | Route | Purpose |
 |---|---|
@@ -60,7 +60,8 @@ content rather than executing.
 
 ## Module map
 
-- `server.mjs` — HTTP routes, MCP server construction, tool/resource
+- `server.mjs` — thin production entrypoint.
+- `server-runtime.mjs` — HTTP routes, MCP server construction, tool/resource
   registration, session management.
 - `lib/machine-commerce.mjs` — x402 payment validation, settlement,
   `safeFetch` (SSRF defense + 256KB cap), paid capability catalog wiring.
