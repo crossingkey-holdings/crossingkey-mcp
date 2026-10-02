@@ -5,7 +5,9 @@ import { spawnSync } from 'node:child_process';
 import express from 'express';
 import Stripe from 'stripe';
 import { randomUUID } from 'node:crypto';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import {McpServer,
+  ResourceTemplate
+} from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
@@ -232,19 +234,18 @@ function publicCapabilityList(){
   const free=[
     ['provider.describe','Provider discovery','Returns provider identity, commerce policy, payment rails, and discovery sequence.'],
 
-    ['offer.list','Offer discovery','Searches public CrossingKey offers before payment.'],
+    ['offers.list','Offer discovery','Searches public CrossingKey offers before payment.'],
 
     ['cost.estimate','Cost estimation','Returns known purchase price or credit cost without executing.'],
 
     ['result.preview','Result preview','Shows result shape without revealing paid output.'],
 
-    ['requirement.check','Requirements check','Explains prerequisites before purchase or execution.'],
+    ['requirements.check','Requirements check','Explains prerequisites before purchase or execution.'],
 
     ['execution.preflight','Execution preflight','Final no-charge decision point before payment/execution.'],
 
-    ['credit.options','Request-credit purchase options','Returns prepaid request-credit packs.'],
+    ['credits.options','Request-credit purchase options','Returns prepaid request-credit packs.'],
 
-    ['service.list','Approved request services','Lists explicitly approved request services.'],
   ].filter(([tool])=>CK_EXPOSE_LEGACY_TOOLS || !LEGACY_TOOL_NAMES.has(tool)).map(([tool,name,summary])=>({id:`tool.${tool}`,tool,name,summary,access:'free',price:{amount_usd:0}}));
   const machine=MACHINE_CAPABILITIES.map(x=>({id:x.name,tool:x.name,name:x.name,summary:x.description,access:'paid',charging_model:'x402_exact',price:{amount_usd:Number(x.priceUsd),currency:'USD'},deterministic:true,ai_required:false,idempotency_required:true}));
   return [...free,...PAID_CAPABILITIES,...machine];
@@ -317,6 +318,87 @@ function discoveryPreflight(item_id) {
   const ready=Boolean(requirements.found&&cost.found&&preview.found&&!deliveryBlocked);
   return {item_id,state:ready?'READY_FOR_HUMAN_AUTHORIZATION':'NOT_READY',requirements_satisfied:ready,authorization_required:true,payment_started:false,execution_started:false,entitlement_created:false,receipt_created:false,reason:ready?'All non-financial checks passed; stop for explicit human authorization.':'One or more non-financial requirements are not satisfied.',checks:{requirements,cost,preview}};
 }
+// schemas describe the success-path structuredContent only.
+const DISCOVERY_OUTPUT_SCHEMAS = {
+  'provider.describe': z.object({
+    provider: z.object({}).passthrough(),
+    sequence: z.array(z.string()),
+    manifest: z.object({}).passthrough(),
+    stopBeforePayment: z.literal(true)
+  }),
+  'offers.list': z.object({
+    offers: z.array(z.object({ id: z.string() }).passthrough()),
+    free: z.boolean(),
+    payment_started: z.boolean()
+  }),
+  'requirements.check': z.object({
+    item_id: z.string(),
+    found: z.boolean(),
+    requirements: z.array(z.string()),
+    payment_required: z.boolean(),
+    type: z.string().optional(),
+    delivery_ready: z.boolean().nullable().optional()
+  }),
+  'cost.estimate': z.object({
+    item_id: z.string(),
+    found: z.boolean(),
+    cost_state: z.string(),
+    payment_required: z.boolean(),
+    cost: z.object({}).passthrough().nullable().optional(),
+    payment_started: z.boolean().optional()
+  }),
+  'result.preview': z.object({
+    item_id: z.string(),
+    found: z.boolean(),
+    preview_state: z.string(),
+    result_preview: z.object({}).passthrough().optional(),
+    payment_started: z.boolean().optional()
+  }),
+  'execution.preflight': z.object({
+    item_id: z.string(),
+    state: z.string(),
+    requirements_satisfied: z.boolean(),
+    authorization_required: z.boolean(),
+    payment_started: z.boolean(),
+    execution_started: z.boolean(),
+    entitlement_created: z.boolean(),
+    receipt_created: z.boolean(),
+    reason: z.string(),
+    checks: z.object({}).passthrough()
+  }),
+  'credits.options': z.object({
+    packs: z.array(z.object({}).passthrough()),
+    free: z.boolean(),
+    payment_started: z.boolean()
+  })
+};
+const X402_CHALLENGE_OUTPUT_SCHEMA = z.object({
+  payment_required: z.literal(true),
+  execution_mode: z.string(),
+  capability: z.string(),
+  input: z.object({}).passthrough(),
+  price: z.string().nullable(),
+  asset: z.string().nullable(),
+  network: z.string().nullable(),
+  pay_to: z.string().nullable(),
+  execution_url: z.string().nullable(),
+  payment_required_header: z.string(),
+  settlement_expectations: z.string(),
+  confirmation_expectations: z.string(),
+  instruction: z.string()
+});
+const XKEY_VALIDATE_OUTPUT_SCHEMA = z.object({
+  capability: z.string(),
+  state: z.string(),
+  success: z.boolean(),
+  credits_charged: z.unknown().optional(),
+  balance: z.unknown().optional(),
+  reservation_id: z.string().nullable().optional(),
+  receipt_id: z.string().nullable().optional(),
+  request_hash: z.string().nullable().optional(),
+  normalized: z.unknown().optional()
+});
+
 async function resolveOfferFromSession(session){
   const c = catalog().offers;
   const direct = session.metadata?.offer_id;
@@ -1106,17 +1188,144 @@ app.get('/api/credits/balance',(req,res)=>{
   });
 });
 
+function mcpError(error_code,message,hint=null){
+  return {
+    isError:true,
+    structuredContent:{error_code,message,hint},
+    content:[{type:'text',text:hint?`${message} ${hint}`:message}]
+  };
+}
+
+const DISCOVERY_GUIDE_TEXT = [
+  'CrossingKey discovery guide (free; no payment or execution happens here).',
+  '',
+  'Recommended sequence:',
+  '1. provider.describe — learn CrossingKey identity, commerce model, and rails.',
+  '2. offers.list — browse public offers and paid capabilities (metadata only).',
+  '3. requirements.check — prerequisites for one item_id.',
+  '4. cost.estimate — the known price; ESTIMATE_ONLY, never a charge.',
+  '5. result.preview — result shape only; paid output is never revealed here.',
+  '6. execution.preflight — final no-charge decision point.',
+  '7. credits.options — prepaid request-credit packs, if you prefer credits.',
+  'Then STOP. Human authorization is required before any purchase, signing,',
+  'transfer, spending, entitlement creation, or paid execution.',
+  '',
+  'Marketplace capabilities: use marketplace.describe, then capability.search',
+  'or catalog.list for active public capabilities, capability.get for one',
+  'capability, and commerce.quote for the authoritative price breakdown.',
+  'Paid marketplace execution is capability.purchase with a prior human',
+  'approval, a buyer idempotency key, and verified x402 payment.',
+  '',
+  'These are guidance only. Server-side authorization, payment, entitlement,',
+  'receipt, replay, idempotency, and receiver-only controls are authoritative.'
+].join('\n');
+
+function capabilityInstructions(name) {
+  const paid = publicCapabilityList().find(x => x.id === name || x.tool === name);
+  const offer = catalog().offers.find(o => o.id === name);
+  if (!paid && !offer) return null;
+  const lines = [
+    `Instructions for ${name}.`,
+    ''
+  ];
+  if (paid) {
+    lines.push(
+      `Paid x402 capability (${paid.name}).`,
+      `Price: ${paid.price?.amount_usd ?? 'see cost.estimate'} USD.`,
+      '',
+      '1. requirements.check {item_id} — confirm prerequisites.',
+      '2. cost.estimate {item_id} — confirm the exact price.',
+      '3. result.preview {item_id} — confirm the result shape.',
+      '4. execution.preflight {item_id} — final no-charge check.',
+      '5. Obtain HUMAN AUTHORIZATION.',
+      `6. Call the ${name} MCP tool — it returns the x402 challenge, spending nothing.`,
+      '7. Sign payment outside ordinary MCP computation; POST the same input',
+      '   with a unique idempotency_key and PAYMENT-SIGNATURE to execution_url.',
+      '8. Expect a settlement receipt header and a result with purchase and',
+      '   receipt references. Verify the receipt before treating it as final.'
+    );
+  } else {
+    lines.push(
+      `Public offer (${offer.name}).`,
+      '',
+      '1. requirements.check {item_id} — confirm prerequisites.',
+      '2. cost.estimate {item_id} — confirm the price.',
+      '3. Obtain HUMAN AUTHORIZATION before any purchase.',
+      '4. Purchase via the advertised checkout; this MCP server never charges.'
+    );
+  }
+  return lines.join('\n');
+}
+
+const COMMERCE_POLICY_TEXT = [
+  'CrossingKey commerce policy.',
+  '',
+  'Free vs paid: discovery tools (provider.describe, offers.list,',
+  'requirements.check, cost.estimate, result.preview, execution.preflight,',
+  'credits.options, and the public marketplace discovery tools) are free and',
+  'read-only. Paid tools return an x402 challenge; execution happens via an',
+  'out-of-band HTTP POST and never inside a free discovery call.',
+  '',
+  'Receiver-only: CrossingKey never initiates spending. Payment happens only',
+  'after explicit human authorization, via Stripe payment links, prepaid',
+  'request credits (ck_ credentials), or x402 USDC on Base (Sepolia by',
+  'default; mainnet only when the operator enables it).',
+  '',
+  'Human authorization: required before any purchase, signing, transfer,',
+  'spending, entitlement creation, or paid execution. Marketplace purchases',
+  'additionally require a prior buyer-bound human approval that names the',
+  'exact capability, input, idempotency key, and quote.',
+  '',
+  'Idempotency and replay: every paid call needs a buyer-generated',
+  'idempotency key (8-160 chars). Retrying with the same key returns the',
+  'stored result instead of a new charge; conflicting reuse is rejected.',
+  'Replayed payments are detected and rejected.',
+  '',
+  'Receipts and entitlements: every paid execution produces a verifiable',
+  'receipt (receipt.verify) and a bounded entitlement (entitlement.inspect).',
+  'Verify before treating a result as final; disputed or failed payments',
+  'return error codes, never silent charges.'
+].join('\n');
+
 function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='anonymous'){
   const s=new McpServer({name:'crossingkey-mcp',version:MCP_RELEASE_VERSION},{instructions:MCP_SERVER_INSTRUCTIONS});
 
+
+  // Marketplace tools are role-scoped inside registerMarketplaceTools:
+  // anonymous sessions see only the public subset; privileged tools appear
+  // only for matching authenticated principals. Approval minting remains a
+  // local-operator CLI action; it is never exposed as an MCP tool.
+  registerMarketplaceTools(s,{
+    marketplace,
+    principal:marketplaceContext,
+    legacyCapabilities:X402_CAPABILITIES,
+    core:machineCommerce,
+    rate:name=>{
+      marketplaceRate(rateKey);
+      if(['provider.register','creator.apply','capability.register'].includes(name)){
+        marketplaceIntakeRate(rateKey);
+      }
+    }
+  });
+
   const discoveryAnnotations={readOnlyHint:true,destructiveHint:false,openWorldHint:false};
-  const discoveryTool=(name,inputSchema,description,handler)=>s.registerTool(name,{title:name,description,inputSchema,annotations:discoveryAnnotations},async input=>{const result=await handler(input);return {structuredContent:result,content:[{type:'text',text:JSON.stringify(result)}]};});
+  const discoveryTool=(name,inputSchema,description,handler)=>s.registerTool(name,{title:name,description,inputSchema,outputSchema:DISCOVERY_OUTPUT_SCHEMAS[name],annotations:discoveryAnnotations},async input=>{
+    try{
+      const result=await handler(input);
+      return {structuredContent:result,content:[{type:'text',text:JSON.stringify(result)}]};
+    }catch(error){
+      console.error(`discovery tool ${name} failed:`,error?.message||error);
+      return mcpError('discovery_failed','Discovery failed unexpectedly.','Retry the same call; if this persists, the operator should check the server data files.');
+    }
+  });
   discoveryTool('provider.describe',z.object({}).strict(),'FREE read-only provider and commerce policy discovery. Use this before selecting an offer or capability.',()=>({provider:PROVIDER_PROFILE,sequence:FREE_DISCOVERY_TOOL_NAMES,manifest:MCP_TOOL_MANIFEST,stopBeforePayment:true}));
   discoveryTool('offers.list',discoveryQuerySchema,'FREE read-only public offer and capability discovery. This tool never starts payment or execution.',discoveryOfferList);
   discoveryTool('requirements.check',discoveryItemSchema,'FREE read-only requirements check. This tool never authorizes or starts payment or execution.',({item_id})=>discoveryRequirements(item_id));
   discoveryTool('cost.estimate',discoveryItemSchema,'FREE read-only cost estimate. This tool never creates checkout, reserves funds, or contacts a facilitator.',({item_id})=>discoveryCost(item_id));
   discoveryTool('result.preview',discoveryItemSchema,'FREE read-only result-shape preview. This tool never executes a capability or creates an entitlement or receipt.',({item_id})=>discoveryPreview(item_id));
   discoveryTool('execution.preflight',discoveryItemSchema,'FREE read-only execution preflight. Returns READY_FOR_HUMAN_AUTHORIZATION only; it never authorizes, purchases, settles, executes, or creates records.',({item_id})=>discoveryPreflight(item_id));
+
+  discoveryTool('credits.options',z.object({}).strict(),'FREE read-only prepaid request-credit pack options. Lists available credit packs with identifiers and credit amounts. Purchasing happens via checkout; this tool never starts payment or creates accounts.',()=>({packs:creditPacks(),free:true,payment_started:false}));
 
   // Free commercial discovery is registered first. Paid x402 products and
   // prepaid xkey.validate remain available below without changing their gates.
@@ -1139,6 +1348,7 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
         title:paid.title,
         description:paid.description,
         inputSchema:paidInputSchema,
+        outputSchema:X402_CHALLENGE_OUTPUT_SCHEMA,
         annotations:{
           readOnlyHint:false,
           destructiveHint:false,
@@ -1191,6 +1401,10 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
               execution_url:decoded.resource?.url || null,
               payment_required_header:
                 challenge.headers['PAYMENT-REQUIRED'],
+              settlement_expectations:
+                'Payment is verified and then settled on the quoted network via the x402 facilitator before any execution. A base64 settlement receipt is returned in the PAYMENT-RESPONSE (x402 v2) or X-PAYMENT-RESPONSE (x402 v1) response header.',
+              confirmation_expectations:
+                'POST the same input with a unique idempotency_key and a PAYMENT-SIGNATURE (v2) or X-PAYMENT (v1) header to execution_url. Success returns the capability result with purchase and receipt references. Retrying with the same idempotency_key returns the stored result instead of a new charge; failed or disputed payments return an error code, never a silent charge.',
               instruction:
                 'Obtain authorized x402 payment signing outside ordinary MCP computation, then POST the same input with a unique idempotency_key and PAYMENT-SIGNATURE to execution_url.'
             },
@@ -1218,34 +1432,22 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
     title:'Validate structured XKEY intake',
     description:'PAID prepaid-credit XKEY intake validation. Requires an authenticated ck_ principal and commits one credit only on verified success. Discovery is free; execution is not.',
     inputSchema:PREPAID_CAPABILITIES[0].inputSchema,
+    outputSchema:XKEY_VALIDATE_OUTPUT_SCHEMA,
     annotations:{
       readOnlyHint:false,
       destructiveHint:false,
-      openWorldHint:false
+      openWorldHint:false,
+      idempotentHint:true
     }
   },async({idempotency_key,raw_intake})=>{
     if(!authContext){
-      return {
-        isError:true,
-        structuredContent:{error:'authentication_required'},
-        content:[{
-          type:'text',
-          text:'Authenticate the MCP session with a valid Bearer ck_ credential.'
-        }]
-      };
+      return mcpError('authentication_required','No credit credential is attached to this MCP session.','Authenticate with a Bearer ck_ credential, then retry the same call.');
     }
 
     const acct=currentCreditAccount(authContext.principal_id);
 
     if(!acct){
-      return {
-        isError:true,
-        structuredContent:{error:'credential_revoked'},
-        content:[{
-          type:'text',
-          text:'Credit credential is no longer valid.'
-        }]
-      };
+      return mcpError('credential_revoked','The credit credential for this session is no longer valid.','Obtain a fresh credential and start a new session; no credit was committed.');
     }
 
     const result=runXkeyBridge({
@@ -1295,6 +1497,29 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
     };
   });
 
+  // Group F: public static resources plus per-capability instructions.
+  s.registerResource('discovery-guide','crossingkey://discovery-guide',{
+    title:'CrossingKey discovery guide',
+    description:'Free read-only guide: how to discover offers and capabilities without spending.',
+    mimeType:'text/plain'
+  },async uri=>({contents:[{uri:uri.href,mimeType:'text/plain',text:DISCOVERY_GUIDE_TEXT}]}));
+
+  s.registerResource('commerce-policy','crossingkey://commerce-policy',{
+    title:'CrossingKey commerce policy',
+    description:'Free read-only commerce policy: free/paid separation, receiver-only payments, authorization, idempotency, receipts.',
+    mimeType:'text/plain'
+  },async uri=>({contents:[{uri:uri.href,mimeType:'text/plain',text:COMMERCE_POLICY_TEXT}]}));
+
+  s.registerResource('capability-instructions',new ResourceTemplate('crossingkey://capability/{name}',{list:undefined}),{
+    title:'Per-capability instructions',
+    description:'Free read-only instructions for one offer or paid capability: discovery sequence, authorization, payment, and confirmation.',
+    mimeType:'text/plain'
+  },async (uri,vars)=>{
+    const text=capabilityInstructions(String(vars.name||''));
+    if(!text) throw new Error(`Unknown capability or offer: ${vars.name}`);
+    return {contents:[{uri:uri.href,mimeType:'text/plain',text}]};
+  });
+
   return s;
 }
 
@@ -1329,6 +1554,21 @@ function forgetMcpSession(sid){
 
 app.post('/mcp',async(req,res)=>{
   try{
+    // DNS-rebinding defense: browser-originated MCP traffic must be same-host.
+    // Non-browser MCP clients normally send no Origin header.
+    const origin=req.headers.origin;
+    if(origin){
+      let originHost=null;
+      try{originHost=new URL(origin).hostname.toLowerCase();}catch{}
+      const requestHost=String(req.headers.host||'').split(':')[0].toLowerCase();
+      if(!originHost||originHost!==requestHost){
+        return res.status(403).json({
+          jsonrpc:'2.0',
+          error:{code:-32000,message:'Forbidden: Origin not allowed'},
+          id:null
+        });
+      }
+    }
     const sid=req.headers['mcp-session-id'];
     let t;
 
