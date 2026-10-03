@@ -233,6 +233,15 @@ Website:
 
 `https://www.crossingkeyintelligence.com`
 
+## Related public architecture
+
+- HAAR research: https://github.com/crossingkey-holdings/crossingkey-public-research/blob/main/research/HAAR.md
+- Professional evidence: https://github.com/crossingkey-holdings/experience
+- Developer documentation: https://github.com/crossingkey-holdings/crossingkey-developer-documentation
+- Open specifications: https://github.com/crossingkey-holdings/crossingkey-open-specifications
+
+HAAR and CrossingKey MCP share concerns such as bounded authority, idempotency, state verification, reconciliation, receipts, and entitlements. HAAR remains a research architecture; this repository and its releases remain authoritative for what CrossingKey MCP actually implements.
+
 ## CrossingKey Intelligence
 
 Operating online under the handle `crossingkey_`.
