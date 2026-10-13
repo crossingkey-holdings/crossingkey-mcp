@@ -1,6 +1,6 @@
 {
   "name": "crossingkey-mcp",
-  "version": "3.0.1",
+  "version": "4.0.0-rc.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,15 +16,18 @@
     "stripe:credits:redirect": "node scripts/activate-credit-redirects.mjs"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.25.0",
-    "@x402/extensions": "2.26.0",
-    "express": "^5.1.0",
-    "stripe": "^18.5.0",
-    "zod": "^3.25.0",
+    "@modelcontextprotocol/sdk": "1.32.1",
     "@x402/core": "^2.25.0",
     "@x402/evm": "^2.25.0",
+    "@x402/extensions": "2.26.0",
     "@x402/fetch": "^2.25.0",
     "dotenv": "^17.4.2",
-    "viem": "^2.56.3"
+    "express": "^5.1.0",
+    "fast-uri": "3.1.8",
+    "ip-address": "10.7.4",
+    "proxy-addr": "2.0.8",
+    "stripe": "^18.5.0",
+    "viem": "^2.56.3",
+    "zod": "^3.25.0"
   }
 }

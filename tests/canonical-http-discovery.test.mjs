@@ -2,12 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const source=fs.readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
+const source=fs.readFileSync(new URL('../server-runtime.mjs',import.meta.url),'utf8');
 
 test('marketplace-inclusive v3 discovery advertises canonical identity',()=>{
   assert.ok(source.includes("canonicalId:'com.crossingkeyintelligence/crossingkey-mcp'"));
-  assert.ok(source.includes("version:'3.0.0'"));
-  assert.ok(source.includes("recommendedEntryTool:'artifact.integrity_manifest'"));
+  assert.ok(source.includes("version:MCP_RELEASE_VERSION"));
+  assert.ok(source.includes("recommendedEntryTool:'provider.describe'"));
   assert.ok(source.includes("toolNaming:'resource.action'"));
   assert.ok(source.includes("roleScopedTools:true"));
   assert.ok(source.includes("marketplace:marketplace.describe()"));
@@ -26,8 +26,8 @@ test('public health remains minimal despite marketplace integration',()=>{
     assert.ok(!block.includes(forbidden),`health leaked ${forbidden}`);
   }
 });
-test('public discovery remains available while MCP computation requires payment',()=>{
+test('public discovery is available through free MCP tools while paid computation remains gated',()=>{
   assert.ok(source.includes("app.get('/.well-known/mcp.json'"));
-  assert.ok(source.includes('freeMcpTools:0'));
+  assert.ok(source.includes('freeMcpTools:FREE_DISCOVERY_TOOL_NAMES.length'));
   assert.ok(!source.includes("registerTool('payment.verify'"));
 });

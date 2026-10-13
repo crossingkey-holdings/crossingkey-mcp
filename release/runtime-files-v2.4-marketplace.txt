@@ -1,4 +1,5 @@
 lib/discovery.mjs
+lib/five-cent-capabilities.mjs
 lib/gate1b-production-adapter.mjs
 lib/gate1b-store.mjs
 lib/machine-commerce.mjs
@@ -7,6 +8,12 @@ lib/marketplace-schema.mjs
 lib/marketplace-storage.mjs
 lib/marketplace-tools.mjs
 lib/marketplace.mjs
+lib/mcp-app-factory.mjs
+lib/mcp-manifest.mjs
 lib/onchain-verifier.mjs
+lib/paid-audits.mjs
 lib/paid-capability-catalog.mjs
+lib/recovery/external-effect-witness.mjs
+lib/recovery/recovery-orchestrator.mjs
+server-runtime.mjs
 server.mjs

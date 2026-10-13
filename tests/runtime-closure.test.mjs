@@ -24,7 +24,7 @@ function resolveLocal(parent,spec){
 }
 
 function expectedClosure(){
-  const queue=[path.join(ROOT,'server.mjs')];
+  const queue=[path.join(ROOT,'server.mjs'),path.join(ROOT,'server-runtime.mjs')];
   const seen=new Set();
   while(queue.length){
     const file=queue.shift();

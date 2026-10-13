@@ -7,6 +7,8 @@ import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import http from 'node:http';
 import {X402_CAPABILITIES,PREPAID_CAPABILITIES} from '../lib/paid-capability-catalog.mjs';
+import {FREE_DISCOVERY_TOOL_NAMES} from '../lib/mcp-manifest.mjs';
+import {MARKETPLACE_PUBLIC_TOOL_NAMES} from '../lib/marketplace-tools.mjs';
 
 test('live MCP transport advertises paid tools and keeps public discovery free',async t=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ck-paid-http-'));
@@ -19,7 +21,7 @@ test('live MCP transport advertises paid tools and keeps public discovery free',
   assert.equal(ready,true,'server started');
   const discovery=await (await fetch(base+'/.well-known/mcp.json')).json();
   assert.equal(discovery.canonicalId,'com.crossingkeyintelligence/crossingkey-mcp');
-  assert.equal(discovery.storefront.freeMcpTools,0);
+  assert.equal(discovery.storefront.freeMcpTools,FREE_DISCOVERY_TOOL_NAMES.length);
   assert.equal(discovery.walletMode,'receiver-only');
   assert.equal(discovery.paidCapabilities.length,X402_CAPABILITIES.length);
   const health=await (await fetch(base+'/health')).json();
@@ -34,7 +36,7 @@ test('live MCP transport advertises paid tools and keeps public discovery free',
   }
   await rpc('initialize',{protocolVersion:'2025-11-25',capabilities:{},clientInfo:{name:'paid-storefront-test',version:'1'}});
   const listed=(await rpc('tools/list',{})).result.tools.map(x=>x.name).sort();
-  assert.deepEqual(listed,[...X402_CAPABILITIES,...PREPAID_CAPABILITIES].map(x=>x.name).sort());
+  assert.deepEqual(listed,[...FREE_DISCOVERY_TOOL_NAMES,...X402_CAPABILITIES,...PREPAID_CAPABILITIES,...MARKETPLACE_PUBLIC_TOOL_NAMES].map(x=>typeof x==='string'?x:x.name).sort());
   assert.equal(listed.includes('payment.verify'),false);
   const paid=await rpc('tools/call',{name:'artifact.integrity_manifest',arguments:{artifacts:[{name:'a',content:'b'}]}});
   assert.equal(paid.result.structuredContent.payment_required,true);
@@ -42,5 +44,7 @@ test('live MCP transport advertises paid tools and keeps public discovery free',
   assert.equal(paid.result.structuredContent.execution_mode,'x402_http');
   const gated=await rpc('tools/call',{name:'xkey.validate',arguments:{idempotency_key:'paid-fixture-0001',raw_intake:'{}'}});
   assert.equal(gated.result.isError,true);
-  assert.equal(gated.result.structuredContent.error,'authentication_required');
+  assert.equal(gated.result.structuredContent.error_code,'authentication_required');
+  assert.equal(typeof gated.result.structuredContent.message,'string');
+  assert.equal(typeof gated.result.structuredContent.hint,'string');
 });

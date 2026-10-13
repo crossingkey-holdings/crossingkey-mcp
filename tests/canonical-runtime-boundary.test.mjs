@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const source=fs.readFileSync(new URL('../server.mjs',import.meta.url),'utf8');
+const source=fs.readFileSync(new URL('../server-runtime.mjs',import.meta.url),'utf8');
 const machine=fs.readFileSync(new URL('../lib/machine-commerce.mjs',import.meta.url),'utf8');
 
 test('marketplace control plane is intentionally included',()=>{

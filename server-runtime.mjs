@@ -270,13 +270,14 @@ function matchesQuery(item,q){return !q||JSON.stringify(item).toLowerCase().incl
 const discoveryId = z.string().min(1).max(160);
 const discoveryQuerySchema = z.object({
   query:z.string().max(160).optional().describe('Optional bounded search text.'),
+  offset:z.number().int().min(0).max(1000000).default(0).describe('Zero-based index of first matching record; use next_offset to retrieve the next page.'),
   limit:z.number().int().min(1).max(50).default(20).describe('Maximum number of public metadata records to return.')
 }).strict();
 const discoveryItemSchema = z.object({
   item_id:discoveryId.describe('Public offer or paid capability identifier returned by offers.list.')
 }).strict();
 
-function discoveryOfferList({query,limit}) {
+function discoveryOfferList({query,limit,offset=0}) {
   const offers = catalog().offers.map(publicOffer).map(offerDescriptor);
   const capabilities = publicCapabilityList().map(item=>({
     id:item.id,
@@ -289,7 +290,9 @@ function discoveryOfferList({query,limit}) {
     requirements:['Explicit human authorization is required before payment or execution.'],
     next_action:'run_requirements_check_then_cost_estimate'
   }));
-  return {offers:[...offers,...capabilities].filter(item=>matchesQuery(item,query)).slice(0,limit),free:true,payment_started:false};
+  const matches=[...offers,...capabilities].filter(item=>matchesQuery(item,query));
+  const page=matches.slice(offset,offset+limit);
+  return {offers:page,total:matches.length,next_offset:offset+limit<matches.length?offset+limit:null,free:true,payment_started:false};
 }
 
 function discoveryRequirements(item_id) {
@@ -328,6 +331,8 @@ const DISCOVERY_OUTPUT_SCHEMAS = {
   }),
   'offers.list': z.object({
     offers: z.array(z.object({ id: z.string() }).passthrough()),
+    total: z.number().int().nonnegative(),
+    next_offset: z.number().int().nonnegative().nullable(),
     free: z.boolean(),
     payment_started: z.boolean()
   }),
@@ -496,7 +501,7 @@ app.disable('x-powered-by');
 app.get("/", (req, res) => {
   res.status(200).json({
     name: "CrossingKey MCP",
-    version:"3.0.0",
+    version: MCP_RELEASE_VERSION,
     status: "operational",
     description:
       "CrossingKey MCP v3 marketplace and machine-commerce endpoint for discovery, qualification, buyer-authorized purchase, fulfillment, receipts, provider intake, and bounded paid capabilities.",
@@ -701,7 +706,13 @@ const CK_PAID_TOOL_NAMES = new Set([
   'mcp.schema_audit',
   'openapi.quality_audit',
   'machine_commerce.readiness_audit',
-  'artifact.integrity_manifest'
+  'artifact.integrity_manifest',
+  'hash.encode',
+  'secret.scan',
+  'pii.scan',
+  'json.repair',
+  'prompt.audit'
+  ,'mcp.launch_audit','x402.purchase_path_audit'
 ]);
 
 function ckCapability(name) {
@@ -924,7 +935,7 @@ app.get('/health', (_req, res) => {
   return res.status(200).json({
     ok: true,
     service: 'crossingkey-mcp',
-    version:'3.0.0'
+    version: MCP_RELEASE_VERSION
   });
 });
 
@@ -1302,7 +1313,7 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
     core:machineCommerce,
     rate:name=>{
       marketplaceRate(rateKey);
-      if(['provider.register','creator.apply','capability.register'].includes(name)){
+      if(['provider.apply','provider.register','creator.apply','capability.register'].includes(name)){
         marketplaceIntakeRate(rateKey);
       }
     }

@@ -32,5 +32,5 @@ test('receipt state has receipts namespace',()=>{const src=fs.readFileSync('lib/
 test('entitlement state has entitlements namespace',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/entitlements/);});
 test('result hashing remains in receipt path',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/resultHash:sha256\(result\)/);});
 test('Kennekarte remains HMAC-bound',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/crossingkey-kennekarte/);});
-test('receiver-only status reports no spend authority',()=>{const src=fs.readFileSync('server.mjs','utf8'); assert.match(src,/autonomousSellerSpend: false/);});
+test('receiver-only status reports no spend authority',()=>{const src=fs.readFileSync('server-runtime.mjs','utf8'); assert.match(src,/autonomousSellerSpend:\s*false/); assert.match(src,/walletMode:\s*'receiver-only'/);});
 test('no facilitator is contacted by free quote generation',()=>{const src=fs.readFileSync('server.mjs','utf8'); const quote=src.slice(src.indexOf("registerTool('capability.quote"),src.indexOf("registerTool('capability.quote")+1300); assert.doesNotMatch(quote,/facilitatorCall/);});
