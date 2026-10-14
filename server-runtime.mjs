@@ -11,7 +11,7 @@ import {McpServer,
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { CAPABILITIES as MACHINE_CAPABILITIES, RECEIVER as LOCKED_RECEIVER, createMachineCommerce } from './lib/machine-commerce.mjs';
+import { CAPABILITIES as MACHINE_CAPABILITIES, RECEIVER as LOCKED_RECEIVER, createMachineCommerce, normalizeX402Version } from './lib/machine-commerce.mjs';
 import {
   PAID_CAPABILITIES as CATALOG_PAID_CAPABILITIES,
   X402_CAPABILITIES,
@@ -1065,8 +1065,9 @@ app.post('/api/x402/:capability',async(req,res)=>{
     const v1Header=req.headers['x-payment'];
     const v2Header=req.headers['payment-signature'];
     if(!v1Header&&!v2Header){
-      const requested=String(req.query.x402Version||req.headers['x402-version']||'2');
-      const version=requested==='1'?1:2;
+      const requested=req.query.x402Version??req.headers['x402-version'];
+      let version;
+      try{version=normalizeX402Version(requested);}catch{return res.status(400).json({error:'unsupported_x402_version'});}
       const challenge=machineCommerce.paymentRequired(capabilityName,version);
       for(const [name,value] of Object.entries(challenge.headers)) res.set(name,value);
       CK_FUNNEL.x402.challenges_402++; ckCap.challenges_402++; return res.status(402).json(challenge.body);
@@ -1085,6 +1086,8 @@ app.post('/api/x402/:capability',async(req,res)=>{
     );
 
     if(paymentPayload.x402Version!==expectedVersion) return res.status(400).json({error:'payment_header_version_mismatch'});
+    if(expectedVersion===1 && paymentPayload.accepted!==undefined) return res.status(400).json({error:'v1_envelope_contains_v2_fields'});
+    if(expectedVersion===2 && (!paymentPayload.accepted||typeof paymentPayload.accepted!=='object')) return res.status(400).json({error:'v2_accepted_requirements_required'});
 
     console.error(`[x402] invoke_start capability=${capabilityName}`);
 
