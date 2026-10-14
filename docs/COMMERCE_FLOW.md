@@ -37,12 +37,13 @@ ESTIMATE_ONLY; `result.preview` reveals result shape, never paid output.
    rejected. Unknown outcomes enter reconciliation; settlement is never
    retried blindly.
 
-## Prepaid request credits
+## Legacy prepaid request-credit compatibility
 
-`credits.options` lists credit packs (Stripe payment links). After purchase, a
-`ck_` credential is issued. `xkey.validate` consumes exactly 1 credit per
-successful validation and 0 on failure; failures still write a receipt. Keys
-are SHA-256 hashed at rest — validation never reveals key material.
+V4 does not sell new prepaid request-credit packs. Historical paid balances and
+their hashed `ck_` credentials remain protected and can be redeemed only through
+`xkey.validate.legacy`. That compatibility path consumes existing credits and
+never creates or settles an x402 payment. New `xkey.validate` requests use the
+direct $0.10 Base USDC x402 flow and never inspect or mutate the credit ledger.
 
 ## Marketplace purchases
 

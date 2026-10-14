@@ -106,14 +106,16 @@ asset, network, pay_to, execution_url, payment_required_header, instruction`).
 | `machine_commerce.readiness_audit` | $2.00 USDC | `{url}` |
 | `artifact.integrity_manifest` | $0.10 USDC (100,000 atomic) | `{artifacts: [{name, content}]}` |
 
-### 3.3 Prepaid tool (1) — `server.mjs:1186-1265`
+### 3.3 XKEY direct-payment tool and legacy compatibility
 
-`xkey.validate` ("Validate structured XKEY intake"). Requires an authenticated
-`ck_` principal (`authentication_required` / `credential_revoked` otherwise).
-Commits one prepaid credit only on verified success; validation failures
-release the reserved credit. Backed by sqlite
-`data/xkey_paid_credits.sqlite3`. `readOnlyHint:false`, `openWorldHint:false`.
-`idempotentHint` not set despite requiring `idempotency_key`.
+`xkey.validate` uses the shared direct x402 lifecycle at $0.10 USDC
+(`100000` atomic units) on Base. It requires the normal x402 payment
+challenge/header, then uses shared receipt, entitlement, replay, and
+idempotency state. It does not inspect or mutate the legacy credit ledger.
+
+Existing paid credit balances remain available only through the authenticated
+`xkey.validate.legacy` compatibility tool. New credit-pack sales are disabled
+in the v4 candidate; historical credit records are not deleted or rewritten.
 
 ### 3.4 Dead surface: 17 marketplace tools defined but NEVER registered
 
@@ -169,11 +171,12 @@ not these.
 ## 5. Commerce
 
 ### 5.1 Capability model — `lib/paid-capability-catalog.mjs`
-`assertPaidCatalog()` enforces exactly 5 x402 + 1 prepaid at import. x402
+`assertPaidCatalog()` enforces exactly 13 x402 capabilities and no current
+prepaid capabilities at import. x402
 fields: `name, title, description, rail:'x402', chargingModel:'x402_exact',
 priceUsd, amount (atomic USDC), asset:'USDC', executionPath, tags, inputSchema,
-inputJsonSchema (frozen), output`. Prepaid: `xkey.validate`,
-`rail:'prepaid_request_credit'`, `priceCredits:1`. Absent per-capability fields:
+inputJsonSchema (frozen), output`. Legacy credit compatibility is outside the
+current paid catalog. Absent per-capability fields:
 `version`, `status`, `category`, `approval_policy`, `side_effects`,
 `requirements`, `estimated_execution`, `delivery`, `examples`,
 `execution_transport`.

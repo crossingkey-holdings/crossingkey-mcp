@@ -40,7 +40,7 @@ The candidate preserves the existing anonymous MCP surface and adds the two auth
 
 - **7 free discovery and commercial-navigation tools**
 - **8 public marketplace tools**
-- **6 paid or credit-gated tools**
+- **13 direct x402 paid tools** plus a separately named legacy credit-redemption compatibility tool for existing customers
 
 Authenticated sessions additionally expose verification and role-gated marketplace operations.
 
@@ -58,7 +58,7 @@ These seven tools can be used anonymously to understand the provider, available 
 - `cost.estimate`
 - `result.preview`
 - `execution.preflight`
-- `credits.options`
+- `credits.options` (legacy compatibility status; new credit sales are disabled)
 
 The normal discovery sequence is:
 
@@ -69,7 +69,7 @@ provider.describe
 → cost.estimate
 → result.preview
 → execution.preflight
-→ credits.options (when prepaid request credits are relevant)
+→ credits.options (legacy compatibility status; new credit sales are disabled)
 ```
 
 A valid commercial flow may reach:
@@ -106,7 +106,7 @@ Discovery, catalog browsing, capability inspection, and quoting do not themselve
 
 ## Paid and gated execution
 
-These six tools perform valuable computation, validation, or artifact generation and are payment- or credit-gated:
+These 13 tools perform valuable computation, validation, or artifact generation and use direct x402 payment:
 
 - `x402.compatibility_audit`
 - `mcp.schema_audit`
@@ -115,7 +115,7 @@ These six tools perform valuable computation, validation, or artifact generation
 - `artifact.integrity_manifest`
 - `xkey.validate`
 
-Current payment models include x402 Base USDC exact-payment flows and prepaid request credits where applicable.
+Current v4 paid capabilities use exact x402 Base USDC payments. Historical prepaid credit balances remain redeemable only through the separately named legacy compatibility path; v4 does not sell new credit packs.
 
 Free discovery does not consume paid execution credits.
 
@@ -182,7 +182,7 @@ CrossingKey supports governed machine-payment infrastructure including:
 - x402 v1
 - x402 v2
 - Base USDC
-- prepaid request credits where supported
+- historical prepaid request credits through a separately named compatibility path only
 - settlement verification
 - entitlements
 - result-bound receipts

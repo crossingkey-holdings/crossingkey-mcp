@@ -3,8 +3,9 @@
 ## Principles
 
 - **Receiver-only payments.** The server never initiates spending. Money moves
-  only after explicit human authorization, via Stripe payment links, prepaid
-  `ck_` request credits, or x402 USDC on Base.
+  only after explicit human authorization, via Stripe payment links or x402
+  USDC on Base. Historical `ck_` credits remain a separately isolated
+  compatibility path and never authorize a new x402 charge.
 - **Human authorization is enforced server-side.** Prose or model compliance
   is not a security boundary. Marketplace purchases require a prior
   buyer-bound human approval naming the exact capability, input, idempotency

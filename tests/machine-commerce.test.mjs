@@ -20,6 +20,17 @@ test('x402 v1/v2, settlement, idempotency, replay, receipt, entitlement and rece
   await assert.rejects(()=>core.invoke({capabilityName:'artifact.integrity_manifest',input:{artifacts:[{name:'a',content:'b'}]},idempotencyKey:'idempotency-2',paymentPayload:payload}),/Replay detected/);
 });
 test('x402 exact scheme is preserved',()=>assert.equal('exact','exact'));
+test('xkey.validate uses direct x402 lifecycle without credit-ledger access',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ck-xkey-direct-'));let calls=[];
+const core=createMachineCommerce({dataFile:path.join(dir,'state.json'),receiver:RECEIVER,network:'eip155:8453',mainnetEnabled:true,rpcUrl:'https://rpc.test',publicBaseUrl:'https://mcp.test',facilitatorUrl:'https://fac.test',kennekarteSecret:'k'.repeat(64),fetchImpl:async(url,init)=>{const request=JSON.parse(init.body||'{}');const op=String(url).endsWith('/verify')?'verify':'settle';if(String(url)==='https://rpc.test')return new Response(JSON.stringify({jsonrpc:'2.0',id:1,result:request.method==='eth_chainId'?'0x2105':'0x100'}));calls.push(op);return new Response(JSON.stringify(op==='verify'?{isValid:true}:{success:true,transaction:'0x'+'b'.repeat(64)}));},executionDependencies:{execute:({capabilityName,input})=>{assert.equal(capabilityName,'xkey.validate');return {ok:true,success:true,state:'VERIFIED_SUCCESS',normalized:{fixture:true},request_hash:'fixture-hash'};}}});
+  const challenge=JSON.parse(Buffer.from(core.paymentRequired('xkey.validate',2).headers['PAYMENT-REQUIRED'],'base64').toString());
+  assert.equal(challenge.accepts[0].amount,'100000');assert.equal(challenge.accepts[0].payTo,RECEIVER);assert.equal(challenge.accepts[0].network,'eip155:8453');assert.equal(challenge.accepts[0].asset,BASE_USDC);
+  const auth={from:'0x1111111111111111111111111111111111111111',to:RECEIVER,value:'100000',validAfter:'1',validBefore:'999999',nonce:'0x'+'c'.repeat(64)};
+  const payload={x402Version:2,accepted:challenge.accepts[0],payload:{signature:'0xs',authorization:auth}};
+  const result=await core.invoke({capabilityName:'xkey.validate',input:{idempotency_key:'xkey-direct-0001',raw_intake:'{}'},idempotencyKey:'xkey-direct-0001',paymentPayload:payload});
+  assert.equal(result.status,'fulfilled');assert.deepEqual(calls,['verify','settle']);assert.equal(result.receipt.payment.amount,'100000');assert.equal(core.verifyReceipt(result.receipt),true);assert.equal(core.inspectEntitlement(result.entitlementId).status,'consumed');
+  fs.rmSync(dir,{recursive:true,force:true});
+});
 test('Base mainnet chain is the configured target',()=>assert.equal('eip155:8453','eip155:8453'));
 test('legacy v1 network label remains base',()=>assert.equal('base','base'));
 test('Base USDC constant is canonical',()=>assert.equal(BASE_USDC,'0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'));

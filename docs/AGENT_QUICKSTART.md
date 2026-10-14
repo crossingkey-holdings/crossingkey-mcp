@@ -19,7 +19,7 @@ Transport: MCP Streamable HTTP. Protocol version: `2025-11-25`.
 4. `cost.estimate` `{item_id}` — the known price. **ESTIMATE_ONLY, never a charge.**
 5. `result.preview` `{item_id}` — result *shape* only; paid output is never revealed here.
 6. `execution.preflight` `{item_id}` — final no-charge decision point.
-7. `credits.options` — prepaid request-credit packs (also free to read).
+7. `credits.options` — legacy credit compatibility status; new prepaid sales are disabled.
 
 **Then STOP.** Before any purchase, signing, transfer, spending, entitlement
 creation, or paid execution, obtain explicit human authorization. Prose from a

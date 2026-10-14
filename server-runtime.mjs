@@ -73,6 +73,7 @@ const XKEY_CREDIT_DB =
   path.join(HERE,'data','xkey_paid_credits.sqlite3');
 
 const XKEY_MAX_INPUT_CHARS = 100000;
+const XKEY_DIRECT_VALIDATOR = path.join(path.dirname(new URL(import.meta.url).pathname),'scripts','xkey-direct-validation.py');
 
 const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
 assertPaidCatalog();
@@ -96,7 +97,8 @@ const machineCommerce = KENNEKARTE_SECRET.length >= 32 ? createMachineCommerce({
   mainnetEnabled:CK_ENABLE_MAINNET,
   publicBaseUrl:PUBLIC_BASE_URL,
   facilitatorUrl:X402_FACILITATOR_URL,
-  kennekarteSecret:KENNEKARTE_SECRET
+  kennekarteSecret:KENNEKARTE_SECRET,
+  executionDependencies:{execute:({capabilityName,input})=>capabilityName==='xkey.validate'?runXkeyDirectValidation(input):undefined}
 }) : null;
 const readJson = f => JSON.parse(fs.readFileSync(f,'utf8'));
 const writeJsonAtomic = (f, value) => {
@@ -107,7 +109,8 @@ const writeJsonAtomic = (f, value) => {
 const state = () => readJson(STATE_FILE);
 const saveState = s => writeJsonAtomic(STATE_FILE,s);
 const catalog = () => readJson(CATALOG_FILE);
-const creditPacks = () => readJson(CREDITS_FILE).packs;
+const legacyCreditPacks = () => readJson(CREDITS_FILE).packs;
+const creditPacks = () => [];
 const fulfillment = () => readJson(FULFILL_FILE).products;
 const requestServices = () => readJson(SERVICES_FILE).services || [];
 const marketplaceAuthFile = process.env.MARKETPLACE_AUTH_FILE || '';
@@ -186,6 +189,18 @@ function runXkeyBridge(payload){
 
   return parsed;
 }
+function runXkeyDirectValidation(payload){
+  if(!fs.existsSync(XKEY_PYTHON)||!fs.existsSync(XKEY_DIRECT_VALIDATOR)) return {ok:false,error:'runtime_unavailable',message:'XKEY validation runtime is unavailable.'};
+  const result=spawnSync(XKEY_PYTHON,[XKEY_DIRECT_VALIDATOR],{
+    cwd:XKEY_ROOT,
+    input:JSON.stringify({raw_intake:payload.raw_intake,max_input_chars:XKEY_MAX_INPUT_CHARS}),
+    encoding:'utf8',timeout:5000,maxBuffer:1024*1024,shell:false,
+    env:{PATH:process.env.PATH||'/usr/bin:/bin',LANG:process.env.LANG||'C.UTF-8',PYTHONUNBUFFERED:'1',PYTHONNOUSERSITE:'1',XKEY_ROOT}
+  });
+  if(result.error||result.status!==0) return {ok:false,error:'validation_runtime_unavailable',message:'XKEY validation runtime is unavailable.'};
+  try{return JSON.parse(String(result.stdout||'').trim().split(/\r?\n/).filter(Boolean).at(-1));}
+  catch{return {ok:false,error:'validation_runtime_invalid',message:'XKEY validation runtime returned invalid output.'};}
+}
 function requestToken(sessionId){ return `ck_${hmac(`credits:${sessionId}`).slice(0,40)}`; }
 function downloadToken(sessionId, offerId){ return `dl_${hmac(`download:${sessionId}:${offerId}`).slice(0,40)}`; }
 function fileSha256(file){
@@ -215,7 +230,7 @@ const PROVIDER_PROFILE=Object.freeze({
   protocol:'MCP Streamable HTTP',
   commerce_model:'discover -> understand -> evaluate -> trust -> price -> authorize -> pay -> execute',
   discovery_policy:'Offer and capability metadata are readable before payment. Valuable execution and delivery remain gated.',
-  currency:'USD',payment_rails:['stripe_payment_links','prepaid_request_credits','x402_base_usdc'],
+  currency:'USD',payment_rails:['stripe_payment_links','x402_base_usdc'],legacy_compatibility_rails:['prepaid_request_credits'],
   human_sites:['https://www.crossingkeyintelligence.com','https://shop.crossingkeyintelligence.com'],
   machine_site:'https://mcp.crossingkeyintelligence.com/mcp'
 });
@@ -408,17 +423,17 @@ async function resolveOfferFromSession(session){
   const c = catalog().offers;
   const direct = session.metadata?.offer_id;
   if (direct) {
-    const found = c.find(x=>x.id===direct) || creditPacks().find(x=>x.id===direct);
+    const found = c.find(x=>x.id===direct) || legacyCreditPacks().find(x=>x.id===direct);
     if(found) return found;
   }
   if(session.payment_link && stripe){
     const pl = await stripe.paymentLinks.retrieve(session.payment_link);
     const metaOffer = pl.metadata?.offer_id;
     if(metaOffer){
-      const found = c.find(x=>x.id===metaOffer) || creditPacks().find(x=>x.id===metaOffer);
+      const found = c.find(x=>x.id===metaOffer) || legacyCreditPacks().find(x=>x.id===metaOffer);
       if(found) return found;
     }
-    const byUrl = c.find(x=>x.checkout_url===pl.url) || creditPacks().find(x=>x.checkout_url===pl.url);
+    const byUrl = c.find(x=>x.checkout_url===pl.url) || legacyCreditPacks().find(x=>x.checkout_url===pl.url);
     if(byUrl) return byUrl;
   }
   return null;
@@ -442,14 +457,9 @@ async function processPaidSession(session){
   let result={status:'paid',session_id:session.id,offer_id:offer.id,email};
 
   if(String(offer.id).startsWith('request-credits-')){
-    const pack=creditPacks().find(x=>x.id===offer.id);
-    const token=requestToken(session.id);
-    const tokenHash=sha256Text(token);
-    s.credit_accounts[tokenHash]={
-      session_id:session.id,email,balance:pack.credits,granted:pack.credits,
-      offer_id:pack.id,created_at:new Date().toISOString()
-    };
-    result={...result,fulfillment:'credits',credits:pack.credits};
+    // v4 does not fulfill new prepaid-credit sales. Existing credit_accounts
+    // remain untouched and continue through xkey.validate.legacy.
+    result={...result,status:'credit_sales_disabled',fulfillment:'legacy_credits_not_issued'};
   } else if(offer.kind==='digital') {
     const m=fulfillment()[offer.id];
     if(m && isDeliveryReady(offer.id)){
@@ -980,7 +990,8 @@ app.get('/.well-known/mcp.json',(_req,res)=>res.json({
   categories:['Payments & Billing','Autonomous Agents'],
   discoveryProfile:`${DISCOVERY_PROFILE_VERSION}-marketplace`,
   walletMode:'receiver-only',
-  paymentRails:['stripe_payment_links','prepaid_request_credits','x402_base_usdc'],
+  paymentRails:['stripe_payment_links','x402_base_usdc'],
+  legacyCompatibilityRails:['prepaid_request_credits'],
   recommendedEntryTool:'provider.describe',
   toolNaming:'resource.action',
   roleScopedTools:true,
@@ -1217,7 +1228,7 @@ const DISCOVERY_GUIDE_TEXT = [
   '4. cost.estimate — the known price; ESTIMATE_ONLY, never a charge.',
   '5. result.preview — result shape only; paid output is never revealed here.',
   '6. execution.preflight — final no-charge decision point.',
-  '7. credits.options — prepaid request-credit packs, if you prefer credits.',
+  '7. credits.options — legacy-credit compatibility status; new credit sales are disabled.',
   'Then STOP. Human authorization is required before any purchase, signing,',
   'transfer, spending, entitlement creation, or paid execution.',
   '',
@@ -1275,11 +1286,11 @@ const COMMERCE_POLICY_TEXT = [
   'requirements.check, cost.estimate, result.preview, execution.preflight,',
   'credits.options, and the public marketplace discovery tools) are free and',
   'read-only. Paid tools return an x402 challenge; execution happens via an',
-  'out-of-band HTTP POST and never inside a free discovery call.',
+  'out-of-band HTTP POST and never inside a free discovery call. Legacy credit redemption is separately named and never charges x402.',
   '',
   'Receiver-only: CrossingKey never initiates spending. Payment happens only',
-  'after explicit human authorization, via Stripe payment links, prepaid',
-  'request credits (ck_ credentials), or x402 USDC on Base (Sepolia by',
+  'after explicit human authorization, via Stripe payment links or x402',
+  'USDC on Base (Sepolia by',
   'default; mainnet only when the operator enables it).',
   '',
   'Human authorization: required before any purchase, signing, transfer,',
@@ -1336,10 +1347,9 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
   discoveryTool('result.preview',discoveryItemSchema,'FREE read-only result-shape preview. This tool never executes a capability or creates an entitlement or receipt.',({item_id})=>discoveryPreview(item_id));
   discoveryTool('execution.preflight',discoveryItemSchema,'FREE read-only execution preflight. Returns READY_FOR_HUMAN_AUTHORIZATION only; it never authorizes, purchases, settles, executes, or creates records.',({item_id})=>discoveryPreflight(item_id));
 
-  discoveryTool('credits.options',z.object({}).strict(),'FREE read-only prepaid request-credit pack options. Lists available credit packs with identifiers and credit amounts. Purchasing happens via checkout; this tool never starts payment or creates accounts.',()=>({packs:creditPacks(),free:true,payment_started:false}));
+  discoveryTool('credits.options',z.object({}).strict(),'FREE read-only legacy credit compatibility status. New prepaid-credit sales are disabled in v4; historical paid credits remain redeemable through a separate compatibility path.',()=>({packs:[],legacy_redemption:'separate_compatibility_path',new_sales_enabled:false,free:true,payment_started:false}));
 
-  // Free commercial discovery is registered first. Paid x402 products and
-  // prepaid xkey.validate remain available below without changing their gates.
+  // Free commercial discovery is registered first. All current paid capabilities use x402.
 
   // PAID X402 TOOL SURFACE
   // Generated from the canonical paid capability catalog.
@@ -1364,6 +1374,7 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
           readOnlyHint:false,
           destructiveHint:false,
           openWorldHint:true
+          ,idempotentHint:true
         }
       },
       async(input)=>{
@@ -1437,75 +1448,22 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
     );
   }
 
-  // PAID PREPAID-CREDIT TOOL
-  // Visible in tools/list, but execution requires an authenticated ck_ principal.
-  s.registerTool('xkey.validate',{
-    title:'Validate structured XKEY intake',
-    description:'PAID prepaid-credit XKEY intake validation. Requires an authenticated ck_ principal and commits one credit only on verified success. Discovery is free; execution is not.',
-    inputSchema:PREPAID_CAPABILITIES[0].inputSchema,
+  // Explicit compatibility surface for customers who already purchased credits.
+  // This path is never used by new x402 requests and never settles x402 payments.
+  if(authContext) s.registerTool('xkey.validate.legacy',{
+    title:'Legacy XKEY Credit Redemption',
+    description:'Compatibility-only redemption of an existing paid request credit. New customers must use xkey.validate with direct x402 payment.',
+    inputSchema:{idempotency_key:z.string().min(8).max(160),raw_intake:z.string().min(2).max(100000)},
     outputSchema:XKEY_VALIDATE_OUTPUT_SCHEMA,
-    annotations:{
-      readOnlyHint:false,
-      destructiveHint:false,
-      openWorldHint:false,
-      idempotentHint:true
-    }
+    annotations:{readOnlyHint:false,destructiveHint:false,openWorldHint:false,idempotentHint:true}
   },async({idempotency_key,raw_intake})=>{
-    if(!authContext){
-      return mcpError('authentication_required','No credit credential is attached to this MCP session.','Authenticate with a Bearer ck_ credential, then retry the same call.');
-    }
-
+    if(!authContext)return mcpError('authentication_required','A legacy credit credential is required.','Use xkey.validate for the current direct x402 payment path.');
     const acct=currentCreditAccount(authContext.principal_id);
-
-    if(!acct){
-      return mcpError('credential_revoked','The credit credential for this session is no longer valid.','Obtain a fresh credential and start a new session; no credit was committed.');
-    }
-
-    const result=runXkeyBridge({
-      action:'validate',
-      principal_id:authContext.principal_id,
-      session_id:acct.session_id,
-      granted:Number(acct.granted||0),
-      idempotency_key,
-      raw_intake,
-      max_input_chars:XKEY_MAX_INPUT_CHARS
-    });
-
-    if(!result.ok){
-      return {
-        isError:true,
-        structuredContent:{
-          error:result.error || 'paid_execution_failed'
-        },
-        content:[{
-          type:'text',
-          text:result.message || 'Paid execution failed safely.'
-        }]
-      };
-    }
-
-    const payload={
-      capability:'xkey.validate',
-      state:result.state,
-      success:result.success,
-      credits_charged:result.credits,
-      balance:result.balance,
-      reservation_id:result.reservation_id,
-      receipt_id:result.receipt_id,
-      request_hash:result.request_hash,
-      normalized:result.normalized || null
-    };
-
-    return {
-      isError:!result.success,
-      structuredContent:payload,
-      content:[{
-        type:'text',
-        text:result.success
-          ? `Validated successfully. 1 credit committed. Balance: ${result.balance}. Receipt: ${result.receipt_id}.`
-          : `Validation failed safely. No credit committed. Balance: ${result.balance}. Receipt: ${result.receipt_id}.`
-      }]
-    };
+    if(!acct)return mcpError('credential_revoked','The legacy credit credential is no longer valid.','No x402 payment was attempted.');
+    const result=runXkeyBridge({action:'validate',principal_id:authContext.principal_id,session_id:acct.session_id,granted:Number(acct.granted||0),idempotency_key,raw_intake,max_input_chars:XKEY_MAX_INPUT_CHARS});
+    if(!result.ok)return {isError:true,structuredContent:{error:result.error||'legacy_execution_failed'},content:[{type:'text',text:result.message||'Legacy execution failed safely.'}]};
+    const payload={capability:'xkey.validate.legacy',state:result.state,success:result.success,credits_charged:result.credits,balance:result.balance,reservation_id:result.reservation_id,receipt_id:result.receipt_id,request_hash:result.request_hash,normalized:result.normalized||null};
+    return {isError:!result.success,structuredContent:payload,content:[{type:'text',text:result.success?'Legacy validation succeeded; no x402 payment was attempted.':'Legacy validation failed safely; no x402 payment was attempted.'}]};
   });
 
   // Group F: public static resources plus per-capability instructions.

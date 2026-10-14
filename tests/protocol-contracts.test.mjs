@@ -145,18 +145,10 @@ test('tool errors use the structured error_code/message/hint shape',async t=>{
   const {rpc}=await startServer(t,files);
   await rpc('initialize',{protocolVersion:'2025-11-25',capabilities:{},clientInfo:{name:'proto',version:'1'}});
   await rpc('notifications/initialized');
-  // xkey.validate without a credential: gated, structured, no leak.
+  // xkey.validate without a payment: challenge only, structured, no leak.
   const gated=await rpc('tools/call',{name:'xkey.validate',arguments:{idempotency_key:'proto-err-0001',raw_intake:'{}'}});
-  assert.equal(gated.result.isError,true);
-  const sc=gated.result.structuredContent;
-  assert.equal(sc.error_code,'authentication_required');
-  assert.equal(typeof sc.message,'string');
-  assert.ok(sc.message.length>0);
-  assert.equal(typeof sc.hint,'string');
-  assert.ok(sc.hint.length>0);
-  const text=gated.result.content.map(c=>c.text).join(' ');
-  assert.ok(text.includes(sc.message),'human-readable text should carry the message');
-  assert.ok(!text.includes('Error:')&&!text.includes(' at '),'error text must not leak stack traces');
+  assert.equal(gated.result.structuredContent.payment_required,true);
+  assert.equal(gated.result.structuredContent.price,'100000');
   // Discovery tools stay soft on unknown items: found:false, not an error.
   const unknown=await rpc('tools/call',{name:'requirements.check',arguments:{item_id:'no-such-item'}});
   assert.equal(unknown.result.isError||false,false);

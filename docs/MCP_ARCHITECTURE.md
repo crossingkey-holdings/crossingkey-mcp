@@ -21,8 +21,8 @@ operator's reverse proxy.
 
 - **Server instructions** — the free/paid separation and stop-before-payment
   rule, delivered in the `initialize` result.
-- **21 anonymous tools** — 7 free discovery, 5 paid x402 challenge tools,
-  `xkey.validate`, 8 public marketplace tools.
+- **28 anonymous tools** — 7 free discovery, 13 paid x402 challenge tools,
+  8 public marketplace tools.
 - **Role-filtered marketplace tools** — authenticated sessions additionally
   see verification tools (`approval.verify`, `idempotency.inspect`,
   `receipt.verify`, `entitlement.inspect`) and role-gated management tools.
@@ -30,7 +30,7 @@ operator's reverse proxy.
   `crossingkey://commerce-policy` (static), and the
   `crossingkey://capability/{name}` template (per-capability instructions).
 - **Tool annotations** — `readOnlyHint`, `destructiveHint`, `openWorldHint`
-  set per tool; paid and credit-gated tools carry `idempotentHint: true`.
+  set per tool; paid tools carry `idempotentHint: true`.
 
 Every tool registers an `outputSchema` (Zod → JSON Schema) and returns
 `structuredContent`; paid challenges return challenge-shaped structured
@@ -72,7 +72,7 @@ content rather than executing.
 - `lib/mcp-manifest.mjs` — canonical tool-name lists and the MCP manifest.
 - `lib/discovery.mjs` — free discovery handlers (describe/list/estimate/
   preview/preflight/credits).
-- `lib/paid-capability-catalog.mjs` — the 5 paid x402 capabilities + pricing.
+- `lib/paid-capability-catalog.mjs` — the 13 paid x402 capabilities + pricing.
 - `lib/onchain-verifier.mjs`, `lib/gate1b-*.mjs` — settlement verification
   and the Gate1B production adapter.
 

@@ -13,7 +13,7 @@ test('canonical v3 identity and streamable HTTP transport remain configured',()=
 
 test('paid catalog is complete and exposes exact x402 pricing',()=>{
   assert.equal(assertPaidCatalog(),true);
-  assert.equal(X402_CAPABILITIES.length,12);
+  assert.equal(X402_CAPABILITIES.length,13);
   for(const name of ['hash.encode','secret.scan','pii.scan','json.repair','prompt.audit']){
     const capability=X402_CAPABILITIES.find(x=>x.name===name);
     assert.ok(capability,`missing paid capability: ${name}`);
@@ -22,7 +22,8 @@ test('paid catalog is complete and exposes exact x402 pricing',()=>{
   }
   assert.equal(X402_CAPABILITIES.find(x=>x.name==='mcp.launch_audit')?.priceUsd,'9.00');
   assert.equal(X402_CAPABILITIES.find(x=>x.name==='x402.purchase_path_audit')?.priceUsd,'19.00');
-  assert.equal(PREPAID_CAPABILITIES[0].name,'xkey.validate');
+  assert.equal(PREPAID_CAPABILITIES.length,0);
+  assert.equal(X402_CAPABILITIES.find(x=>x.name==='xkey.validate')?.amount,'100000');
   assert.match(source,/const paidX402Tools = X402_CAPABILITIES/);
   assert.match(source,/machineCommerce\.paymentRequired\(paid\.name,2\)/);
 });

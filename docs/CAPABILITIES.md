@@ -44,7 +44,8 @@ sets `CK_ENABLE_MAINNET=true`.
 
 | Tool | What it does |
 |---|---|
-| `xkey.validate` | Validates one `ck_` request credit; commits 1 credit on success, 0 on failure. Idempotent (`idempotentHint: true`). Never reveals key material. |
+| `xkey.validate` | Direct $0.10 Base USDC x402 validation; shared receipt, entitlement, replay, and idempotency lifecycle. No credit balance required. |
+| `xkey.validate.legacy` | Authenticated compatibility-only redemption of an existing paid request credit; never charges x402. |
 
 ## Marketplace tools — public (8, anonymous)
 
