@@ -3,6 +3,7 @@ import test from 'node:test';
 import fs from 'node:fs';
 import {X402_CAPABILITIES} from '../lib/paid-capability-catalog.mjs';
 import {BASE_USDC,RECEIVER,createMachineCommerce,canonicalizePayment,enforcePolicy,normalizeX402Version} from '../lib/machine-commerce.mjs';
+import {getDiscoveryContract} from '../lib/discovery.mjs';
 
 const config={dataFile:'/tmp/ck-x402-bilingual-unused.json',receiver:RECEIVER,network:'eip155:8453',mainnetEnabled:true,publicBaseUrl:'https://mcp.example',facilitatorUrl:'https://facilitator.example',kennekarteSecret:'k'.repeat(64)};
 const core=createMachineCommerce(config);
@@ -11,7 +12,7 @@ function auth(amount,nonce='0x'+'a'.repeat(64)){return {from:payer,to:RECEIVER,v
 
 test('all 13 paid capabilities expose validated v1 and v2 requirements',()=>{
   assert.equal(X402_CAPABILITIES.length,13);
-  for(const cap of X402_CAPABILITIES){
+  for(const [index,cap] of X402_CAPABILITIES.entries()){
     const v1=core.paymentRequired(cap.name,1).body;
     assert.equal(v1.x402Version,1,cap.name);
     assert.equal(v1.accepts[0].network,'base',cap.name);
@@ -69,7 +70,32 @@ test('HTTP and MCP transport declarations do not overclaim native MCP payments',
   assert.match(runtime,/payment_header_version_mismatch/);
   assert.match(runtime,/X-PAYMENT-RESPONSE/);
   assert.match(runtime,/PAYMENT-RESPONSE/);
-  assert.match(runtime,/execution_mode:'x402_http'/);
-  assert.match(manifest,/mcpNativePaymentExchange: false/);
+  assert.match(runtime,/x402\/payment/);
+  assert.match(runtime,/x402\/payment-response/);
+  assert.match(runtime,/_meta:\{'x402\/payment-response':response\}/);
+  assert.match(manifest,/mcpNativePaymentExchange: true/);
   assert.match(manifest,/preferredVersion:2/);
+});
+
+test('all 13 native MCP v2 retries share one verified settlement lifecycle',async()=>{
+  const dir=fs.mkdtempSync('/tmp/ck-native-matrix-');
+  const calls=[];
+  const core=createMachineCommerce({...config,dataFile:`${dir}/state.json`,rpcUrl:'https://rpc.example',fetchImpl:async(url,init)=>{
+    const body=JSON.parse(init.body||'{}');
+    if(String(url)==='https://rpc.example') return new Response(JSON.stringify({jsonrpc:'2.0',id:1,result:body.method==='eth_chainId'?'0x2105':'0x100'}));
+    calls.push(String(url));
+    return new Response(JSON.stringify(String(url).endsWith('/verify')?{isValid:true}:{success:true,transaction:'0x'+'d'.repeat(64)}));
+  },executionDependencies:{execute:({capabilityName})=>({capability:capabilityName,synthetic:true})}});
+  for(const [index,cap] of X402_CAPABILITIES.entries()){
+    const challenge=JSON.parse(Buffer.from(core.paymentRequired(cap.name,2).headers['PAYMENT-REQUIRED'],'base64'));
+    const payment={x402Version:2,resource:{url:`mcp://tool/${cap.name}`},accepted:challenge.accepts[0],payload:{signature:'fixture-native',authorization:{from:payer,to:RECEIVER,value:cap.amount,validAfter:'1',validBefore:'9999999999',nonce:`0x${String(index+1).padStart(64,'0')}`}}};
+    const result=await core.invoke({capabilityName:cap.name,input:getDiscoveryContract(cap.name).input,idempotencyKey:`native-matrix-${cap.name.replace(/[^a-z0-9]/g,'-')}`,paymentPayload:payment});
+    assert.equal(result.status,'fulfilled',cap.name);
+    assert.equal(result.receipt.payment.version,2,cap.name);
+    assert.equal(result.receipt.payment.amount,cap.amount,cap.name);
+    assert.equal(core.verifyReceipt(result.receipt),true,cap.name);
+  }
+  assert.equal(calls.filter(x=>x.endsWith('/verify')).length,13);
+  assert.equal(calls.filter(x=>x.endsWith('/settle')).length,13);
+  fs.rmSync(dir,{recursive:true,force:true});
 });

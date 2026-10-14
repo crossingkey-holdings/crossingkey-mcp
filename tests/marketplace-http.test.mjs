@@ -43,11 +43,12 @@ test('live MCP transport advertises paid tools and keeps public discovery free',
   assert.equal(creditStatus.result.structuredContent.new_sales_enabled,false);
   assert.deepEqual(creditStatus.result.structuredContent.packs,[]);
   const paid=await rpc('tools/call',{name:'artifact.integrity_manifest',arguments:{artifacts:[{name:'a',content:'b'}]}});
-  assert.equal(paid.result.structuredContent.payment_required,true);
-  assert.equal(paid.result.structuredContent.price,'100000');
-  assert.equal(paid.result.structuredContent.execution_mode,'x402_http');
+  assert.equal(paid.result.isError,true);
+  assert.equal(paid.result.structuredContent.x402Version,2);
+  assert.equal(paid.result.structuredContent.accepts[0].amount,'100000');
+  assert.match(paid.result.content[0].text,/x402Version/);
   const xkey=await rpc('tools/call',{name:'xkey.validate',arguments:{idempotency_key:'paid-fixture-0001',raw_intake:'{}'}});
-  assert.equal(xkey.result.structuredContent.payment_required,true);
-  assert.equal(xkey.result.structuredContent.price,'100000');
-  assert.equal(xkey.result.structuredContent.execution_mode,'x402_http');
+  assert.equal(xkey.result.isError,true);
+  assert.equal(xkey.result.structuredContent.x402Version,2);
+  assert.equal(xkey.result.structuredContent.accepts[0].amount,'100000');
 });

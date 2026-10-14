@@ -9,6 +9,8 @@ import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
 import http from 'node:http';
+import {X402_CAPABILITIES} from '../lib/paid-capability-catalog.mjs';
+import {getDiscoveryContract} from '../lib/discovery.mjs';
 
 function bootServer(t){
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'ck-proto-contracts-'));
@@ -131,12 +133,11 @@ test('x402 challenge states settlement and confirmation expectations',async t=>{
   await rpc('initialize',{protocolVersion:'2025-11-25',capabilities:{},clientInfo:{name:'proto',version:'1'}});
   await rpc('notifications/initialized');
   const challenge=await rpc('tools/call',{name:'x402.compatibility_audit',arguments:{url:'https://example.com/pay'}});
-  assert.equal(challenge.result.isError||false,false);
+  assert.equal(challenge.result.isError,true);
   const sc=challenge.result.structuredContent;
-  assert.equal(sc.payment_required,true);
-  assert.ok(sc.settlement_expectations.includes('facilitator'),'settlement expectations should name the facilitator');
-  assert.ok(sc.confirmation_expectations.includes('idempotency_key'),'confirmation expectations should cover idempotent retry');
-  assert.ok(sc.instruction.includes('HUMAN')||sc.instruction.includes('authorized'),'instruction should require authorization');
+  assert.equal(sc.x402Version,2);
+  assert.equal(sc.resource.url,'mcp://tool/x402.compatibility_audit');
+  assert.equal(JSON.parse(challenge.result.content[0].text).x402Version,2);
 });
 
 test('tool errors use the structured error_code/message/hint shape',async t=>{
@@ -147,12 +148,33 @@ test('tool errors use the structured error_code/message/hint shape',async t=>{
   await rpc('notifications/initialized');
   // xkey.validate without a payment: challenge only, structured, no leak.
   const gated=await rpc('tools/call',{name:'xkey.validate',arguments:{idempotency_key:'proto-err-0001',raw_intake:'{}'}});
-  assert.equal(gated.result.structuredContent.payment_required,true);
-  assert.equal(gated.result.structuredContent.price,'100000');
+  assert.equal(gated.result.isError,true);
+  assert.equal(gated.result.structuredContent.x402Version,2);
+  assert.equal(gated.result.structuredContent.accepts[0].amount,'100000');
   // Discovery tools stay soft on unknown items: found:false, not an error.
   const unknown=await rpc('tools/call',{name:'requirements.check',arguments:{item_id:'no-such-item'}});
   assert.equal(unknown.result.isError||false,false);
   assert.equal(unknown.result.structuredContent.found,false);
+});
+
+test('native MCP x402 v2 challenge and rejected retry cover every paid capability',async t=>{
+  const {dir,files}=bootServer(t);
+  t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+  const {rpc}=await startServer(t,files);
+  await rpc('initialize',{protocolVersion:'2025-11-25',capabilities:{},clientInfo:{name:'native-x402-matrix',version:'1'}});
+  await rpc('notifications/initialized');
+  for(const capability of X402_CAPABILITIES){
+    const name=capability.name;
+    const input=getDiscoveryContract(name).input;
+    const unpaid=await rpc('tools/call',{name,arguments:input});
+    assert.equal(unpaid.result.isError,true,name);
+    assert.equal(unpaid.result.structuredContent.x402Version,2,name);
+    assert.equal(JSON.parse(unpaid.result.content[0].text).x402Version,2,name);
+    assert.equal(unpaid.result.structuredContent.resource.url,`mcp://tool/${name}`,name);
+    const rejected=await rpc('tools/call',{name,arguments:input,_meta:{'x402/payment':{x402Version:1}}});
+    assert.equal(rejected.result.isError,true,name);
+    assert.match(rejected.result.structuredContent.error,/Invalid x402/);
+  }
 });
 
 test('public resources expose discovery guide, commerce policy, and per-capability instructions',async t=>{

@@ -11,7 +11,7 @@ import {McpServer,
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { CAPABILITIES as MACHINE_CAPABILITIES, RECEIVER as LOCKED_RECEIVER, createMachineCommerce, normalizeX402Version } from './lib/machine-commerce.mjs';
+import { CAPABILITIES as MACHINE_CAPABILITIES, RECEIVER as LOCKED_RECEIVER, createMachineCommerce, normalizeX402Version, sha256 } from './lib/machine-commerce.mjs';
 import {
   PAID_CAPABILITIES as CATALOG_PAID_CAPABILITIES,
   X402_CAPABILITIES,
@@ -393,20 +393,28 @@ const DISCOVERY_OUTPUT_SCHEMAS = {
   })
 };
 const X402_CHALLENGE_OUTPUT_SCHEMA = z.object({
-  payment_required: z.literal(true),
-  execution_mode: z.string(),
-  capability: z.string(),
-  input: z.object({}).passthrough(),
-  price: z.string().nullable(),
-  asset: z.string().nullable(),
-  network: z.string().nullable(),
-  pay_to: z.string().nullable(),
-  execution_url: z.string().nullable(),
-  payment_required_header: z.string(),
-  settlement_expectations: z.string(),
-  confirmation_expectations: z.string(),
-  instruction: z.string()
-});
+  payment_required: z.literal(true).optional(),
+  x402Version: z.literal(2).optional(),
+  error: z.string().optional(),
+  resource: z.object({}).passthrough().optional(),
+  accepts: z.array(z.object({}).passthrough()).optional(),
+  extensions: z.object({}).passthrough().optional(),
+  execution_mode: z.string().optional(),
+  capability: z.string().optional(),
+  input: z.object({}).passthrough().optional(),
+  price: z.string().nullable().optional(),
+  asset: z.string().nullable().optional(),
+  network: z.string().nullable().optional(),
+  pay_to: z.string().nullable().optional(),
+  execution_url: z.string().nullable().optional(),
+  payment_required_header: z.string().optional(),
+  settlement_expectations: z.string().optional(),
+  confirmation_expectations: z.string().optional(),
+  instruction: z.string().optional(),
+  status: z.string().optional(),
+  purchaseId: z.string().optional(),
+  entitlementId: z.string().optional()
+}).passthrough();
 const XKEY_VALIDATE_OUTPUT_SCHEMA = z.object({
   capability: z.string(),
   state: z.string(),
@@ -991,6 +999,8 @@ app.get('/.well-known/mcp.json',(_req,res)=>res.json({
   discoveryProfile:`${DISCOVERY_PROFILE_VERSION}-marketplace`,
   walletMode:'receiver-only',
   paymentRails:['stripe_payment_links','x402_base_usdc'],
+  nativeMcpPayment:{protocol:'x402',version:2,requestMeta:'x402/payment',responseMeta:'x402/payment-response',preferred:true},
+  httpPaymentFallback:{v2:true,v1:true},
   legacyCompatibilityRails:['prepaid_request_credits'],
   recommendedEntryTool:'provider.describe',
   toolNaming:'resource.action',
@@ -1263,11 +1273,11 @@ function capabilityInstructions(name) {
       '3. result.preview {item_id} — confirm the result shape.',
       '4. execution.preflight {item_id} — final no-charge check.',
       '5. Obtain HUMAN AUTHORIZATION.',
-      `6. Call the ${name} MCP tool — it returns the x402 challenge, spending nothing.`,
-      '7. Sign payment outside ordinary MCP computation; POST the same input',
-      '   with a unique idempotency_key and PAYMENT-SIGNATURE to execution_url.',
-      '8. Expect a settlement receipt header and a result with purchase and',
-      '   receipt references. Verify the receipt before treating it as final.'
+          `6. Call the ${name} MCP tool — it returns a native x402 v2 PaymentRequired challenge without spending.`,
+          '7. After authorization, retry the same MCP tool call with the PaymentPayload',
+          '   in _meta["x402/payment"]. Non-native clients may use the HTTP fallback.',
+          '8. Expect settlement evidence in _meta["x402/payment-response"] and a result',
+          '   with purchase and receipt references. Verify the receipt before treating it as final.'
     );
   } else {
     lines.push(
@@ -1288,8 +1298,9 @@ const COMMERCE_POLICY_TEXT = [
   'Free vs paid: discovery tools (provider.describe, offers.list,',
   'requirements.check, cost.estimate, result.preview, execution.preflight,',
   'credits.options, and the public marketplace discovery tools) are free and',
-  'read-only. Paid tools return an x402 challenge; execution happens via an',
-  'out-of-band HTTP POST and never inside a free discovery call. Legacy credit redemption is separately named and never charges x402.',
+  'read-only. Paid tools return a native x402 v2 challenge; authorized retries',
+  'carry _meta["x402/payment"] and return _meta["x402/payment-response"]. HTTP',
+  'x402 v1/v2 remains a compatibility fallback. Legacy credit redemption is separately named and never charges x402.',
   '',
   'Receiver-only: CrossingKey never initiates spending. Payment happens only',
   'after explicit human authorization, via Stripe payment links or x402',
@@ -1358,14 +1369,32 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
   // Generated from the canonical paid capability catalog.
   const paidX402Tools = X402_CAPABILITIES;
 
+  function nativePaymentRequired(capability){
+    const httpChallenge=machineCommerce.paymentRequired(capability.name,2);
+    const decoded=JSON.parse(Buffer.from(httpChallenge.headers['PAYMENT-REQUIRED'],'base64').toString('utf8'));
+    return {
+      x402Version:2,
+      error:'Payment required to access this resource',
+      resource:{url:`mcp://tool/${capability.name}`,description:capability.description,mimeType:'application/json'},
+      accepts:decoded.accepts,
+      extensions:decoded.extensions
+    };
+  }
+
+  function nativePaymentKey(capability,input,extra){
+    const session=String(extra?.sessionId||'');
+    if(!session) throw new Error('MCP session identity is required for paid retry');
+    return `native-mcp-${session}-${sha256({capability:capability.name,input}).slice(-48)}`;
+  }
+
+  function nativePaymentFailure(capability,reason){
+    const required=nativePaymentRequired(capability);
+    const body={...required,error:reason};
+    return {isError:true,structuredContent:body,content:[{type:'text',text:JSON.stringify(body)}]};
+  }
+
   for (const paid of paidX402Tools) {
-    const paidInputSchema = paid.name==='artifact.integrity_manifest'
-      ? z.object({
-          ...paid.inputSchema,
-          idempotency_key:z.string().min(8).max(160).optional(),
-          payment_payload:z.record(z.unknown()).optional()
-        })
-      : paid.inputSchema;
+    const paidInputSchema = paid.inputSchema;
     s.registerTool(
       paid.name,
       {
@@ -1380,7 +1409,7 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
           ,idempotentHint:true
         }
       },
-      async(input)=>{
+      async(input,extra)=>{
         if(!machineCommerce){
           return {
             isError:true,
@@ -1389,63 +1418,25 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
         }
 
         try{
-          if(paid.name==='artifact.integrity_manifest'&&input.payment_payload&&input.idempotency_key){
-            const result=await machineCommerce.invoke({
-              capabilityName:paid.name,
-              input:{artifacts:input.artifacts},
-              idempotencyKey:input.idempotency_key,
-              paymentPayload:input.payment_payload
-            });
-            ckConsumeDurableRevenueEvents();
-            return {
-              structuredContent:{...result,mcp_execution:'canonical_machine_commerce'},
-              content:[{type:'text',text:JSON.stringify({...result,mcp_execution:'canonical_machine_commerce'})}]
-            };
+          const paymentPayload=extra?._meta?.['x402/payment'];
+          if(paymentPayload===undefined){
+            const required=nativePaymentRequired(paid);
+            return {isError:true,structuredContent:required,content:[{type:'text',text:JSON.stringify(required)}]};
           }
-          const challenge =
-            machineCommerce.paymentRequired(paid.name,2);
-
-          const decoded =
-            JSON.parse(
-              Buffer.from(
-                challenge.headers['PAYMENT-REQUIRED'],
-                'base64'
-              ).toString('utf8')
-            );
-
+          if(!paymentPayload||typeof paymentPayload!=='object'||paymentPayload.x402Version!==2){
+            return nativePaymentFailure(paid,'Invalid x402 v2 payment payload');
+          }
+          const idempotencyKey=nativePaymentKey(paid,input,extra);
+          const result=await machineCommerce.invoke({capabilityName:paid.name,input,idempotencyKey,paymentPayload});
+          ckConsumeDurableRevenueEvents();
+          const response={success:true,transaction:result.settlement?.transaction||null,network:result.receipt?.payment?.network||null,payer:result.receipt?.holder||null};
           return {
-            structuredContent:{
-              payment_required:true,
-              execution_mode:'x402_http',
-              capability:paid.name,
-              input,
-              price:decoded.accepts?.[0]?.amount || null,
-              asset:decoded.accepts?.[0]?.asset || null,
-              network:decoded.accepts?.[0]?.network || null,
-              pay_to:decoded.accepts?.[0]?.payTo || null,
-              execution_url:decoded.resource?.url || null,
-              payment_required_header:
-                challenge.headers['PAYMENT-REQUIRED'],
-              settlement_expectations:
-                'Payment is verified and then settled on the quoted network via the x402 facilitator before any execution. A base64 settlement receipt is returned in the PAYMENT-RESPONSE (x402 v2) or X-PAYMENT-RESPONSE (x402 v1) response header.',
-              confirmation_expectations:
-                'POST the same input with a unique idempotency_key and a PAYMENT-SIGNATURE (v2) or X-PAYMENT (v1) header to execution_url. Success returns the capability result with purchase and receipt references. Retrying with the same idempotency_key returns the stored result instead of a new charge; failed or disputed payments return an error code, never a silent charge.',
-              instruction:
-                'Obtain authorized x402 payment signing outside ordinary MCP computation, then POST the same input with a unique idempotency_key and PAYMENT-SIGNATURE to execution_url.'
-            },
-            content:[{
-              type:'text',
-              text:`Payment required for ${paid.name}. Exact x402 challenge and execution endpoint returned. No funds were spent by this MCP call.`
-            }]
+            structuredContent:result,
+            content:[{type:'text',text:JSON.stringify(result)}],
+            _meta:{'x402/payment-response':response}
           };
         }catch(e){
-          return {
-            isError:true,
-            content:[{
-              type:'text',
-              text:`Unable to create x402 purchase challenge: ${e.message}`
-            }]
-          };
+          return nativePaymentFailure(paid,'Payment verification or settlement failed');
         }
       }
     );

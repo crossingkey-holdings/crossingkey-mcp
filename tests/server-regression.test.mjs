@@ -25,7 +25,8 @@ test('paid catalog is complete and exposes exact x402 pricing',()=>{
   assert.equal(PREPAID_CAPABILITIES.length,0);
   assert.equal(X402_CAPABILITIES.find(x=>x.name==='xkey.validate')?.amount,'100000');
   assert.match(source,/const paidX402Tools = X402_CAPABILITIES/);
-  assert.match(source,/machineCommerce\.paymentRequired\(paid\.name,2\)/);
+  assert.match(source,/nativePaymentRequired\(paid\)/);
+  assert.match(source,/x402\/payment/);
 });
 
 test('free discovery and health remain bounded while paid computation stays protected',()=>{

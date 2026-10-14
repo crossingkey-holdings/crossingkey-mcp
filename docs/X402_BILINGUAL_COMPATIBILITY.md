@@ -15,9 +15,11 @@ The server rejects unsupported versions, ambiguous v1/v2 request headers, and
 envelopes containing fields from the other protocol. Both versions enter the
 same verify-before-settle, replay, idempotency, receipt, and entitlement path.
 
-MCP tool calls return an x402 HTTP challenge fallback. This candidate does not
-claim a native MCP payment exchange: clients must authorize and submit the
-version-appropriate HTTP request to the advertised execution URL. The
-facilitator's live v1 support remains an environment-specific verification
-item; local fixtures verify that the version is forwarded without bypassing
-verification.
+MCP tool calls now use the native x402 v2 exchange. An unpaid call returns the
+direct `PaymentRequired` object in `structuredContent` and as JSON text. The
+client retries with its `PaymentPayload` in `_meta["x402/payment"]`; a
+successful result carries bounded settlement evidence in
+`_meta["x402/payment-response"]`. Non-native clients retain the HTTP v2/v1
+fallback. The facilitator's live v1 support remains an environment-specific
+verification item; local fixtures verify that the version is forwarded without
+bypassing verification.
