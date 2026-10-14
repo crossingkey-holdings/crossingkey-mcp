@@ -23,7 +23,13 @@ test('x402 exact scheme is preserved',()=>assert.equal('exact','exact'));
 test('Base mainnet chain is the configured target',()=>assert.equal('eip155:8453','eip155:8453'));
 test('legacy v1 network label remains base',()=>assert.equal('base','base'));
 test('Base USDC constant is canonical',()=>assert.equal(BASE_USDC,'0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'));
-test('receiver constant is configured CrossingKey receiver',()=>assert.equal(RECEIVER,'0x6D1CCe697B145E6D8DB31B038F5D7fbc4Fe27B28'));
+test('receiver constant is configured CrossingKey receiver',()=>assert.equal(RECEIVER,'0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B'));
+test('configured receiver is carried into payment instructions',()=>{
+  const core=createMachineCommerce({dataFile:path.join(os.tmpdir(),'ck-receiver-config-test.json'),receiver:RECEIVER,network:'eip155:8453',mainnetEnabled:true,publicBaseUrl:'https://mcp.test',facilitatorUrl:'https://fac.test',kennekarteSecret:'k'.repeat(64)});
+  const challenge=JSON.parse(Buffer.from(core.paymentRequired('artifact.integrity_manifest',2).headers['PAYMENT-REQUIRED'],'base64').toString());
+  assert.equal(challenge.accepts[0].payTo,RECEIVER);
+  assert.notEqual(challenge.accepts[0].payTo,'0x6D1CCe697B145E6D8DB31B038F5D7fbc4Fe27B28');
+});
 test('x402 exposes both protocol versions',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/x402Versions:\[1,2\]/);});
 test('facilitator verify precedes settle in source',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.ok(src.indexOf("'verify'")<src.indexOf("'settle'"));});
 test('purchase state has idempotency namespace',()=>{const src=fs.readFileSync('lib/machine-commerce.mjs','utf8'); assert.match(src,/idempotency/);});

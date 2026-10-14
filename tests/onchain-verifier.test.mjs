@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { verifyOnchain, BASE_USDC, TRANSFER_TOPIC } from '../lib/onchain-verifier.mjs';
 
-const receiver='0x6D1CCe697B145E6D8DB31B038F5D7fbc4Fe27B28';
+const receiver='0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B';
 const payer='0x1111111111111111111111111111111111111111';
 const tx='0x'+'a'.repeat(64);
 const topic=a=>'0x'+'0'.repeat(24)+a.slice(2);
