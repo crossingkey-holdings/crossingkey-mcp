@@ -14,13 +14,17 @@ Agent-native MCP for governed commerce, x402 payments, paid capabilities, and ve
 
 **Published source release**
 
-`3.0.1`
+`3.0.1` (historical production baseline)
+
+**Current local release candidate**
+
+`4.0.0-rc.1`
 
 **Current production release**
 
-`3.0.0`
+`v3.0.1` (unchanged; the v4 candidate is not deployed)
 
-The v3.0.1 source release is published and qualified. Production remains on the separately certified v3.0.0 runtime.
+The v4.0.0-rc.1 source candidate is prepared and tested in the isolated development worktree. Source preparation does not imply production deployment.
 
 Source publication does not imply production deployment.
 
@@ -28,11 +32,11 @@ Source publication does not imply production deployment.
 
 MCP Streamable HTTP
 
-## CrossingKey MCP v3.0.1 source
+## CrossingKey MCP v4.0.0-rc.1 candidate
 
 CrossingKey MCP is a governed machine-commerce interface for AI agents and authorized software clients.
 
-The v3.0.1 anonymous MCP source surface contains **21 tools**:
+The candidate preserves the existing anonymous MCP surface and adds the two authorized v4 paid audits. The exact live/public tool count remains a deployment-time verification item.
 
 - **7 free discovery and commercial-navigation tools**
 - **8 public marketplace tools**
@@ -85,7 +89,7 @@ until the required buyer authorization and payment conditions are satisfied.
 
 ## Public marketplace discovery
 
-The anonymous v3.0.1 source surface also exposes:
+The preserved anonymous marketplace surface also exposes:
 
 - `marketplace.describe`
 - `provider.register`
@@ -163,7 +167,7 @@ Paid execution does not occur merely because an agent asks for it.
 
 ## MCP resources
 
-The v3.0.1 source exposes public MCP resources for agent comprehension:
+The candidate preserves the public MCP resources for agent comprehension:
 
 - `crossingkey://discovery-guide`
 - `crossingkey://commerce-policy`

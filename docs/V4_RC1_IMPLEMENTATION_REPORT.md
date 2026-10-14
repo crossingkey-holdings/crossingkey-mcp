@@ -34,7 +34,9 @@ was added.
 - No real payment was submitted.
 - No live Stripe product or Checkout flow was created.
 - No Cloudflare, DNS, Shopify, systemd, or wallet changes were made.
-- Dependency advisories remain open pending a writable trusted npm cache and
-  verified current package metadata.
-- Complete systemd drop-in inspection remains blocked by the previously
-  recorded permission denial.
+- Production dependency audit: zero findings with current metadata. The
+  audit must be rerun if the dependency tree changes.
+- The protected drop-in directive parser passed the founder-local read-only
+  inspection. Exact loaded-versus-on-disk equality and the cause of
+  `NeedDaemonReload=yes` remain UNKNOWN without a manager reload, which is
+  intentionally not performed in this preparation-only work.

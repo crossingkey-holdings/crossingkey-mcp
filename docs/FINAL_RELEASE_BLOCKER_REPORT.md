@@ -29,8 +29,10 @@
 - No real x402 settlement was executed for either new commercial audit.
 - No live public endpoint was audited in this task.
 - No production service restart or post-deployment verification occurred.
-- The complete privileged systemd drop-in remains unreadable and was not
-  inspected or bypassed.
+- The protected drop-in's reviewed directive inventory and syntax passed the
+  founder-local read-only inspection. Loaded-versus-on-disk equality and the
+  exact cause of `NeedDaemonReload=yes` remain UNKNOWN because no daemon-reload
+  was performed.
 - No live Stripe/Shopify/Cloudflare state was changed or reverified.
 
 ## Explicit approval required
