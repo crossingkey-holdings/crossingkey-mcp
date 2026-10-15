@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "ck-mcp-v4-release-20261015T165630Z",
+  "created_at_utc": "2026-10-15T16:56:30Z",
+  "claim_level": "TESTED",
+  "asset_or_release_id": "crossingkey-mcp@4.0.0-rc.1",
+  "source_of_truth": "/home/founder/Downloads/crossingkey-mcp-v4-development",
+  "version_or_commit": "4.0.0-rc.1 at pre-release HEAD dd19ad663cbc23f61e0d6d353dae13367ec7ea5f",
+  "environment": "Pop!_OS 24.04, Linux 7.1.5-76070105-generic, Node v22.23.2, npm 10.9.8",
+  "capability_attestation": {
+    "files_read": true,
+    "files_written": true,
+    "tests_executed": true,
+    "network_used": true,
+    "external_action_executed": false
+  },
+  "commands_or_test_cases": [
+    "npm ci",
+    "npm run check",
+    "npm test",
+    "node --test tests/*.test.mjs",
+    "node --test tests/*.mjs",
+    "npm run test:integration",
+    "npm audit --omit=dev --json",
+    "node scripts/trybounty-safety-test.mjs",
+    "bash tests/deployment-control.test.sh",
+    "node scripts/scan-marketplace-secrets.mjs --tracked",
+    "npm run proof:verify",
+    "node proof/recovery-witness-contract-test.mjs",
+    "node proof/test-recovery-finalizer.mjs",
+    "node proof/production-recovery-authority-test.mjs",
+    "node scripts/test-recovery-reconciliation.mjs",
+    "bash scripts/test-recovery-verifier-negative.sh",
+    "git diff --check"
+  ],
+  "result_summary": "Phase 2 PASS: 113/113 complete repository tests, zero production dependency vulnerabilities, zero tracked secret-scan findings, proof source/evidence hashes pass, recovery/deployment/security fixtures pass, 13-capability catalog and payment boundaries pass. Staging and public cutover remain pending.",
+  "artifacts": [
+    "release-evidence/v4-untracked-file-classification.json",
+    "release-evidence/v4-release-verification.log",
+    "release-evidence/v4-promotion-readiness.md",
+    "release-evidence/v4-governor-preflight.md",
+    "release-evidence/v4-roadmap-completion-record.md"
+  ],
+  "hashes": [
+    {
+      "path": "proof/evidence/qualified-source-SHA256SUMS",
+      "sha256": "99ac3ff6ef1711bb0ce509ed2d675e42d4d04c1889d20516ca4e0b7159ef46e4"
+    }
+  ],
+  "reviewer_or_approval": "Operator AUTONOMOUS EXECUTION DIRECTIVE dated 2026-10-15; exact release/push/staging/cutover/rollback scope explicitly approved.",
+  "known_limitations": [
+    "GitHub remote equality is pending Phase 3.",
+    "Operator-host legacy topology is pending Phase 4.",
+    "Separate staged v4 service and 13 local unpaid challenges are pending Phase 5.",
+    "Tunnel backup and origin cutover are pending Phases 6-7.",
+    "No live payment or settlement is authorized or tested.",
+    "Tag signature, GitHub attestation, and OpenTimestamps are not available."
+  ],
+  "rollback_reference": "release-evidence/v4-promotion-readiness.md#exact-rollback-procedure",
+  "status": "PHASE_2_VERIFIED"
+}

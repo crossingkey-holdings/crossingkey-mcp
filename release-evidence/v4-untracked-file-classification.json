@@ -1,0 +1,132 @@
+{
+  "schema": "crossingkey.v4-untracked-file-classification.v1",
+  "generated_at": "2026-10-15T16:56:30Z",
+  "repository": "/home/founder/Downloads/crossingkey-mcp-v4-development",
+  "source_head": "dd19ad663cbc23f61e0d6d353dae13367ec7ea5f",
+  "release_version": "4.0.0-rc.1",
+  "inspection": {
+    "untracked_file_count": 59,
+    "json_parse": "PASS",
+    "archive_readability": "PASS",
+    "shell_syntax": "PASS",
+    "node_syntax": "PASS",
+    "secret_term_review": "COMPLETED",
+    "files_deleted": 0,
+    "files_modified": 0
+  },
+  "policy": "Pre-existing untracked work is preserved in place and excluded from the current release commit unless it is both necessary for this cutover and independently reviewed as part of this run.",
+  "classifications": [
+    {
+      "classification": "temporary file",
+      "include_in_current_release_commit": false,
+      "reason": "Operator task-state material is machine/session-specific and is not product source or public release evidence.",
+      "files": [
+        ".crossingkey-codex-tasks/backup-and-v4-release-preflight.md"
+      ]
+    },
+    {
+      "classification": "documentation",
+      "include_in_current_release_commit": false,
+      "reason": "Useful pre-existing operator documentation, preserved unchanged; it predates and is not required by the current minimal release delta.",
+      "files": [
+        "docs/PRODUCTION_PREFLIGHT_READ_ONLY_PROCEDURE.md",
+        "docs/PROTECTED_SYSTEMD_FIXED_UTILITY_PROCEDURE.md",
+        "docs/V4_RC1_FINAL_COMPATIBILITY_PREFLIGHT.md"
+      ]
+    },
+    {
+      "classification": "release evidence",
+      "include_in_current_release_commit": false,
+      "reason": "Historical point-in-time evidence and manifests are preserved unchanged. They do not prove the current candidate or public cutover and are not restamped as current evidence.",
+      "files": [
+        "release-evidence/v4-evidence-closure-20261015/EVIDENCE_CLOSURE.json",
+        "release-evidence/v4-final-20261015T090422Z/fixture-audits.json",
+        "release-evidence/v4-final-20261015T090422Z/release-state.txt",
+        "release-evidence/v4-parity-inventory.json",
+        "release-evidence/v4-qualified-source-dd19ad6/PROVENANCE.json",
+        "release-evidence/v4-qualified-source-dd19ad6/qualified-source-SHA256SUMS",
+        "release-evidence/v4.0.0-rc.1-29307a5-r2/archive-sha256.txt",
+        "release-evidence/v4.0.0-rc.1-29307a5-r2/build-manifest.txt",
+        "release-evidence/v4.0.0-rc.1-29307a5-r2/source-tree.txt",
+        "release-evidence/v4.0.0-rc.1-29307a5/archive-sha256.txt",
+        "release-evidence/v4.0.0-rc.1-29307a5/build-manifest.txt",
+        "release-evidence/v4.0.0-rc.1-29307a5/source-tree.txt",
+        "release-evidence/v4.0.0-rc.1-8fe6c7d-bilingual/BUILD_MANIFEST.json",
+        "release-evidence/v4.0.0-rc.1-8fe6c7d-bilingual/BUILD_MANIFEST.sha256",
+        "release-evidence/v4.0.0-rc.1-8fe6c7d-bilingual/SHA256SUMS",
+        "release-evidence/v4.0.0-rc.1-a013d8e-native-mcp-x402/BUILD_MANIFEST.json",
+        "release-evidence/v4.0.0-rc.1-a013d8e-native-mcp-x402/BUILD_MANIFEST.sha256",
+        "release-evidence/v4.0.0-rc.1-a013d8e-native-mcp-x402/SHA256SUMS",
+        "release-evidence/v4.0.0-rc.1-b0d74e9/archive-sha256.txt",
+        "release-evidence/v4.0.0-rc.1-b0d74e9/build-manifest.txt",
+        "release-evidence/v4.0.0-rc.1-b0d74e9/critical-sha256.txt",
+        "release-evidence/v4.0.0-rc.1-b0d74e9/receiver-verification.txt",
+        "release-evidence/v4.0.0-rc.1-c8d2ec3/archive-sha256.txt",
+        "release-evidence/v4.0.0-rc.1-c8d2ec3/build-manifest.txt",
+        "release-evidence/v4.0.0-rc.1-c8d2ec3/source-tree.txt",
+        "release-evidence/v4.0.0-rc.1-fe96da4/archive-sha256.txt",
+        "release-evidence/v4.0.0-rc.1-fe96da4/build-manifest.txt",
+        "release-evidence/v4.0.0-rc.1-fe96da4/public-surface-readonly.txt",
+        "release-evidence/v4.0.0-rc.1-fe96da4/runtime-import-verification.txt",
+        "release-evidence/v4.0.0-rc.1-fe96da4/runtime-metadata-check.txt",
+        "release-evidence/v4.0.0-rc.1-fe96da4/service-metadata-readonly.txt",
+        "release-evidence/v4.0.0-rc.1-fe96da4/source-file-sha256.txt",
+        "release-evidence/v4.0.0-rc.1-fe96da4/source-gate.txt",
+        "release-evidence/v4.0.0-rc.1-fe96da4/source-tree.txt"
+      ]
+    },
+    {
+      "classification": "generated artifact",
+      "include_in_current_release_commit": false,
+      "reason": "Generated binary archives and interpreter cache are reproducible artifacts, not source. Archives opened successfully and were left untouched; the bytecode cache is explicitly prohibited from staging.",
+      "files": [
+        "release-evidence/v4.0.0-rc.1-29307a5-r2/crossingkey-mcp-v4.0.0-rc.1-29307a5de88803e7d445818fd5f5a329dd52b199.tar.gz",
+        "release-evidence/v4.0.0-rc.1-29307a5/crossingkey-mcp-v4.0.0-rc.1-29307a5de88803e7d445818fd5f5a329dd52b199.tar.gz",
+        "release-evidence/v4.0.0-rc.1-8fe6c7d-bilingual/crossingkey-mcp-v4.0.0-rc.1-8fe6c7d.tar.gz",
+        "release-evidence/v4.0.0-rc.1-a013d8e-native-mcp-x402/crossingkey-mcp-v4.0.0-rc.1-a013d8e.tar.gz",
+        "release-evidence/v4.0.0-rc.1-b0d74e9/crossingkey-mcp-v4.0.0-rc.1-b0d74e9582e16d69ac6786f0a9c69859b7df3c9c.tar.gz",
+        "release-evidence/v4.0.0-rc.1-c8d2ec3/crossingkey-mcp-4.0.0-rc.1-c8d2ec331f57ba39c954f53aea340179766cb866.tar.gz",
+        "release-evidence/v4.0.0-rc.1-fe96da4/crossingkey-mcp-v4.0.0-rc.1-fe96da483fe292f03f1bea71cfc34c28a862c23b.tar.gz",
+        "scripts/__pycache__/xkey-direct-validation.cpython-312.pyc"
+      ]
+    },
+    {
+      "classification": "deployment support",
+      "include_in_current_release_commit": false,
+      "reason": "Useful pre-existing founder-side diagnostics, recovery, and systemd utilities. Syntax passed, but they are preserved as unrelated uncommitted operator work rather than absorbed into this release.",
+      "files": [
+        "scripts/founder-dropin-targeted-diagnostic.sh",
+        "scripts/founder-encrypted-storage-inspection.sh",
+        "scripts/founder-final-recovery-path-verification.sh",
+        "scripts/founder-runtime-path-selector-inspection.sh",
+        "scripts/founder-systemd-readonly-inspection.sh",
+        "scripts/founder-systemd-reconciliation.sh",
+        "scripts/inspect-encrypted-storage-readonly.sh",
+        "scripts/inspect-systemd-config.mjs",
+        "scripts/prepare-crossingkey-encrypted-recovery.sh",
+        "scripts/reconcile-crossingkey-recovery-state.mjs",
+        "scripts/verify-crossingkey-recovery-artifact.sh"
+      ]
+    },
+    {
+      "classification": "test",
+      "include_in_current_release_commit": false,
+      "reason": "Pre-existing untracked recovery tests passed in this run and remain preserved, but are excluded from the minimal commit because they belong to the separate recovery workstream.",
+      "files": [
+        "scripts/test-recovery-reconciliation.mjs",
+        "scripts/test-recovery-verifier-negative.sh"
+      ]
+    }
+  ],
+  "prohibited_items_observed": {
+    "env_files": [],
+    "databases": [],
+    "private_keys": [],
+    "wallet_files": [],
+    "seed_phrases": [],
+    "credentials": [],
+    "secret_bearing_logs": [],
+    "node_modules": []
+  },
+  "decision": "PASS_WITH_EXCLUSIONS"
+}

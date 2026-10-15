@@ -1,0 +1,76 @@
+Timestamp — 2026-10-15 16:56:30 UTC
+RELEASE_VERSION=4.0.0-rc.1
+PACKAGE_NAME=crossingkey-mcp
+CANONICAL_ID=com.crossingkeyintelligence/crossingkey-mcp
+MCP_TRANSPORT=streamable-http
+MCP_PROTOCOL_VERSION=2025-11-25
+SOURCE_HEAD_BEFORE_RELEASE_COMMIT=dd19ad663cbc23f61e0d6d353dae13367ec7ea5f
+SOURCE_BRANCH=codex/crossingkey-v4-development
+REMOTE=origin https://github.com/crossingkey-holdings/crossingkey-mcp.git
+
+PHASE_1_BASELINE=PASS
+TRACKED_WORKTREE_AT_BASELINE=CLEAN
+UNTRACKED_FILES_INSPECTED=59
+UNTRACKED_FILES_DELETED=0
+UNTRACKED_FILES_MODIFIED=0
+UNTRACKED_CLASSIFICATION=release-evidence/v4-untracked-file-classification.json
+
+NPM_CI=PASS packages_added=122 audit_vulnerabilities=0
+NPM_RUN_CHECK=PASS
+NPM_TEST=PASS tests=1 failed=0
+NODE_TEST_ALL_TEST_FILES=PASS tests=110 failed=0
+NODE_TEST_ALL_MJS=PASS tests=113 failed=0
+BASE_RPC_INTEGRATION=PASS network=eip155:8453 chain_id=8453 writes=0
+TRYBOUNTY_SAFETY=PASS
+DEPLOYMENT_CONTROL_FIXTURES=PASS
+NPM_AUDIT_PRODUCTION=PASS total=0 critical=0 high=0 moderate=0 low=0
+TRACKED_SECRET_SCAN=PASS files_scanned=269 findings=0
+STAGED_SECRET_SCAN=PASS files_scanned=9 findings=0
+PROOF_VERIFY=PASS source_hashes=PASS evidence_hashes=PASS isolated_qualification=PASS
+RECOVERY_WITNESS_CONTRACT=PASS
+RECOVERY_FINALIZER=PASS
+PRODUCTION_RECOVERY_AUTHORITY_FIXTURE=PASS settlement_repeated=false
+RECOVERY_RECONCILIATION=PASS
+RECOVERY_VERIFIER_NEGATIVE_MATRIX=PASS
+GIT_DIFF_CHECK=PASS
+
+REPAIRED_1=Refreshed eight stale qualified-source hashes and the parent evidence-manifest hash after verifying the current sources and full test suite.
+REPAIRED_2=Made the tracked secret scanner recognize only the exact deterministic HMAC test fixture at its exact test path while failing closed if that fixture changes.
+
+CAPABILITY_01=x402.compatibility_audit price_usd=1.00 amount_atomic=1000000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_02=mcp.schema_audit price_usd=1.00 amount_atomic=1000000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_03=openapi.quality_audit price_usd=1.00 amount_atomic=1000000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_04=machine_commerce.readiness_audit price_usd=2.00 amount_atomic=2000000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_05=artifact.integrity_manifest price_usd=0.10 amount_atomic=100000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_06=hash.encode price_usd=0.01 amount_atomic=10000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_07=secret.scan price_usd=0.01 amount_atomic=10000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_08=pii.scan price_usd=0.01 amount_atomic=10000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_09=json.repair price_usd=0.01 amount_atomic=10000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_10=prompt.audit price_usd=0.01 amount_atomic=10000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_11=mcp.launch_audit price_usd=9.00 amount_atomic=9000000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_12=x402.purchase_path_audit price_usd=19.00 amount_atomic=19000000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+CAPABILITY_13=xkey.validate price_usd=0.10 amount_atomic=100000 validation=PASS catalog=PASS discovery=PASS mcp_registration=PASS execution_route=PASS payment_route=PASS
+
+PAYMENT_VERIFY_BEFORE_SETTLE=PASS
+DUPLICATE_FULFILLMENT_PREVENTION=PASS
+REPLAY_REJECTION=PASS
+RECEIPT_RESULT_BINDING=PASS
+ENTITLEMENT_BUYER_CAPABILITY_BINDING=PASS
+RECEIVER_ONLY=PASS
+AUTONOMOUS_SELLER_SPENDING=false
+FREE_DISCOVERY_EXECUTES_PAID_COMPUTATION=false
+PRIVATE_DATA_IN_PUBLIC_DISCOVERY=NOT_OBSERVED
+PRODUCTION_PATH_REQUIRED_BY_V4_RUNTIME=false
+LEGACY_PRODUCTION_STATE_MODIFIED=false
+LIVE_PAYMENT_PERFORMED=false
+LIVE_SETTLEMENT_PERFORMED=false
+
+PHASE_2_DECISION=PASS
+STAGED_LOCAL_VERIFICATION=PENDING_PHASE_5
+PUBLIC_CUTOVER_VERIFICATION=PENDING_PHASE_7
+LIVE_CERTIFICATION=PENDING
+
+— 𝙅̶△𝘼̶
+crossingkey_
+CrossingKey Intelligence
+intelligence is the standard.
