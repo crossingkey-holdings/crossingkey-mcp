@@ -98,6 +98,7 @@ const machineCommerce = KENNEKARTE_SECRET.length >= 32 ? createMachineCommerce({
   publicBaseUrl:PUBLIC_BASE_URL,
   facilitatorUrl:X402_FACILITATOR_URL,
   kennekarteSecret:KENNEKARTE_SECRET,
+  onPaymentLifecycleEvent:event=>ckObservePaymentLifecycle(event),
   executionDependencies:{execute:({capabilityName,input})=>capabilityName==='xkey.validate'?runXkeyDirectValidation(input):undefined}
 }) : null;
 const readJson = f => JSON.parse(fs.readFileSync(f,'utf8'));
@@ -564,7 +565,43 @@ CK_FUNNEL_DB.exec(`
     updated_at TEXT NOT NULL,
     state_json TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS payment_attempts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL,
+    request_id TEXT NOT NULL,
+    capability TEXT NOT NULL,
+    public_route TEXT NOT NULL,
+    transport TEXT NOT NULL,
+    synthetic INTEGER NOT NULL CHECK (synthetic IN (0, 1)),
+    challenge_issued INTEGER NOT NULL CHECK (challenge_issued IN (0, 1)),
+    payment_proof_submitted INTEGER NOT NULL CHECK (payment_proof_submitted IN (0, 1)),
+    verification_attempted INTEGER NOT NULL CHECK (verification_attempted IN (0, 1)),
+    verification_outcome TEXT,
+    settlement_attempted INTEGER NOT NULL CHECK (settlement_attempted IN (0, 1)),
+    settlement_outcome TEXT,
+    receipt_creation_outcome TEXT,
+    entitlement_creation_outcome TEXT,
+    final_http_status INTEGER NOT NULL,
+    latency_ms INTEGER NOT NULL,
+    classification TEXT NOT NULL,
+    commercial_state TEXT,
+    actionable INTEGER NOT NULL CHECK (actionable IN (0, 1)),
+    safe_reference TEXT,
+    application_version TEXT NOT NULL
+  );
+
+  CREATE INDEX IF NOT EXISTS payment_attempts_timestamp_idx
+    ON payment_attempts(timestamp DESC);
+  CREATE INDEX IF NOT EXISTS payment_attempts_actionable_idx
+    ON payment_attempts(actionable, timestamp DESC);
 `);
+
+try {
+  fs.chmodSync(CK_FUNNEL_DB_PATH, 0o600);
+} catch (error) {
+  console.error('[funnel] sqlite_permission_error');
+}
 
 function ckLoadPersistentFunnel() {
   try {
@@ -598,6 +635,33 @@ const CK_FUNNEL_SAVE = CK_FUNNEL_DB.prepare(`
     updated_at=excluded.updated_at,
     state_json=excluded.state_json
 `);
+
+const CK_PAYMENT_ATTEMPT_INSERT = CK_FUNNEL_DB.prepare(`
+  INSERT INTO payment_attempts (
+    timestamp, request_id, capability, public_route, transport, synthetic,
+    challenge_issued, payment_proof_submitted, verification_attempted,
+    verification_outcome, settlement_attempted, settlement_outcome,
+    receipt_creation_outcome, entitlement_creation_outcome,
+    final_http_status, latency_ms, classification, commercial_state,
+    actionable, safe_reference, application_version
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+
+const CK_PAYMENT_ATTEMPT_PRUNE = CK_FUNNEL_DB.prepare(`
+  DELETE FROM payment_attempts
+  WHERE id NOT IN (
+    SELECT id FROM payment_attempts ORDER BY id DESC LIMIT ?
+  )
+`);
+
+const CK_PAYMENT_ATTEMPT_MAX_ROWS_RAW = Number(
+  process.env.CK_PAYMENT_ATTEMPT_MAX_ROWS || 5000
+);
+const CK_PAYMENT_ATTEMPT_MAX_ROWS =
+  Number.isSafeInteger(CK_PAYMENT_ATTEMPT_MAX_ROWS_RAW) &&
+  CK_PAYMENT_ATTEMPT_MAX_ROWS_RAW >= 100
+    ? Math.min(50_000, CK_PAYMENT_ATTEMPT_MAX_ROWS_RAW)
+    : 5000;
 
 let ckFunnelSaveTimer = null;
 
@@ -673,6 +737,38 @@ const CK_FUNNEL = {
   revenue: {
     settlements: 0,
     atomic_usdc: 0
+  },
+  commercial: {
+    provider_discovery_requests: 0,
+    capability_discovery_requests: 0,
+    paid_capability_inquiries: 0,
+    price_inspections: 0,
+    payment_instruction_requests: 0,
+    payment_challenges_issued: 0,
+    payment_proofs_received: 0,
+    verification_attempts: 0,
+    verification_failures: 0,
+    settlement_attempts: 0,
+    settlement_failures: 0,
+    receipt_creation_attempts: 0,
+    receipt_creation_failures: 0,
+    entitlement_creation_attempts: 0,
+    entitlement_creation_failures: 0,
+    successful_paid_executions: 0,
+    unconverted_challenges: 0,
+    synthetic_requests: 0
+  },
+  failure_categories: {
+    INVALID_PAYMENT_PROOF: 0,
+    VERIFICATION_FAILURE: 0,
+    SETTLEMENT_FAILURE: 0,
+    FACILITATOR_FAILURE: 0,
+    RECEIPT_FAILURE: 0,
+    ENTITLEMENT_FAILURE: 0,
+    REPLAY_OR_IDEMPOTENCY_CONFLICT: 0,
+    UNEXPECTED_SERVER_EXCEPTION: 0,
+    MALFORMED_REQUEST: 0,
+    INFRASTRUCTURE_FAILURE: 0
   }
 };
 
@@ -712,6 +808,16 @@ if (CK_FUNNEL_PERSISTED?.state) {
     saved.revenue || {}
   );
 
+  Object.assign(
+    CK_FUNNEL.commercial,
+    saved.commercial || {}
+  );
+
+  Object.assign(
+    CK_FUNNEL.failure_categories,
+    saved.failure_categories || {}
+  );
+
   console.log(
     `[funnel] restored persistent counters updated=${CK_FUNNEL_PERSISTED.updated_at}`
   );
@@ -719,19 +825,7 @@ if (CK_FUNNEL_PERSISTED?.state) {
 
 
 
-const CK_PAID_TOOL_NAMES = new Set([
-  'x402.compatibility_audit',
-  'mcp.schema_audit',
-  'openapi.quality_audit',
-  'machine_commerce.readiness_audit',
-  'artifact.integrity_manifest',
-  'hash.encode',
-  'secret.scan',
-  'pii.scan',
-  'json.repair',
-  'prompt.audit'
-  ,'mcp.launch_audit','x402.purchase_path_audit'
-]);
+const CK_PAID_TOOL_NAMES = new Set(PAID_TOOL_NAMES);
 
 function ckCapability(name) {
   if (!CK_FUNNEL.capabilities[name]) {
@@ -739,12 +833,175 @@ function ckCapability(name) {
       requests: 0,
       challenges_402: 0,
       payment_returns: 0,
+      unconverted_challenges: 0,
+      verification_failures: 0,
+      settlement_failures: 0,
       fulfilled: 0,
       settlements: 0,
       atomic_usdc: 0
     };
   }
   return CK_FUNNEL.capabilities[name];
+}
+
+const CK_PAYMENT_ATTEMPTS = new Map();
+let ckPaymentAttemptWrites = 0;
+
+function ckBoundedText(value, max = 160) {
+  return String(value ?? '').replace(/[\r\n\t]/g, ' ').slice(0, max);
+}
+
+function ckSafeReference(value) {
+  const text = ckBoundedText(value, 128);
+  if (!text) return null;
+  if (/^0x[a-fA-F0-9]{64}$/.test(text)) {
+    return `${text.slice(0, 12)}...${text.slice(-8)}`;
+  }
+  if (/^ck_(?:purchase|rcpt|ent)_[A-Za-z0-9-]+$/.test(text)) {
+    return text.slice(0, 96);
+  }
+  return null;
+}
+
+function ckIncrement(object, key) {
+  object[key] = Number(object[key] || 0) + 1;
+}
+
+function ckBeginPaymentAttempt({requestId, capability, route, transport, synthetic=false, proofSubmitted=false}) {
+  const id = ckBoundedText(requestId || crypto.randomUUID(), 128);
+  const attempt = {
+    timestamp: new Date().toISOString(),
+    startedAt: Date.now(),
+    requestId: id,
+    capability: ckBoundedText(capability || 'unknown', 160),
+    route: ckBoundedText(route || 'unknown', 240),
+    transport: transport === 'mcp' ? 'mcp' : 'http',
+    synthetic: synthetic === true,
+    challengeIssued: false,
+    proofSubmitted: proofSubmitted === true,
+    verificationAttempted: false,
+    verificationOutcome: null,
+    settlementAttempted: false,
+    settlementOutcome: null,
+    receiptOutcome: null,
+    entitlementOutcome: null,
+    safeReference: null,
+    finalized: false
+  };
+  CK_PAYMENT_ATTEMPTS.set(id, attempt);
+  ckIncrement(CK_FUNNEL.commercial, 'paid_capability_inquiries');
+  if (attempt.synthetic) ckIncrement(CK_FUNNEL.commercial, 'synthetic_requests');
+  if (attempt.proofSubmitted) ckIncrement(CK_FUNNEL.commercial, 'payment_proofs_received');
+  return attempt;
+}
+
+function ckObservePaymentLifecycle(event) {
+  const requestId = ckBoundedText(event?.telemetryContext?.requestId, 128);
+  const attempt = CK_PAYMENT_ATTEMPTS.get(requestId);
+  if (!attempt || attempt.finalized) return;
+
+  switch (event.stage) {
+    case 'VERIFICATION_ATTEMPTED':
+      if (!attempt.verificationAttempted) {
+        attempt.verificationAttempted = true;
+        ckIncrement(CK_FUNNEL.commercial, 'verification_attempts');
+      }
+      break;
+    case 'VERIFICATION_SUCCEEDED':
+      attempt.verificationOutcome = 'SUCCEEDED';
+      break;
+    case 'VERIFICATION_FAILED':
+      attempt.verificationOutcome = 'FAILED';
+      attempt.failureKind = event.failureKind || 'VERIFICATION_FAILURE';
+      ckIncrement(CK_FUNNEL.commercial, 'verification_failures');
+      ckIncrement(ckCapability(attempt.capability), 'verification_failures');
+      break;
+    case 'SETTLEMENT_ATTEMPTED':
+      if (!attempt.settlementAttempted) {
+        attempt.settlementAttempted = true;
+        ckIncrement(CK_FUNNEL.commercial, 'settlement_attempts');
+      }
+      break;
+    case 'SETTLEMENT_SUCCEEDED':
+      attempt.settlementOutcome = 'SUCCEEDED';
+      attempt.safeReference = ckSafeReference(event.reference);
+      break;
+    case 'SETTLEMENT_FAILED':
+      attempt.settlementOutcome = 'FAILED';
+      attempt.failureKind = event.failureKind || 'SETTLEMENT_FAILURE';
+      ckIncrement(CK_FUNNEL.commercial, 'settlement_failures');
+      ckIncrement(ckCapability(attempt.capability), 'settlement_failures');
+      break;
+    case 'FINALIZATION_ATTEMPTED':
+      if (attempt.receiptOutcome === null) {
+        attempt.receiptOutcome = 'ATTEMPTED';
+        attempt.entitlementOutcome = 'ATTEMPTED';
+        ckIncrement(CK_FUNNEL.commercial, 'receipt_creation_attempts');
+        ckIncrement(CK_FUNNEL.commercial, 'entitlement_creation_attempts');
+      }
+      break;
+    case 'FINALIZATION_SUCCEEDED':
+      attempt.receiptOutcome = 'SUCCEEDED';
+      attempt.entitlementOutcome = 'SUCCEEDED';
+      attempt.safeReference = ckSafeReference(event.receiptId) || attempt.safeReference;
+      break;
+    case 'FINALIZATION_FAILED':
+      attempt.receiptOutcome = 'FAILED';
+      attempt.entitlementOutcome = 'FAILED';
+      attempt.failureKind = 'RECEIPT_FAILURE';
+      ckIncrement(CK_FUNNEL.commercial, 'receipt_creation_failures');
+      ckIncrement(CK_FUNNEL.commercial, 'entitlement_creation_failures');
+      ckIncrement(CK_FUNNEL.failure_categories, 'ENTITLEMENT_FAILURE');
+      break;
+  }
+}
+
+function ckFinalizePaymentAttempt(attempt, {status, classification, commercialState=null, actionable=false, reference=null}={}) {
+  if (!attempt || attempt.finalized) return;
+  attempt.finalized = true;
+  CK_PAYMENT_ATTEMPTS.delete(attempt.requestId);
+  const finalClassification = ckBoundedText(classification || attempt.failureKind || 'UNEXPECTED_SERVER_EXCEPTION', 80);
+  const finalReference = ckSafeReference(reference) || attempt.safeReference;
+
+  if (finalClassification === 'SUCCESSFUL_PAID_EXECUTION') {
+    ckIncrement(CK_FUNNEL.commercial, 'successful_paid_executions');
+  } else if (Object.hasOwn(CK_FUNNEL.failure_categories, finalClassification)) {
+    ckIncrement(CK_FUNNEL.failure_categories, finalClassification);
+  }
+  if (actionable) CK_FUNNEL.x402.errors++;
+
+  try {
+    CK_PAYMENT_ATTEMPT_INSERT.run(
+      attempt.timestamp,
+      attempt.requestId,
+      attempt.capability,
+      attempt.route,
+      attempt.transport,
+      attempt.synthetic ? 1 : 0,
+      attempt.challengeIssued ? 1 : 0,
+      attempt.proofSubmitted ? 1 : 0,
+      attempt.verificationAttempted ? 1 : 0,
+      attempt.verificationOutcome,
+      attempt.settlementAttempted ? 1 : 0,
+      attempt.settlementOutcome,
+      attempt.receiptOutcome,
+      attempt.entitlementOutcome,
+      Number(status || 500),
+      Math.max(0, Date.now() - attempt.startedAt),
+      finalClassification,
+      commercialState,
+      actionable ? 1 : 0,
+      finalReference,
+      MCP_RELEASE_VERSION
+    );
+    ckPaymentAttemptWrites++;
+    if (ckPaymentAttemptWrites % 100 === 0) {
+      CK_PAYMENT_ATTEMPT_PRUNE.run(CK_PAYMENT_ATTEMPT_MAX_ROWS);
+    }
+  } catch {
+    console.error('[payment-telemetry] persistence_error');
+  }
+  ckSchedulePersistentFunnelSave();
 }
 
 ckConsumeDurableRevenueEvents();
@@ -772,18 +1029,17 @@ app.use((req,res,next)=>{
 
   if (path.startsWith('/.well-known/')) {
     CK_FUNNEL.discovery_requests++;
+    if (path.includes('agent') || path.includes('mcp')) {
+      ckIncrement(CK_FUNNEL.commercial, 'provider_discovery_requests');
+    }
+    if (path.includes('x402') || path.includes('mcp')) {
+      ckIncrement(CK_FUNNEL.commercial, 'capability_discovery_requests');
+    }
   }
 
-  const incoming =
-    String(req.headers['x-request-id'] || '').trim();
-
-  const cfRay =
-    String(req.headers['cf-ray'] || '').trim();
-
-  const correlationId =
-    incoming ||
-    cfRay ||
-    crypto.randomUUID();
+  // Always generate the stored correlation ID. Client-supplied request IDs and
+  // edge identifiers may contain unnecessary identifying or secret material.
+  const correlationId = crypto.randomUUID();
 
   req.ckCorrelationId = correlationId;
   res.setHeader('X-CrossingKey-Request-ID', correlationId);
@@ -798,6 +1054,16 @@ app.use((req,res,next)=>{
       CK_FUNNEL.mcp.tools_call++;
 
       const name = req.body?.params?.name;
+
+      if (name === 'provider.describe') {
+        ckIncrement(CK_FUNNEL.commercial, 'provider_discovery_requests');
+      }
+      if (['offers.list', 'requirements.check', 'result.preview', 'execution.preflight'].includes(name)) {
+        ckIncrement(CK_FUNNEL.commercial, 'capability_discovery_requests');
+      }
+      if (name === 'cost.estimate') {
+        ckIncrement(CK_FUNNEL.commercial, 'price_inspections');
+      }
 
       if (CK_PAID_TOOL_NAMES.has(name)) {
         CK_FUNNEL.mcp.paid_tool_calls++;
@@ -1068,36 +1334,53 @@ app.post('/api/x402/:capability',async(req,res)=>{
     ckCap.payment_returns++;
   }
 
+  const ckAttempt = ckBeginPaymentAttempt({
+    requestId: req.ckCorrelationId,
+    capability: ckCapName,
+    route: `/api/x402/${encodeURIComponent(ckCapName)}`,
+    transport: 'http',
+    synthetic: String(req.headers['x-crossingkey-synthetic'] || '') === '1',
+    proofSubmitted: ckHadPayment
+  });
+
   try{
-    if(!machineCommerce) return res.status(503).json({error:'machine_commerce_not_configured'});
+    if(!machineCommerce){ckFinalizePaymentAttempt(ckAttempt,{status:503,classification:'INFRASTRUCTURE_FAILURE',actionable:true});return res.status(503).json({error:'machine_commerce_not_configured'});}
     const capabilityName=String(req.params.capability||'');
-    if(!MACHINE_CAPABILITIES.some(x=>x.name===capabilityName)) return res.status(404).json({error:'unknown_capability'});
+    if(!MACHINE_CAPABILITIES.some(x=>x.name===capabilityName)){ckFinalizePaymentAttempt(ckAttempt,{status:404,classification:'MALFORMED_REQUEST',actionable:false});return res.status(404).json({error:'unknown_capability'});}
     const v1Header=req.headers['x-payment'];
     const v2Header=req.headers['payment-signature'];
     if(!v1Header&&!v2Header){
       const requested=req.query.x402Version??req.headers['x402-version'];
       let version;
-      try{version=normalizeX402Version(requested);}catch{return res.status(400).json({error:'unsupported_x402_version'});}
+      try{version=normalizeX402Version(requested);}catch{ckFinalizePaymentAttempt(ckAttempt,{status:400,classification:'MALFORMED_REQUEST',actionable:false});return res.status(400).json({error:'unsupported_x402_version'});}
       const challenge=machineCommerce.paymentRequired(capabilityName,version);
       for(const [name,value] of Object.entries(challenge.headers)) res.set(name,value);
-      CK_FUNNEL.x402.challenges_402++; ckCap.challenges_402++; return res.status(402).json(challenge.body);
+      CK_FUNNEL.x402.challenges_402++;
+      ckCap.challenges_402++;
+      ckCap.unconverted_challenges++;
+      ckAttempt.challengeIssued=true;
+      ckIncrement(CK_FUNNEL.commercial, 'payment_instruction_requests');
+      ckIncrement(CK_FUNNEL.commercial, 'payment_challenges_issued');
+      ckIncrement(CK_FUNNEL.commercial, 'unconverted_challenges');
+      ckFinalizePaymentAttempt(ckAttempt,{status:402,classification:'EXPECTED_UNPAID_402',commercialState:'UNCONVERTED_CHALLENGE',actionable:false});
+      return res.status(402).json(challenge.body);
     }
-    if(v1Header&&v2Header) return res.status(400).json({error:'ambiguous_payment_headers'});
+    if(v1Header&&v2Header){ckFinalizePaymentAttempt(ckAttempt,{status:400,classification:'INVALID_PAYMENT_PROOF',actionable:true});return res.status(400).json({error:'ambiguous_payment_headers'});}
     const input=req.body?.input;
     const idempotencyKey=String(req.body?.idempotency_key||req.headers['idempotency-key']||'');
-    if(!/^[A-Za-z0-9._:-]{8,160}$/.test(idempotencyKey)) return res.status(400).json({error:'bounded_idempotency_key_required'});
+    if(!/^[A-Za-z0-9._:-]{8,160}$/.test(idempotencyKey)){ckFinalizePaymentAttempt(ckAttempt,{status:400,classification:'MALFORMED_REQUEST',actionable:false});return res.status(400).json({error:'bounded_idempotency_key_required'});}
     const inputValidation=validatePaidCapabilityInput(capabilityName,input);
-    if(!inputValidation.ok) return res.status(400).json({error:inputValidation.code});
+    if(!inputValidation.ok){ckFinalizePaymentAttempt(ckAttempt,{status:400,classification:'MALFORMED_REQUEST',actionable:false});return res.status(400).json({error:inputValidation.code});}
     const paymentPayload=decodeBase64Json(v1Header||v2Header);
     const expectedVersion=v1Header?1:2;
 
     console.error(
-      `[x402] paid_ingress capability=${capabilityName} version=${expectedVersion} idempotency=${idempotencyKey}`
+      `[x402] paid_ingress capability=${capabilityName} version=${expectedVersion} request=${ckAttempt.requestId}`
     );
 
-    if(paymentPayload.x402Version!==expectedVersion) return res.status(400).json({error:'payment_header_version_mismatch'});
-    if(expectedVersion===1 && paymentPayload.accepted!==undefined) return res.status(400).json({error:'v1_envelope_contains_v2_fields'});
-    if(expectedVersion===2 && (!paymentPayload.accepted||typeof paymentPayload.accepted!=='object')) return res.status(400).json({error:'v2_accepted_requirements_required'});
+    if(paymentPayload.x402Version!==expectedVersion){ckFinalizePaymentAttempt(ckAttempt,{status:400,classification:'INVALID_PAYMENT_PROOF',actionable:true});return res.status(400).json({error:'payment_header_version_mismatch'});}
+    if(expectedVersion===1 && paymentPayload.accepted!==undefined){ckFinalizePaymentAttempt(ckAttempt,{status:400,classification:'INVALID_PAYMENT_PROOF',actionable:true});return res.status(400).json({error:'v1_envelope_contains_v2_fields'});}
+    if(expectedVersion===2 && (!paymentPayload.accepted||typeof paymentPayload.accepted!=='object')){ckFinalizePaymentAttempt(ckAttempt,{status:400,classification:'INVALID_PAYMENT_PROOF',actionable:true});return res.status(400).json({error:'v2_accepted_requirements_required'});}
 
     console.error(`[x402] invoke_start capability=${capabilityName}`);
 
@@ -1105,11 +1388,12 @@ app.post('/api/x402/:capability',async(req,res)=>{
       capabilityName,
       input,
       idempotencyKey,
-      paymentPayload
+      paymentPayload,
+      telemetryContext:{requestId:ckAttempt.requestId,route:ckAttempt.route,synthetic:ckAttempt.synthetic}
     });
 
     console.error(
-      `[x402] invoke_ok capability=${capabilityName} purchase=${result.purchaseId||'duplicate'}`
+      `[x402] invoke_ok capability=${capabilityName} request=${ckAttempt.requestId} duplicate=${result.duplicate===true}`
     );
 
     ckConsumeDurableRevenueEvents();
@@ -1121,18 +1405,34 @@ app.post('/api/x402/:capability',async(req,res)=>{
 
     const settlementHeader=Buffer.from(JSON.stringify(result.settlement)).toString('base64');
     res.set(expectedVersion===1?'X-PAYMENT-RESPONSE':'PAYMENT-RESPONSE',settlementHeader);
+    ckFinalizePaymentAttempt(ckAttempt,{
+      status:200,
+      classification:result.duplicate?'REPLAY_OR_IDEMPOTENCY_CONFLICT':'SUCCESSFUL_PAID_EXECUTION',
+      actionable:false,
+      reference:result.receipt?.id||result.settlement?.transaction
+    });
     return res.json(result);
   }catch(err){
     const message=String(err?.message||'x402 execution failed');
+    const classification = ckAttempt.failureKind ||
+      (/replay|idempotency|already processed/i.test(message)
+        ? 'REPLAY_OR_IDEMPOTENCY_CONFLICT'
+        : /verification|verify/i.test(message)
+          ? 'VERIFICATION_FAILURE'
+          : /settlement|reconciliation/i.test(message)
+            ? 'SETTLEMENT_FAILURE'
+            : /invalid|required|mismatch|unsupported|authorization|signature/i.test(message)
+              ? 'INVALID_PAYMENT_PROOF'
+              : 'UNEXPECTED_SERVER_EXCEPTION');
 
     console.error(
-      `[x402] route_error name=${String(err?.name||'Error')} message=${message.slice(0,240)}`
+      `[x402] route_error name=${ckBoundedText(err?.name||'Error',80)} class=${classification}`
     );
 
     const client=/required|mismatch|unsupported|invalid|conflict|replay|disabled/i.test(message);
+    ckFinalizePaymentAttempt(ckAttempt,{status:client?400:502,classification,actionable:classification!=='REPLAY_OR_IDEMPOTENCY_CONFLICT'});
     return res.status(client?400:502).json({
-      error:client?'invalid_payment_or_request':'settlement_or_execution_failed',
-      message
+      error:client?'invalid_payment_or_request':'settlement_or_execution_failed'
     });
   }
 });
@@ -1417,25 +1717,66 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
           };
         }
 
+        const paymentPayload=extra?._meta?.['x402/payment'];
+        const paymentAttempt=ckBeginPaymentAttempt({
+          requestId:crypto.randomUUID(),
+          capability:paid.name,
+          route:`mcp://tool/${paid.name}`,
+          transport:'mcp',
+          synthetic:extra?._meta?.['crossingkey/synthetic']===true,
+          proofSubmitted:paymentPayload!==undefined
+        });
+
         try{
-          const paymentPayload=extra?._meta?.['x402/payment'];
           if(paymentPayload===undefined){
             const required=nativePaymentRequired(paid);
+            paymentAttempt.challengeIssued=true;
+            ckIncrement(CK_FUNNEL.commercial, 'payment_instruction_requests');
+            ckIncrement(CK_FUNNEL.commercial, 'payment_challenges_issued');
+            ckIncrement(CK_FUNNEL.commercial, 'unconverted_challenges');
+            ckIncrement(ckCapability(paid.name), 'unconverted_challenges');
+            ckFinalizePaymentAttempt(paymentAttempt,{status:200,classification:'EXPECTED_UNPAID_402',commercialState:'UNCONVERTED_CHALLENGE',actionable:false});
             return {isError:true,structuredContent:required,content:[{type:'text',text:JSON.stringify(required)}]};
           }
           if(!paymentPayload||typeof paymentPayload!=='object'||paymentPayload.x402Version!==2){
+            ckFinalizePaymentAttempt(paymentAttempt,{status:200,classification:'INVALID_PAYMENT_PROOF',actionable:true});
             return nativePaymentFailure(paid,'Invalid x402 v2 payment payload');
           }
           const idempotencyKey=nativePaymentKey(paid,input,extra);
-          const result=await machineCommerce.invoke({capabilityName:paid.name,input,idempotencyKey,paymentPayload});
+          const result=await machineCommerce.invoke({
+            capabilityName:paid.name,
+            input,
+            idempotencyKey,
+            paymentPayload,
+            telemetryContext:{requestId:paymentAttempt.requestId,route:paymentAttempt.route,synthetic:paymentAttempt.synthetic}
+          });
           ckConsumeDurableRevenueEvents();
           const response={success:true,transaction:result.settlement?.transaction||null,network:result.receipt?.payment?.network||null,payer:result.receipt?.holder||null};
+          ckFinalizePaymentAttempt(paymentAttempt,{
+            status:200,
+            classification:result.duplicate?'REPLAY_OR_IDEMPOTENCY_CONFLICT':'SUCCESSFUL_PAID_EXECUTION',
+            actionable:false,
+            reference:result.receipt?.id||result.settlement?.transaction
+          });
           return {
             structuredContent:result,
             content:[{type:'text',text:JSON.stringify(result)}],
             _meta:{'x402/payment-response':response}
           };
         }catch(e){
+          const message=String(e?.message||'');
+          const classification=paymentAttempt.failureKind||(
+            /replay|idempotency/i.test(message)
+              ? 'REPLAY_OR_IDEMPOTENCY_CONFLICT'
+              : /verification|verify/i.test(message)
+                ? 'VERIFICATION_FAILURE'
+                : /settlement|reconciliation/i.test(message)
+                  ? 'SETTLEMENT_FAILURE'
+                  : /invalid|required|mismatch|unsupported|authorization|signature/i.test(message)
+                    ? 'INVALID_PAYMENT_PROOF'
+                    : 'UNEXPECTED_SERVER_EXCEPTION'
+          );
+          ckFinalizePaymentAttempt(paymentAttempt,{status:200,classification,actionable:classification!=='REPLAY_OR_IDEMPOTENCY_CONFLICT'});
           return nativePaymentFailure(paid,'Payment verification or settlement failed');
         }
       }

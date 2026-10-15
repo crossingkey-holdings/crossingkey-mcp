@@ -1,0 +1,1484 @@
+{
+  "schema_version": "crossingkey/public-endpoint-inventory/1",
+  "generated_at": "2026-10-15T19:07:48.904Z",
+  "release_version": "4.0.0-rc.1",
+  "staging_base": "http://127.0.0.1:3401",
+  "public_base": "https://mcp.crossingkeyintelligence.com",
+  "current_public_version": "3.0.1",
+  "method_source": {
+    "v4": "server-runtime.mjs app.post('/api/x402/:capability')",
+    "v3": "/home/founder/Downloads/crossingkey_developer_revenue_app/server-runtime.mjs app.post('/api/x402/:capability')"
+  },
+  "no_payment_proof_submitted": true,
+  "live_settlement_attempted": false,
+  "summary": {
+    "endpoint_count": 13,
+    "legacy_endpoint_count": 10,
+    "new_public_endpoint_count": 3,
+    "mcp_only_count": 0,
+    "changed_endpoint_count": 0,
+    "unverified_endpoint_count": 0,
+    "named_legacy_continuity_gate": "PASS",
+    "all_legacy_continuity_gate": "PASS",
+    "staged_endpoint_gate": "PASS",
+    "promotion_gate": "PASS"
+  },
+  "endpoints": [
+    {
+      "capability": "x402.compatibility_audit",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/x402.compatibility_audit",
+      "source_route": "/api/x402/x402.compatibility_audit",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "LEGACY_ENDPOINT_PRESERVED",
+      "current_price": {
+        "amount_usd": "1.00",
+        "amount_atomic": "1000000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) x402 endpoint to audit."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Compatibility result including status, detected x402 version, findings and pass/fail state."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": true,
+        "in_public_discovery": true,
+        "named_continuity_requirement": false,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "VERIFIED_COMPATIBLE_WITH_V3_0_1",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 402,
+          "challenge_present": true,
+          "challenge": {
+            "x402Version": 2,
+            "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/x402.compatibility_audit",
+            "requirement": {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "amount": "1000000",
+              "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+              "maxTimeoutSeconds": 60
+            }
+          }
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/x402.compatibility_audit",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "1000000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "VERIFIED_CURRENT_V3_0_1"
+    },
+    {
+      "capability": "mcp.schema_audit",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/mcp.schema_audit",
+      "source_route": "/api/x402/mcp.schema_audit",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "LEGACY_ENDPOINT_PRESERVED",
+      "current_price": {
+        "amount_usd": "1.00",
+        "amount_atomic": "1000000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "tools"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "tools": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object"
+            },
+            "description": "MCP tool definitions to audit."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Aggregate MCP schema score plus per-tool findings."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": true,
+        "in_public_discovery": true,
+        "named_continuity_requirement": false,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "VERIFIED_COMPATIBLE_WITH_V3_0_1",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 402,
+          "challenge_present": true,
+          "challenge": {
+            "x402Version": 2,
+            "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/mcp.schema_audit",
+            "requirement": {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "amount": "1000000",
+              "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+              "maxTimeoutSeconds": 60
+            }
+          }
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/mcp.schema_audit",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "1000000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "VERIFIED_CURRENT_V3_0_1"
+    },
+    {
+      "capability": "openapi.quality_audit",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/openapi.quality_audit",
+      "source_route": "/api/x402/openapi.quality_audit",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "LEGACY_ENDPOINT_PRESERVED",
+      "current_price": {
+        "amount_usd": "1.00",
+        "amount_atomic": "1000000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "spec"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "spec": {
+            "type": "object",
+            "description": "Parsed OpenAPI document to audit."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "OpenAPI quality score, operation count and structural findings."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": true,
+        "in_public_discovery": true,
+        "named_continuity_requirement": false,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "VERIFIED_COMPATIBLE_WITH_V3_0_1",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 402,
+          "challenge_present": true,
+          "challenge": {
+            "x402Version": 2,
+            "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/openapi.quality_audit",
+            "requirement": {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "amount": "1000000",
+              "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+              "maxTimeoutSeconds": 60
+            }
+          }
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/openapi.quality_audit",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "1000000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "VERIFIED_CURRENT_V3_0_1"
+    },
+    {
+      "capability": "machine_commerce.readiness_audit",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/machine_commerce.readiness_audit",
+      "source_route": "/api/x402/machine_commerce.readiness_audit",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "LEGACY_ENDPOINT_PRESERVED",
+      "current_price": {
+        "amount_usd": "2.00",
+        "amount_atomic": "2000000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Base URL of the machine-commerce service to audit."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Machine-commerce readiness score and endpoint checks."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": true,
+        "in_public_discovery": true,
+        "named_continuity_requirement": false,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "VERIFIED_COMPATIBLE_WITH_V3_0_1",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 402,
+          "challenge_present": true,
+          "challenge": {
+            "x402Version": 2,
+            "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/machine_commerce.readiness_audit",
+            "requirement": {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "amount": "2000000",
+              "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+              "maxTimeoutSeconds": 60
+            }
+          }
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/machine_commerce.readiness_audit",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "2000000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "VERIFIED_CURRENT_V3_0_1"
+    },
+    {
+      "capability": "artifact.integrity_manifest",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/artifact.integrity_manifest",
+      "source_route": "/api/x402/artifact.integrity_manifest",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "LEGACY_ENDPOINT_PRESERVED",
+      "current_price": {
+        "amount_usd": "0.10",
+        "amount_atomic": "100000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "artifacts"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "artifacts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "content"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Deterministic artifact hashes and root manifest hash."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": true,
+        "in_public_discovery": true,
+        "named_continuity_requirement": false,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "VERIFIED_COMPATIBLE_WITH_V3_0_1",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 402,
+          "challenge_present": true,
+          "challenge": {
+            "x402Version": 2,
+            "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/artifact.integrity_manifest",
+            "requirement": {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "amount": "100000",
+              "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+              "maxTimeoutSeconds": 60
+            }
+          }
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/artifact.integrity_manifest",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "100000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "VERIFIED_CURRENT_V3_0_1"
+    },
+    {
+      "capability": "hash.encode",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/hash.encode",
+      "source_route": "/api/x402/hash.encode",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "LEGACY_ENDPOINT_PRESERVED",
+      "current_price": {
+        "amount_usd": "0.01",
+        "amount_atomic": "10000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 65536,
+            "description": "Input text, maximum 65536 UTF-8 bytes."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Deterministic hash.encode result."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": true,
+        "in_public_discovery": true,
+        "named_continuity_requirement": true,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "VERIFIED_COMPATIBLE_WITH_V3_0_1",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 402,
+          "challenge_present": true,
+          "challenge": {
+            "x402Version": 2,
+            "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/hash.encode",
+            "requirement": {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "amount": "10000",
+              "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+              "maxTimeoutSeconds": 60
+            }
+          }
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/hash.encode",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "VERIFIED_CURRENT_V3_0_1"
+    },
+    {
+      "capability": "secret.scan",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/secret.scan",
+      "source_route": "/api/x402/secret.scan",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "LEGACY_ENDPOINT_PRESERVED",
+      "current_price": {
+        "amount_usd": "0.01",
+        "amount_atomic": "10000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 65536,
+            "description": "Input text, maximum 65536 UTF-8 bytes."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Deterministic secret.scan result."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": true,
+        "in_public_discovery": true,
+        "named_continuity_requirement": true,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "VERIFIED_COMPATIBLE_WITH_V3_0_1",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 402,
+          "challenge_present": true,
+          "challenge": {
+            "x402Version": 2,
+            "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/secret.scan",
+            "requirement": {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "amount": "10000",
+              "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+              "maxTimeoutSeconds": 60
+            }
+          }
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/secret.scan",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "VERIFIED_CURRENT_V3_0_1"
+    },
+    {
+      "capability": "pii.scan",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/pii.scan",
+      "source_route": "/api/x402/pii.scan",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "LEGACY_ENDPOINT_PRESERVED",
+      "current_price": {
+        "amount_usd": "0.01",
+        "amount_atomic": "10000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 65536,
+            "description": "Input text, maximum 65536 UTF-8 bytes."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Deterministic pii.scan result."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": true,
+        "in_public_discovery": true,
+        "named_continuity_requirement": true,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "VERIFIED_COMPATIBLE_WITH_V3_0_1",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 402,
+          "challenge_present": true,
+          "challenge": {
+            "x402Version": 2,
+            "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/pii.scan",
+            "requirement": {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "amount": "10000",
+              "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+              "maxTimeoutSeconds": 60
+            }
+          }
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/pii.scan",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "VERIFIED_CURRENT_V3_0_1"
+    },
+    {
+      "capability": "json.repair",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/json.repair",
+      "source_route": "/api/x402/json.repair",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "LEGACY_ENDPOINT_PRESERVED",
+      "current_price": {
+        "amount_usd": "0.01",
+        "amount_atomic": "10000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 65536,
+            "description": "Input text, maximum 65536 UTF-8 bytes."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Deterministic json.repair result."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": true,
+        "in_public_discovery": true,
+        "named_continuity_requirement": true,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "VERIFIED_COMPATIBLE_WITH_V3_0_1",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 402,
+          "challenge_present": true,
+          "challenge": {
+            "x402Version": 2,
+            "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/json.repair",
+            "requirement": {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "amount": "10000",
+              "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+              "maxTimeoutSeconds": 60
+            }
+          }
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/json.repair",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "VERIFIED_CURRENT_V3_0_1"
+    },
+    {
+      "capability": "prompt.audit",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/prompt.audit",
+      "source_route": "/api/x402/prompt.audit",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "LEGACY_ENDPOINT_PRESERVED",
+      "current_price": {
+        "amount_usd": "0.01",
+        "amount_atomic": "10000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 65536,
+            "description": "Input text, maximum 65536 UTF-8 bytes."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Deterministic prompt.audit result."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": true,
+        "in_public_discovery": true,
+        "named_continuity_requirement": true,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "VERIFIED_COMPATIBLE_WITH_V3_0_1",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 402,
+          "challenge_present": true,
+          "challenge": {
+            "x402Version": 2,
+            "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/prompt.audit",
+            "requirement": {
+              "scheme": "exact",
+              "network": "eip155:8453",
+              "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+              "amount": "10000",
+              "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+              "maxTimeoutSeconds": 60
+            }
+          }
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/prompt.audit",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "10000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "VERIFIED_CURRENT_V3_0_1"
+    },
+    {
+      "capability": "mcp.launch_audit",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/mcp.launch_audit",
+      "source_route": "/api/x402/mcp.launch_audit",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "NEW_PUBLIC_ENDPOINT",
+      "current_price": {
+        "amount_usd": "9.00",
+        "amount_atomic": "9000000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) MCP service base URL to audit."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Deterministic launch score, checks, findings, and pass/fail status."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": false,
+        "in_public_discovery": false,
+        "named_continuity_requirement": false,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "ADDITIVE_NOT_PRESENT_IN_V3",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 404,
+          "challenge_present": false,
+          "challenge": null
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/mcp.launch_audit",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "9000000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "NOT_YET_PUBLIC_V4"
+    },
+    {
+      "capability": "x402.purchase_path_audit",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/x402.purchase_path_audit",
+      "source_route": "/api/x402/x402.purchase_path_audit",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "NEW_PUBLIC_ENDPOINT",
+      "current_price": {
+        "amount_usd": "19.00",
+        "amount_atomic": "19000000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "url",
+          "capability"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTP(S) x402 service base URL."
+          },
+          "capability": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "description": "Capability name whose no-payment challenge should be audited."
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Purchase-path score, challenge checks, findings, and explicit no-payment status."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": false,
+        "in_public_discovery": false,
+        "named_continuity_requirement": false,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "ADDITIVE_NOT_PRESENT_IN_V3",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 404,
+          "challenge_present": false,
+          "challenge": null
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/x402.purchase_path_audit",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "19000000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "NOT_YET_PUBLIC_V4"
+    },
+    {
+      "capability": "xkey.validate",
+      "method": "POST",
+      "public_url": "https://mcp.crossingkeyintelligence.com/api/x402/xkey.validate",
+      "source_route": "/api/x402/xkey.validate",
+      "route_exists_in_staging": true,
+      "directly_callable_over_http": true,
+      "mcp_only": false,
+      "classification": "NEW_PUBLIC_ENDPOINT",
+      "current_price": {
+        "amount_usd": "0.10",
+        "amount_atomic": "100000",
+        "currency": "USDC"
+      },
+      "x402_protocol_version": 2,
+      "payment_chain": "eip155:8453",
+      "payment_asset": {
+        "symbol": "USDC",
+        "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "receiving_wallet": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+      "request_schema": {
+        "type": "object",
+        "required": [
+          "idempotency_key",
+          "raw_intake"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "idempotency_key": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9._:-]+"
+          },
+          "raw_intake": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100000
+          }
+        }
+      },
+      "success_response_schema": {
+        "type": "object",
+        "description": "Validated normalized XKEY intake with shared x402 purchase, entitlement, and receipt references."
+      },
+      "unpaid_response_contract": {
+        "http_status": 402,
+        "header": "PAYMENT-REQUIRED",
+        "header_encoding": "base64 JSON",
+        "schema": {
+          "type": "object",
+          "required": [
+            "x402Version",
+            "resource",
+            "accepts"
+          ],
+          "properties": {
+            "x402Version": {
+              "const": 2
+            },
+            "resource": {
+              "type": "object"
+            },
+            "accepts": {
+              "type": "array",
+              "minItems": 1
+            },
+            "extensions": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "legacy_v3": {
+        "in_source_catalog": false,
+        "in_public_discovery": false,
+        "named_continuity_requirement": false,
+        "schema_compatible": true,
+        "price_compatible": true,
+        "backward_compatibility": "ADDITIVE_NOT_PRESENT_IN_V3",
+        "unpaid_observation": {
+          "reached": true,
+          "status": 404,
+          "challenge_present": false,
+          "challenge": null
+        }
+      },
+      "staged_unpaid_observation": {
+        "reached": true,
+        "status": 402,
+        "challenge_present": true,
+        "challenge": {
+          "x402Version": 2,
+          "resource_url": "https://mcp.crossingkeyintelligence.com/api/x402/xkey.validate",
+          "requirement": {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "amount": "100000",
+            "payTo": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+            "maxTimeoutSeconds": 60
+          }
+        }
+      },
+      "unpaid_challenge_verification": "VERIFIED",
+      "public_hostname_verification": "NOT_YET_PUBLIC_V4"
+    }
+  ]
+}

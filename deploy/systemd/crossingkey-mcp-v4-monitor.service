@@ -1,0 +1,25 @@
+[Unit]
+Description=CrossingKey MCP v4 nonpaying public health and x402 monitor
+Documentation=file:%h/Downloads/crossingkey-mcp-v4-development/docs/V4_COMMERCIAL_MONITORING.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Downloads/crossingkey-mcp-v4-development
+ExecStart=/usr/bin/node scripts/synthetic-commercial-monitor.mjs https://mcp.crossingkeyintelligence.com
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictRealtime=true
+RestrictNamespaces=true
+
+[Install]
+WantedBy=default.target

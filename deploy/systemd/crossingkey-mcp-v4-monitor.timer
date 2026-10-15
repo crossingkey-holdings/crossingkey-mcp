@@ -1,0 +1,12 @@
+[Unit]
+Description=Run CrossingKey MCP v4 public monitor every five minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+RandomizedDelaySec=20s
+Persistent=true
+Unit=crossingkey-mcp-v4-monitor.service
+
+[Install]
+WantedBy=timers.target
