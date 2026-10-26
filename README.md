@@ -27,11 +27,11 @@ The source is being prepared as patch release `5.0.1`. The host-side restart and
 **Public verification**
 
 - Cloudflare Tunnel `crossingkey-mcp` is healthy.
-- `mcp.crossingkeyintelligence.com` routes to the V4 origin on `127.0.0.1:3401`.
-- Public discovery reports V4, Streamable HTTP, and Base mainnet `eip155:8453`.
+- `mcp.crossingkeyintelligence.com` routes to the V5 origin on `127.0.0.1:3401`.
+- Public discovery reports V5, Streamable HTTP, and Base mainnet `eip155:8453`.
 - No live payment or Base settlement is implied by discovery metadata alone.
 
-This repository is the source of truth for the V4 candidate. Runtime deployment and release tagging are tracked separately.
+This repository is the source of truth for the v5.0.1 candidate. Runtime deployment and release tagging are tracked separately.
 
 **Public documentation**
 
