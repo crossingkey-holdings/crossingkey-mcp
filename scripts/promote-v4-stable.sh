@@ -55,6 +55,28 @@ grep -q 'mcp-v4-2026-10-26-marketplace' <<<"$DISCOVERY" || die "Public discovery
 DOCS="$(curl -fsS --max-time 15 "$PUBLIC/mcp")"
 grep -q 'CrossingKey MCP v4' <<<"$DOCS" || die "Public MCP documentation response is not live."
 
+echo "Recording stable public verification in source metadata..."
+node <<'NODE'
+const fs = require('node:fs');
+const readmePath = 'README.md';
+const readme = fs.readFileSync(readmePath, 'utf8').replaceAll('4.0.0-rc.1', '4.0.0');
+fs.writeFileSync(readmePath, readme);
+const statusPath = 'live-status.json';
+const status = JSON.parse(fs.readFileSync(statusPath, 'utf8'));
+status.version = '4.0.0';
+status.operatorHostVersionObserved = '4.0.0';
+status.statusSemantics = 'stable_public_runtime_verified';
+status.localVerification = 'automated_v4_suite_passed; public health/discovery verified';
+status.verifiedAt = new Date().toISOString().slice(0, 10);
+fs.writeFileSync(statusPath, JSON.stringify(status, null, 2) + '\n');
+NODE
+
+git add README.md live-status.json
+if ! git diff --cached --quiet; then
+  git commit -m "Record stable V4 public promotion"
+  git push origin main
+fi
+
 echo "Creating GitHub release/tag v4.0.0..."
 if command -v gh >/dev/null 2>&1; then
   if gh release view "v$EXPECTED_VERSION" >/dev/null 2>&1; then
