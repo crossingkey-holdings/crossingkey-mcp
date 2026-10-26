@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.0.1 — 2026-10-26
+
+- Aligns the buyer package and server candidate metadata with the dependency-hardening patch release.
+- Preserves explicit approval, receiver-only seller boundaries, x402 v1/v2 support, and no-payment test behavior.
+
 ## 5.0.0 — 2026-10-26
 
 - Added explicit-approval x402 buyer transport for Node and TypeScript users.
