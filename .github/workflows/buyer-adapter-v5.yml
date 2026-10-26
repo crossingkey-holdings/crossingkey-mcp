@@ -28,7 +28,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - run: npm ci
       - run: node --test tests/buyer-adapter-v5.test.mjs
+      - run: node --test tests/v5-server-contract.test.mjs
       - run: PYTHONPATH=clients/x402-buyer/python python -m unittest clients/x402-buyer/python/test_buyer.py
       - run: node --check clients/x402-buyer/src/index.mjs
       - run: node --check clients/x402-buyer/src/browser.mjs

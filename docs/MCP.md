@@ -1,4 +1,4 @@
-# CrossingKey MCP v4
+# CrossingKey MCP v5
 
 CrossingKey MCP is a governed Streamable HTTP MCP for agent discovery, bounded capabilities, buyer-authorized machine commerce, x402 payments on Base, and verifiable results.
 
@@ -7,7 +7,8 @@ CrossingKey MCP is a governed Streamable HTTP MCP for agent discovery, bounded c
 - MCP transport: https://mcp.crossingkeyintelligence.com/mcp
 - Human documentation: https://www.crossingkeyintelligence.com/mcp/
 - Canonical identity: `com.crossingkeyintelligence/crossingkey-mcp`
-- Current public runtime: `4.0.0`
+- Candidate server release: `5.0.0`
+- Current public runtime before cutover: `4.0.0`
 - Protocol: MCP Streamable HTTP
 - Network: Base mainnet, `eip155:8453`
 - Asset: USDC
@@ -32,7 +33,7 @@ Discovery is free and does not itself authorize paid execution. Payment, authori
 
 ## Payment rails
 
-The public V4 profile advertises:
+The public v5 candidate preserves:
 
 - Stripe payment links
 - x402 v1 compatibility

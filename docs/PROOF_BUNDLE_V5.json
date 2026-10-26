@@ -2,7 +2,7 @@
   "release": "5.0.0",
   "release_unit": "@crossingkey/x402-buyer",
   "repository": "crossingkey-holdings/crossingkey-mcp",
-  "server_version_untouched": "4.0.0",
+  "server_version_candidate": "5.0.0",
   "date": "2026-10-26",
   "funds_spent": false,
   "production_changes": false,
@@ -26,6 +26,6 @@
   "limitations": [
     "No live settlement was attempted.",
     "A host must provide the buyer wallet signer and payment-header injection.",
-    "The server remains receiver-only and was not restarted or relabeled."
+    "The server remains receiver-only; production restart and public relabeling are separate cutover gates."
   ]
 }

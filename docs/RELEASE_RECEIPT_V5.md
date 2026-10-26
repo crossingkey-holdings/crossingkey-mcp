@@ -2,8 +2,8 @@
 
 - Release unit: `@crossingkey/x402-buyer`
 - Repository: `crossingkey-holdings/crossingkey-mcp`
-- Server compatibility: receiver-only MCP `4.0.0`
-- Client release: `5.0.0`
+- Server release candidate: receiver-only MCP `5.0.0`
+- Buyer adapter release: `5.0.0`
 - Release date: 2026-10-26
 - Funds spent: `0`
 - Production services changed: `0`
@@ -27,4 +27,5 @@
 
 This receipt proves the client transport's mocked control flow and its ability
 to parse the public unpaid challenge. It does not prove a wallet vendor's
-EIP-3009 implementation, live USDC settlement, or universal host compatibility.
+EIP-3009 implementation, live USDC settlement, universal host compatibility,
+or a production host cutover until the host verification section is completed.

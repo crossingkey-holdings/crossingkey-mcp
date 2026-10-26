@@ -2,10 +2,10 @@
 
 Status: `TESTED — RELEASE CANDIDATE`
 
-This release adds a buyer-side x402 transport without changing the live
-receiver-only MCP v4 server. The server remains on v4.0.0. The v5 version is
-the client adapter release, not a claim that the production server has been
-restarted or relabeled.
+This release adds a buyer-side x402 transport and is bundled with the v5
+server candidate. The server remains receiver-only. The source version is
+prepared for a controlled host cutover; a version string in GitHub is not, by
+itself, proof that the production process has restarted.
 
 ## What it does
 
