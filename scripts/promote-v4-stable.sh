@@ -16,10 +16,22 @@ command -v curl >/dev/null || die "curl is required"
 command -v git >/dev/null || die "git is required"
 command -v node >/dev/null || die "node is required"
 
-if [[ -z "$REPO_DIR" ]]; then
-  REPO_DIR="$(systemctl --user show "$SERVICE" -p WorkingDirectory --value || true)"
+if [[ -z "$REPO_DIR" || ! -d "$REPO_DIR/.git" ]]; then
+  SERVICE_DIR="$(systemctl --user show "$SERVICE" -p WorkingDirectory --value 2>/dev/null || true)"
+  for candidate in \
+    "$REPO_DIR" \
+    "$SERVICE_DIR" \
+    "$HOME/src/crossingkey-mcp" \
+    "$HOME/Downloads/crossingkey-mcp" \
+    "$HOME/Downloads/crossingkey-mcp-v4-development"
+  do
+    if [[ -n "$candidate" && -d "$candidate/.git" && -f "$candidate/lib/mcp-manifest.mjs" ]]; then
+      REPO_DIR="$candidate"
+      break
+    fi
+  done
 fi
-[[ -n "$REPO_DIR" && -d "$REPO_DIR/.git" ]] || die "Set CK_MCP_REPO_DIR to the checked-out V4 repository."
+[[ -n "$REPO_DIR" && -d "$REPO_DIR/.git" && -f "$REPO_DIR/lib/mcp-manifest.mjs" ]] || die "No checked-out V4 repository found. Checked service directory and ~/src/crossingkey-mcp."
 cd "$REPO_DIR"
 
 git fetch origin main
