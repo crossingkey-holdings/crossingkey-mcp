@@ -3,7 +3,7 @@
   "name": "com.crossingkeyintelligence/crossingkey-mcp",
   "title": "CrossingKey MCP",
   "description": "Agent-native MCP for governed commerce, x402 payments, paid capabilities, and verifiable receipts.",
-  "version": "4.0.0-rc.1",
+  "version": "4.0.0",
   "websiteUrl": "https://www.crossingkeyintelligence.com",
   "repository": {
     "url": "https://github.com/crossingkey-holdings/crossingkey-mcp",
