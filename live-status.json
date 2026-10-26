@@ -2,17 +2,17 @@
   "name": "CrossingKey MCP",
   "runtimeName": "crossingkey-mcp",
   "canonicalIdentity": "com.crossingkeyintelligence/crossingkey-mcp",
-  "version": "2.5.0",
+  "version": "4.0.0-rc.1",
   "endpoint": "https://mcp.crossingkeyintelligence.com/mcp",
   "wellKnown": "https://mcp.crossingkeyintelligence.com/.well-known/mcp.json",
   "transport": "streamable-http",
   "machineCommerce": true,
   "mcpInitializeVerified": true,
-  "publicEndpointVerified": false,
-  "statusSemantics": "local_marketplace_candidate_only_not_deployed",
+  "publicEndpointVerified": true,
+  "statusSemantics": "public_v4_rc1_verified_not_stable",
   "marketplace": true,
-  "localVerification": "sandbox_MCP_transport_and_mock_facilitator_no_money_movement",
-  "operatorHostVersionObserved": "2.4.0",
+  "localVerification": "automated_v4_suite_passed; no live settlement claim",
+  "operatorHostVersionObserved": "4.0.0-rc.1",
   "historicalValidatedProfile": {
     "generation": "v2",
     "scheme": "exact",
@@ -22,16 +22,20 @@
     "sourceStatus": "historical_local_validation"
   },
   "currentConfiguredProfile": {
-    "x402Versions": [1, 2],
+    "x402Versions": [
+      1,
+      2
+    ],
     "scheme": "exact",
     "network": "eip155:8453",
     "chainId": 8453,
+    "chain": "Base",
     "asset": "USDC",
     "contract": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    "receiver": "0x6D1CCe697B145E6D8DB31B038F5D7fbc4Fe27B28",
+    "receiver": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
     "mainnetEnabled": true,
     "walletMode": "receiver-only",
-    "paymentVerifyOnchain": "free_read_only_capability",
+    "paymentVerifyOnchain": "configured; settlement proof remains separate",
     "settlementProof": "pending_independent_payment"
   },
   "execution": {
@@ -42,5 +46,10 @@
     "replayResistance": true,
     "idempotentRequests": true
   },
-  "verifiedAt": "2026-09-16"
+  "verifiedAt": "2026-10-26",
+  "verificationSources": [
+    "https://mcp.crossingkeyintelligence.com/health",
+    "https://mcp.crossingkeyintelligence.com/.well-known/mcp.json",
+    "Cloudflare Tunnel configuration read-back"
+  ]
 }
