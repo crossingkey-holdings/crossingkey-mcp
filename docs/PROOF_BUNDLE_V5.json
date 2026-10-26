@@ -1,0 +1,31 @@
+{
+  "release": "5.0.0",
+  "release_unit": "@crossingkey/x402-buyer",
+  "repository": "crossingkey-holdings/crossingkey-mcp",
+  "server_version_untouched": "4.0.0",
+  "date": "2026-10-26",
+  "funds_spent": false,
+  "production_changes": false,
+  "tests": {
+    "javascript": {"passed": 8, "failed": 0, "command": "node --test tests/buyer-adapter-v5.test.mjs"},
+    "python": {"passed": 3, "failed": 0, "command": "PYTHONPATH=clients/x402-buyer/python python3 -m unittest clients/x402-buyer/python/test_buyer.py"},
+    "syntax": "passed",
+    "secret_scan": "passed"
+  },
+  "live_unpaid_probe": {
+    "endpoint": "https://mcp.crossingkeyintelligence.com/mcp",
+    "capability": "hash.encode",
+    "x402_version": 2,
+    "network": "eip155:8453",
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "pay_to": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+    "amount_atomic_units": "10000",
+    "max_timeout_seconds": 60,
+    "payment_submitted": false
+  },
+  "limitations": [
+    "No live settlement was attempted.",
+    "A host must provide the buyer wallet signer and payment-header injection.",
+    "The server remains receiver-only and was not restarted or relabeled."
+  ]
+}

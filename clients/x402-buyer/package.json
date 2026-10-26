@@ -1,0 +1,16 @@
+{
+  "name": "@crossingkey/x402-buyer",
+  "version": "5.0.0",
+  "description": "Buyer-side x402 v2 transport with explicit approval and injected wallet signing.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./browser": "./src/browser.mjs"
+  },
+  "types": "./src/index.d.ts",
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false,
+  "license": "MIT"
+}

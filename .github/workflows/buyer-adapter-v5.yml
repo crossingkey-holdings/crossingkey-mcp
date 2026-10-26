@@ -1,0 +1,35 @@
+name: buyer-adapter-v5
+
+on:
+  push:
+    paths:
+      - "clients/x402-buyer/**"
+      - "tests/buyer-adapter-v5.test.mjs"
+      - "docs/BUYER_ADAPTER_V5.md"
+      - ".github/workflows/buyer-adapter-v5.yml"
+  pull_request:
+    paths:
+      - "clients/x402-buyer/**"
+      - "tests/buyer-adapter-v5.test.mjs"
+      - "docs/BUYER_ADAPTER_V5.md"
+      - ".github/workflows/buyer-adapter-v5.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: node --test tests/buyer-adapter-v5.test.mjs
+      - run: PYTHONPATH=clients/x402-buyer/python python -m unittest clients/x402-buyer/python/test_buyer.py
+      - run: node --check clients/x402-buyer/src/index.mjs
+      - run: node --check clients/x402-buyer/src/browser.mjs
+      - run: python -m py_compile clients/x402-buyer/python/crossingkey_x402/*.py
