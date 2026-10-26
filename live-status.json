@@ -11,7 +11,7 @@
   "publicEndpointVerified": true,
   "statusSemantics": "v5.0.1_source_candidate_host_cutover_pending",
   "marketplace": true,
-  "localVerification": "automated_v5_suite_pending; host cutover pending",
+  "localVerification": "automated_v5.0.1_suite_passed; host cutover pending",
   "operatorHostVersionObserved": "5.0.0",
   "historicalValidatedProfile": {
     "generation": "v2",
