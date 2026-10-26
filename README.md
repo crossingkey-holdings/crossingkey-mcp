@@ -18,7 +18,7 @@ Agent-native MCP for governed commerce, x402 payments, paid capabilities, and ve
 
 **Current public runtime before host cutover**
 
-`4.0.0-rc.1` — verified at the public health and discovery endpoints on 2026-10-26.
+`4.0.0` — verified at the public health and discovery endpoints on 2026-10-26.
 
 **Promotion state**
 

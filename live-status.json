@@ -9,10 +9,10 @@
   "machineCommerce": true,
   "mcpInitializeVerified": true,
   "publicEndpointVerified": true,
-  "statusSemantics": "stable_source_ready_public_runtime_cutover_required",
+  "statusSemantics": "stable_public_runtime_verified",
   "marketplace": true,
-  "localVerification": "automated_v4_suite_passed; stable host cutover pending",
-  "operatorHostVersionObserved": "4.0.0-rc.1",
+  "localVerification": "automated_v4_suite_passed; public health/discovery verified",
+  "operatorHostVersionObserved": "4.0.0",
   "historicalValidatedProfile": {
     "generation": "v2",
     "scheme": "exact",
