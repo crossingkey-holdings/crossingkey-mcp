@@ -11,7 +11,7 @@ if (!/^https?:\/\//.test(base)) {
   process.exit(2);
 }
 
-const EXPECTED_VERSION = '5.0.0';
+const EXPECTED_VERSION = '5.0.1';
 const EXPECTED_NETWORK = 'eip155:8453';
 const failures = [];
 const checks = [];

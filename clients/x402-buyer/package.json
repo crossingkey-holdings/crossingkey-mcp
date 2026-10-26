@@ -1,6 +1,6 @@
 {
   "name": "@crossingkey/x402-buyer",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Buyer-side x402 v2 transport with explicit approval and injected wallet signing.",
   "type": "module",
   "exports": {

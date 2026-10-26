@@ -1,4 +1,4 @@
-# CrossingKey buyer adapter v5.0.0
+# CrossingKey buyer adapter v5.0.1
 
 Status: `TESTED — RELEASE CANDIDATE`
 

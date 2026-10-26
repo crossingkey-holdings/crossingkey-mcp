@@ -14,24 +14,24 @@ Agent-native MCP for governed commerce, x402 payments, paid capabilities, and ve
 
 **Stable source target**
 
-`5.0.0` — the exact source being prepared for promotion.
+`5.0.1` — the exact dependency-hardening source being prepared for promotion.
 
 **Current public runtime before host cutover**
 
-`4.0.0` — the current public runtime before the v5 host cutover.
+`5.0.0` — the current public runtime before the v5.0.1 host cutover.
 
 **Promotion state**
 
-The source is being prepared as stable `5.0.0`. The host-side restart and GitHub release/tag are performed only after the running process is verified against this exact source.
+The source is being prepared as patch release `5.0.1`. The host-side restart and GitHub release/tag are performed only after the running process is verified against this exact source.
 
 **Public verification**
 
 - Cloudflare Tunnel `crossingkey-mcp` is healthy.
-- `mcp.crossingkeyintelligence.com` routes to the V4 origin on `127.0.0.1:3401`.
-- Public discovery reports V4, Streamable HTTP, and Base mainnet `eip155:8453`.
+- `mcp.crossingkeyintelligence.com` routes to the V5 origin on `127.0.0.1:3401`.
+- Public discovery reports V5, Streamable HTTP, and Base mainnet `eip155:8453`.
 - No live payment or Base settlement is implied by discovery metadata alone.
 
-This repository is the source of truth for the V4 candidate. Runtime deployment and release tagging are tracked separately.
+This repository is the source of truth for the v5.0.1 candidate. Runtime deployment and release tagging are tracked separately.
 
 **Public documentation**
 
@@ -45,7 +45,7 @@ This repository is the source of truth for the V4 candidate. Runtime deployment 
 
 MCP Streamable HTTP
 
-## CrossingKey MCP v5.0.0
+## CrossingKey MCP v5.0.1
 
 CrossingKey MCP is a governed machine-commerce interface for AI agents and authorized software clients.
 

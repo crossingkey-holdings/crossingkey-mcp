@@ -1,9 +1,9 @@
-# Release receipt — CrossingKey buyer adapter v5.0.0
+# Release receipt — CrossingKey buyer adapter v5.0.1
 
 - Release unit: `@crossingkey/x402-buyer`
 - Repository: `crossingkey-holdings/crossingkey-mcp`
-- Server release candidate: receiver-only MCP `5.0.0`
-- Buyer adapter release: `5.0.0`
+- Server release candidate: receiver-only MCP `5.0.1`
+- Buyer adapter release: `5.0.1`
 - Release date: 2026-10-26
 - Funds spent: `0`
 - Production services changed: `0`
