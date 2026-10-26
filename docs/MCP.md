@@ -7,7 +7,7 @@ CrossingKey MCP is a governed Streamable HTTP MCP for agent discovery, bounded c
 - MCP transport: https://mcp.crossingkeyintelligence.com/mcp
 - Human documentation: https://www.crossingkeyintelligence.com/mcp/
 - Canonical identity: `com.crossingkeyintelligence/crossingkey-mcp`
-- Current public runtime: `4.0.0-rc.1`
+- Current public runtime: `4.0.0`
 - Protocol: MCP Streamable HTTP
 - Network: Base mainnet, `eip155:8453`
 - Asset: USDC
