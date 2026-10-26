@@ -9,15 +9,15 @@ test('v5 release metadata is consistent', () => {
   const packageLock = JSON.parse(fs.readFileSync(new URL('../package-lock.json', import.meta.url)));
   const serverJson = JSON.parse(fs.readFileSync(new URL('../server.json', import.meta.url)));
   const liveStatus = JSON.parse(fs.readFileSync(new URL('../live-status.json', import.meta.url)));
-  assert.equal(packageJson.version, '5.0.0');
-  assert.equal(packageLock.version, '5.0.0');
-  assert.equal(packageLock.packages[''].version, '5.0.0');
-  assert.equal(MCP_RELEASE_VERSION, '5.0.0');
+  assert.equal(packageJson.version, '5.0.1');
+  assert.equal(packageLock.version, '5.0.1');
+  assert.equal(packageLock.packages[''].version, '5.0.1');
+  assert.equal(MCP_RELEASE_VERSION, '5.0.1');
   assert.equal(MCP_PROTOCOL_VERSION, '2025-11-25');
-  assert.equal(MCP_TOOL_MANIFEST.version, '5.0.0');
-  assert.equal(serverJson.version, '5.0.0');
-  assert.equal(liveStatus.version, '5.0.0');
-  assert.equal(liveStatus.operatorHostVersionObserved, '4.0.0');
+  assert.equal(MCP_TOOL_MANIFEST.version, '5.0.1');
+  assert.equal(serverJson.version, '5.0.1');
+  assert.equal(liveStatus.version, '5.0.1');
+  assert.equal(liveStatus.operatorHostVersionObserved, '5.0.0');
 });
 
 test('v5 preserves receiver-only Base mainnet x402 v1/v2 boundaries', () => {
