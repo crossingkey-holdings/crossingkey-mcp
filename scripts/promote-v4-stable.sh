@@ -16,10 +16,9 @@ command -v curl >/dev/null || die "curl is required"
 command -v git >/dev/null || die "git is required"
 command -v node >/dev/null || die "node is required"
 
+SERVICE_DIR="$(systemctl --user show "$SERVICE" -p WorkingDirectory --value 2>/dev/null || true)"
 if [[ -z "$REPO_DIR" || ! -d "$REPO_DIR/.git" ]]; then
-  SERVICE_DIR="$(systemctl --user show "$SERVICE" -p WorkingDirectory --value 2>/dev/null || true)"
   for candidate in \
-    "$REPO_DIR" \
     "$SERVICE_DIR" \
     "$HOME/src/crossingkey-mcp" \
     "$HOME/Downloads/crossingkey-mcp" \
@@ -31,7 +30,27 @@ if [[ -z "$REPO_DIR" || ! -d "$REPO_DIR/.git" ]]; then
     fi
   done
 fi
-[[ -n "$REPO_DIR" && -d "$REPO_DIR/.git" && -f "$REPO_DIR/lib/mcp-manifest.mjs" ]] || die "No checked-out V4 repository found. Checked service directory and ~/src/crossingkey-mcp."
+[[ -n "$REPO_DIR" && -d "$REPO_DIR/.git" && -f "$REPO_DIR/lib/mcp-manifest.mjs" ]] || die "No checked-out V4 repository found. Checked the service directory and ~/src/crossingkey-mcp."
+
+# The service may still point at the historical non-Git runtime directory. When
+# the verified checkout differs, make the staged service execute that checkout.
+# This preserves the service name, environment files, port, tunnel, and data.
+if [[ -n "$SERVICE_DIR" && "$(readlink -f "$SERVICE_DIR")" != "$(readlink -f "$REPO_DIR")" ]]; then
+  UNIT_DROPIN_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$SERVICE.d"
+  UNIT_DROPIN="$UNIT_DROPIN_DIR/20-crossingkey-github-source.conf"
+  mkdir -p "$UNIT_DROPIN_DIR"
+  if [[ -f "$UNIT_DROPIN" ]]; then
+    cp "$UNIT_DROPIN" "$UNIT_DROPIN.backup.$(date -u +%Y%m%dT%H%M%SZ)"
+  fi
+  NODE_BIN="$(command -v node)"
+  cat > "$UNIT_DROPIN" <<EOF
+[Service]
+WorkingDirectory=$REPO_DIR
+ExecStart=
+ExecStart=$NODE_BIN $REPO_DIR/server.mjs
+EOF
+  echo "Pinned $SERVICE to GitHub checkout: $REPO_DIR"
+fi
 cd "$REPO_DIR"
 
 git fetch origin main
