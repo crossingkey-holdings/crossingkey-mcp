@@ -57,7 +57,7 @@ const MACHINE_COMMERCE_FILE = process.env.MACHINE_COMMERCE_FILE || path.join(HER
 const KENNEKARTE_SECRET = process.env.CK_KENNEKARTE_HMAC_SECRET || CLAIM_SECRET;
 const CK_EXPOSE_LEGACY_TOOLS = process.env.CK_EXPOSE_LEGACY_TOOLS === 'true';
 const LEGACY_TOOL_NAMES = new Set(['list_stripe_offers','get_stripe_checkout_link','get_fulfillment_status']);
-const DISCOVERY_PROFILE_VERSION = 'mcp-v3-2026-09-21';
+const DISCOVERY_PROFILE_VERSION = 'mcp-v4-2026-10-26';
 const OPENAI_APPS_CHALLENGE_TOKEN = process.env.OPENAI_APPS_CHALLENGE_TOKEN || '';
 
 const XKEY_ROOT =
@@ -523,7 +523,7 @@ app.get("/", (req, res) => {
     version: MCP_RELEASE_VERSION,
     status: "operational",
     description:
-      "CrossingKey MCP v3 marketplace and machine-commerce endpoint for discovery, qualification, buyer-authorized purchase, fulfillment, receipts, provider intake, and bounded paid capabilities.",
+      "CrossingKey MCP v4 governed machine-commerce endpoint for agent discovery, buyer-authorized payment, bounded capabilities, fulfillment, receipts, and verifiable results.",
     operator: "CrossingKey Intelligence",
     mcp: {
       endpoint: "https://mcp.crossingkeyintelligence.com/mcp",
@@ -541,7 +541,9 @@ app.get("/", (req, res) => {
       registry: "Official MCP Registry",
       tools_via_mcp: true
     },
-    human_site: "https://www.crossingkeyintelligence.com"
+    human_site: "https://www.crossingkeyintelligence.com",
+    documentation: "https://www.crossingkeyintelligence.com/mcp/",
+    repository: "https://github.com/crossingkey-holdings/crossingkey-mcp"
   });
 });
 
@@ -1260,6 +1262,8 @@ app.get('/.well-known/mcp.json',(_req,res)=>res.json({
   endpoint:`${PUBLIC_BASE_URL}/mcp`,
   transport:'streamable-http',
   protocolVersion:MCP_PROTOCOL_VERSION,
+  documentation:'https://www.crossingkeyintelligence.com/mcp/',
+  repository:'https://github.com/crossingkey-holdings/crossingkey-mcp',
   machineCommerce:true,
   categories:['Payments & Billing','Autonomous Agents'],
   discoveryProfile:`${DISCOVERY_PROFILE_VERSION}-marketplace`,
@@ -1943,9 +1947,7 @@ app.get('/mcp',async(req,res)=>{
   const t=transports.get(sid);
 
   if(!t){
-    return res.status(400).send(
-      'Invalid or missing MCP session'
-    );
+    return res.status(200).type('html').send("<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>CrossingKey MCP v4</title>\n<style>:root{color-scheme:dark;--void:#050508;--text:#f4f1f7;--muted:#c7c2cf;--pink:#cc0155;--line:rgba(204,1,85,.35)}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,rgba(204,1,85,.16),transparent 36rem),var(--void);color:var(--text);font:16px/1.65 system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:920px;margin:0 auto;padding:clamp(2rem,7vw,6rem) 1.25rem}a{color:#ff4e9a}h1,h2{font-family:Georgia,serif;font-weight:500;line-height:1.05}h1{font-size:clamp(3rem,9vw,6.5rem);margin:.5rem 0 1rem}h2{font-size:2rem;margin-top:3rem}.eyebrow{color:#ff4e9a;letter-spacing:.18em;text-transform:uppercase;font-size:.78rem;font-weight:700}.lede{max-width:680px;color:var(--muted);font-size:1.2rem}.panel{border:1px solid var(--line);background:rgba(16,16,24,.82);padding:1.2rem 1.3rem;margin:1rem 0;box-shadow:0 0 30px rgba(204,1,85,.08)}code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}code{color:#ff79b4}pre{overflow:auto;color:#f8d7e7;background:#08080d;border:1px solid rgba(255,255,255,.12);padding:1rem}.links{display:flex;flex-wrap:wrap;gap:.7rem}.links a{display:inline-block;border:1px solid rgba(204,1,85,.55);padding:.7rem 1rem;text-decoration:none}.links a:hover{background:rgba(204,1,85,.16);box-shadow:0 0 28px rgba(204,1,85,.45)}</style>\n</head><body><main><div class=\"eyebrow\">CrossingKey Intelligence / Machine Interface</div>\n<h1>CrossingKey MCP v4</h1><p class=\"lede\">A governed Streamable HTTP MCP for agent discovery, bounded capabilities, buyer-authorized machine commerce, x402 payments on Base, and verifiable results.</p>\n<section class=\"panel\"><strong>Current public runtime:</strong> <code>4.0.0-rc.1</code><br><strong>Canonical identity:</strong> <code>com.crossingkeyintelligence/crossingkey-mcp</code><br><strong>Network:</strong> <code>eip155:8453</code> · Base mainnet · USDC<br><strong>Wallet policy:</strong> receiver-only</section>\n<h2>How it works</h2><p>Discovery is free. Evaluation is safe. Payment is explicit. Authority stays bounded. Execution is deterministic. Fulfillment is verifiable.</p>\n<pre>provider.describe\n→ offers.list\n→ requirements.check\n→ cost.estimate\n→ result.preview\n→ execution.preflight\n→ human authorization\n→ payment\n→ execute\n→ receipt</pre>\n<h2>Capabilities</h2><p>Free discovery covers provider identity, offers, requirements, cost estimates, result previews, execution preflight, and credit compatibility. Paid capabilities include schema audits, OpenAPI audits, machine-commerce readiness, artifact integrity, hashing, secret scanning, PII scanning, JSON repair, prompt audits, launch audits, purchase-path audits, and XKEY validation.</p>\n<h2>Connect</h2><div class=\"links\"><a href=\"https://mcp.crossingkeyintelligence.com/mcp\">MCP endpoint</a><a href=\"https://mcp.crossingkeyintelligence.com/.well-known/mcp.json\">MCP discovery</a><a href=\"https://mcp.crossingkeyintelligence.com/.well-known/x402\">x402 discovery</a><a href=\"https://github.com/crossingkey-holdings/crossingkey-mcp\">GitHub source</a><a href=\"https://www.crossingkeyintelligence.com\">CrossingKey Intelligence</a></div>\n<p style=\"color:var(--muted);margin-top:3rem\">Payment and execution remain separate governed stages. Discovery metadata does not prove live settlement.</p></main></body></html>");
   }
 
   if(!sessionAuthorizationMatches(sid,req)){
