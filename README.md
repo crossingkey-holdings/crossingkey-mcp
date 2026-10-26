@@ -12,13 +12,17 @@ Agent-native MCP for governed commerce, x402 payments, paid capabilities, and ve
 
 `com.crossingkeyintelligence/crossingkey-mcp`
 
-**Current public runtime**
+**Stable source target**
+
+`4.0.0` — the exact source currently prepared for promotion.
+
+**Current public runtime before host cutover**
 
 `4.0.0-rc.1` — verified at the public health and discovery endpoints on 2026-10-26.
 
-**Source status**
+**Promotion state**
 
-The `main` branch contains the V4 candidate source. The stable `v4.0.0` tag and GitHub release have not yet been created.
+The source is prepared as stable `4.0.0`. The host-side restart and GitHub release/tag are performed only after the running process is verified against this exact source.
 
 **Public verification**
 
@@ -41,11 +45,11 @@ This repository is the source of truth for the V4 candidate. Runtime deployment 
 
 MCP Streamable HTTP
 
-## CrossingKey MCP v4.0.0-rc.1 candidate
+## CrossingKey MCP v4.0.0
 
 CrossingKey MCP is a governed machine-commerce interface for AI agents and authorized software clients.
 
-The candidate preserves the existing anonymous MCP surface and adds the two authorized v4 paid audits. The exact live/public tool count remains a deployment-time verification item.
+The stable source preserves the existing anonymous MCP surface and adds the two authorized v4 paid audits. The exact live/public tool count remains a deployment-time verification item.
 
 - **7 free discovery and commercial-navigation tools**
 - **8 public marketplace tools**
