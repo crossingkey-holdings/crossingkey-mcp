@@ -12,21 +12,30 @@ Agent-native MCP for governed commerce, x402 payments, paid capabilities, and ve
 
 `com.crossingkeyintelligence/crossingkey-mcp`
 
-**Published source release**
+**Current public runtime**
 
-`3.0.1` (historical production baseline)
+`4.0.0-rc.1` — verified at the public health and discovery endpoints on 2026-10-26.
 
-**Current local release candidate**
+**Source status**
 
-`4.0.0-rc.1`
+The `main` branch contains the V4 candidate source. The stable `v4.0.0` tag and GitHub release have not yet been created.
 
-**Current production release**
+**Public verification**
 
-`v3.0.1` (unchanged; the v4 candidate is not deployed)
+- Cloudflare Tunnel `crossingkey-mcp` is healthy.
+- `mcp.crossingkeyintelligence.com` routes to the V4 origin on `127.0.0.1:3401`.
+- Public discovery reports V4, Streamable HTTP, and Base mainnet `eip155:8453`.
+- No live payment or Base settlement is implied by discovery metadata alone.
 
-The v4.0.0-rc.1 source candidate is prepared and tested in the isolated development worktree. Source preparation does not imply production deployment.
+This repository is the source of truth for the V4 candidate. Runtime deployment and release tagging are tracked separately.
 
-Source publication does not imply production deployment.
+**Public documentation**
+
+- [MCP protocol and capability guide](docs/MCP.md)
+- [Live machine discovery](https://mcp.crossingkeyintelligence.com/.well-known/mcp.json)
+- [Live health](https://mcp.crossingkeyintelligence.com/health)
+- [Public human-facing documentation](https://www.crossingkeyintelligence.com/mcp/)
+- [GitHub source](https://github.com/crossingkey-holdings/crossingkey-mcp)
 
 **Transport**
 
