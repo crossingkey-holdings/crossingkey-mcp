@@ -59,6 +59,11 @@ BEGIN
  IF n<>1 THEN RAISE EXCEPTION 'build still paid after refund'; END IF;
  SELECT count(*) INTO n FROM public.dock_entitlements WHERE stripe_payment_intent_id='pi_build_ok' AND status='revoked';
  IF n<>1 THEN RAISE EXCEPTION 'build entitlement not revoked'; END IF;
+ SELECT count(*) INTO n FROM public.dock_receipts WHERE receipt_type='revocation' AND entitlement_id IN (SELECT id FROM public.dock_entitlements WHERE stripe_payment_intent_id='pi_build_ok');
+ IF n<>1 THEN RAISE EXCEPTION 'build revocation receipt missing'; END IF;
+ PERFORM public.dock_fulfill_stripe_event('evt_build_refund_again','charge.refunded',true,null,null,'pi_build_ok',null,2900,'usd','hash',null);
+ SELECT count(*) INTO n FROM public.dock_receipts WHERE receipt_type='revocation' AND entitlement_id IN (SELECT id FROM public.dock_entitlements WHERE stripe_payment_intent_id='pi_build_ok');
+ IF n<>1 THEN RAISE EXCEPTION 'duplicate build refund emitted duplicate receipt'; END IF;
  RAISE NOTICE 'PASS: generic refund and custom-build fulfillment/revocation checks';
 END
 $tests$;
