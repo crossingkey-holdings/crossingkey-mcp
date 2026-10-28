@@ -281,7 +281,7 @@ begin
   if p_event_type = 'charge.refunded' then
     if p_payment_intent_id is null then
       update public.dock_payment_events set processed=true,processed_at=now() where id=ev.id;
-      return jsonb_build_object('recorded',true,'revoked',false,'reason','refund_without_payment_intent');
+      return jsonb_build_object('recorded',true,'entitlement_created',false,'revoked',false,'reason','refund_without_payment_intent');
     end if;
     -- Prevent overlapping refund processing from racing the same payment intent.
     perform pg_advisory_xact_lock(hashtextextended(p_payment_intent_id, 1));
@@ -297,7 +297,7 @@ begin
     end if;
     update public.dock_payment_events set processed=true,processed_at=now() where id=ev.id;
     return jsonb_build_object('recorded',true,'revoked',ent.id is not null,
-      'already_revoked',ent.id is not null and ent.status='revoked');
+      'entitlement_created',false,'already_revoked',ent.id is not null and ent.status='revoked');
   end if;
 
   -- Staging-only Phase 1C correction for the generic plan path.
