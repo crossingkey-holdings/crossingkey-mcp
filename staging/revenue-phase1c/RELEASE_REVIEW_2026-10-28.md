@@ -42,3 +42,17 @@ Keep the verified Coinbase CDP x402 receiver `0x2381A81818E0FdCBe36c901e52dD8747
 ## Safety boundary
 
 No production database, webhook, wallet, payout method, Cloudflare deployment, or payment was changed by this review.
+
+
+## Source-owner discovery
+
+GitHub code search found the actual Supabase function and Edge Function source in **`crossingkey-holdings/crossingkey-sites`**, not the MCP repository:
+- `supabase/dock-paid-builds.sql`: declares the 11-argument fulfillment RPC.
+- `supabase/functions/stripe-webhook/index.ts`: explicitly passes `p_client_reference_id`, confirming the 11-argument caller.
+- `docs/OPERATIONS.md`: documents the canonical live Stripe webhook topology.
+
+These results cover searchable default-branch files, not every external caller. **Production deployment of the Supabase migration and webhook belongs in a reviewed change to `crossingkey-sites`**, while the current `crossingkey-mcp` Phase 1C branch remains a test/reference package. Do not accidentally deploy a payment database migration with the MCP server release.
+
+See:
+- https://github.com/crossingkey-holdings/crossingkey-sites/blob/main/supabase/dock-paid-builds.sql
+- https://github.com/crossingkey-holdings/crossingkey-sites/blob/main/supabase/functions/stripe-webhook/index.ts
