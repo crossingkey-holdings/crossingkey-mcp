@@ -127,6 +127,12 @@ begin
       b.id := null;
     end;
 
+    if b.id is null then
+      raise exception 'unknown_custom_build_reference';
+    end if;
+    if b.status is distinct from 'awaiting_payment' and b.status not in ('paid','delivered','revoked') then
+      raise exception 'invalid_custom_build_state';
+    end if;
     if b.id is not null then
       if b.status = 'revoked' then
         raise exception 'build_revoked';
@@ -142,6 +148,11 @@ begin
           'build_id',b.id,
           'status',b.status
         );
+      end if;
+
+      if p_amount_cents is distinct from b.price_cents
+         or lower(coalesce(p_currency,'')) is distinct from lower(b.currency) then
+        raise exception 'custom_build_payment_mismatch';
       end if;
 
       select * into ent
@@ -263,6 +274,30 @@ begin
         'revoked',true
       );
     end if;
+  end if;
+
+  -- Phase 1D staging guard: revoke matching generic-plan entitlements on refunds.
+  -- The existing custom-build refund branch above retains precedence.
+  if p_event_type = 'charge.refunded' then
+    if p_payment_intent_id is null then
+      update public.dock_payment_events set processed=true,processed_at=now() where id=ev.id;
+      return jsonb_build_object('recorded',true,'revoked',false,'reason','refund_without_payment_intent');
+    end if;
+    -- Prevent overlapping refund processing from racing the same payment intent.
+    perform pg_advisory_xact_lock(hashtextextended(p_payment_intent_id, 1));
+    select * into ent from public.dock_entitlements
+      where stripe_payment_intent_id=p_payment_intent_id and plan_id is not null
+      order by granted_at desc limit 1 for update;
+    if ent.id is not null and ent.status <> 'revoked' then
+      update public.dock_entitlements set status='revoked',revoked_at=now() where id=ent.id;
+      insert into public.dock_receipts(entitlement_id,payment_event_id,receipt_type,receipt_hash,details)
+      values(ent.id,ev.id,'revocation',
+             encode(digest(p_event_id || ':' || p_payment_intent_id,'sha256'),'hex'),
+             jsonb_build_object('event_type',p_event_type,'payment_intent_id',p_payment_intent_id));
+    end if;
+    update public.dock_payment_events set processed=true,processed_at=now() where id=ev.id;
+    return jsonb_build_object('recorded',true,'revoked',ent.id is not null,
+      'already_revoked',ent.id is not null and ent.status='revoked');
   end if;
 
   -- Staging-only Phase 1C correction for the generic plan path.
