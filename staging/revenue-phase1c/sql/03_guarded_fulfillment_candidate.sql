@@ -242,7 +242,7 @@ begin
       limit 1
       for update;
 
-      if ent.id is not null then
+      if ent.id is not null and ent.status <> 'revoked' then
         update public.dock_entitlements
         set status='revoked', revoked_at=now()
         where id=ent.id;
