@@ -77,3 +77,12 @@ $f$;
 INSERT INTO public.dock_plans(slug,stripe_payment_link_id,amount_cents,currency,capability_limits)
 VALUES ('credits_100','plink_fixture',500,'usd','{"credits":100}'::jsonb),
 ('support','plink_support',500,'usd','{}'::jsonb);
+-- Full production function additionally references the builds table.
+CREATE SCHEMA IF NOT EXISTS extensions;
+CREATE TABLE public.dock_builds (
+ id uuid PRIMARY KEY DEFAULT gen_random_uuid(), owner_id uuid NOT NULL,
+ status text NOT NULL DEFAULT 'awaiting_payment',
+ stripe_payment_link_id text, stripe_checkout_session_id text UNIQUE,
+ stripe_payment_intent_id text, customer_email text, paid_at timestamptz,
+ updated_at timestamptz DEFAULT now()
+);
