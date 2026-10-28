@@ -26,4 +26,4 @@ jobs:
         with:
           node-version: '22'
       - name: Run synthetic guard tests without credentials or network payments
-        run: node --test staging/revenue-phase1c/tests/payment-guards.test.mjs
+        run: node --test staging/revenue-phase1c/tests/*.test.mjs
