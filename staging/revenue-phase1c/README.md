@@ -46,3 +46,15 @@ Sequence:
 - The production function retains the custom-build branch with specific price/link checks; this test suite is focused on generic plan fulfillment. Add custom-build and refund tests before any migration.
 - Candidate functions are not deploy-ready: separately review all signature overloads, permissions, caller expectations, migrations, rollback, old records, and schema drift.
 - Only the GitHub staging branch has been modified. No live Supabase migration, deployment, real Stripe charge, wallet transfer, or new billable service has been executed.
+
+
+## Phase 1D: refund, signed webhook, custom build validation (staging only)
+
+Added:
+- `sql/03_guarded_fulfillment_candidate.sql`: generic full-refund entitlement revocation; guarded build-reference lookup, build price and currency checks, and idempotent repeat refund receipts.
+- `sql/05_refunds_custom_builds.sql`: disposable PostgreSQL tests for generic refunds, replay, unknown custom builds, wrong price/currency, valid owner-bound build purchase, duplicate build checkout, full refund, and duplicate refund.
+- `stripe-event-policy.mjs`: runtime-neutral strict HMAC and admission policy. Accepts valid paid checkout sessions and fully refunded charge events only; rejects partial refunds, missing identifiers, wrong object shapes, and unsupported payment intent events.
+- `stripe-webhook.candidate.ts`: proposed revision of the actual Supabase Edge Function using the shared validation policy; **not deployed**.
+- `tests/stripe-authentication.test.mjs`: exercises actual cryptographic HMAC verification of signed fixture payloads and checkout/refund admission policies.
+
+**Important release constraints:** The staged webhook and SQL candidate are not deployed. A Stripe-signed request can originate from an authentic but erroneous or unexpected event, so payment object verification, mode matching, and database fail-closed guards remain mandatory. A database RPC cannot itself verify a Stripe signature. Partial refunds and disputes require a separately specified policy. Full refund verification is applied at the webhook boundary, while the database assumes only the trusted service-role function may call the RPC. Confirm exact Stripe event object fields and all deployed RPC overloads before production approval. No real payment, money transfer, database migration, or service deployment occurred.
