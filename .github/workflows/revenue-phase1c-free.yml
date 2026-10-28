@@ -59,5 +59,7 @@ jobs:
         run: psql -v ON_ERROR_STOP=1 -f staging/revenue-phase1c/sql/03_guarded_fulfillment_candidate.sql
       - name: Exercise corrected actual SQL implementation
         run: psql -v ON_ERROR_STOP=1 -f staging/revenue-phase1c/sql/04_fulfillment_regression.sql
+      - name: Exercise generic refunds and custom build grants in actual SQL
+        run: psql -v ON_ERROR_STOP=1 -f staging/revenue-phase1c/sql/05_refunds_custom_builds.sql
       - name: Concurrent duplicate checkout delivery with separate DB connections
         run: bash staging/revenue-phase1c/tests/sql-concurrent.sh
