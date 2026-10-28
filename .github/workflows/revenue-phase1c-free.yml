@@ -15,7 +15,27 @@ permissions:
 jobs:
   isolated-guards:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ck_fixture
+          POSTGRES_PASSWORD: local-runner-only
+          POSTGRES_DB: ck_phase1c
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ck_fixture -d ck_phase1c"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: ck_fixture
+      PGPASSWORD: local-runner-only
+      PGDATABASE: ck_phase1c
     steps:
       - name: Checkout staging branch
         uses: actions/checkout@v5
@@ -25,5 +45,17 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Run synthetic guard tests without credentials or network payments
+      - name: Run mock and synthetic checks
         run: node --test staging/revenue-phase1c/tests/*.test.mjs
+      - name: Confirm PostgreSQL client
+        run: command -v psql || (sudo apt-get update -qq && sudo apt-get install -y postgresql-client)
+      - name: Load disposable schema and actual inspected function
+        run: |
+          psql -v ON_ERROR_STOP=1 -f staging/revenue-phase1c/sql/01_snapshot_generic.sql
+          psql -v ON_ERROR_STOP=1 -f staging/revenue-phase1c/sql/02_actual_fulfillment.sql
+      - name: Demonstrate baseline vulnerability without changing live services
+        run: psql -v ON_ERROR_STOP=1 -f staging/revenue-phase1c/sql/00_baseline_regression.sql
+      - name: Apply staged correction only to disposable database
+        run: psql -v ON_ERROR_STOP=1 -f staging/revenue-phase1c/sql/03_guarded_fulfillment_candidate.sql
+      - name: Exercise corrected actual SQL implementation
+        run: psql -v ON_ERROR_STOP=1 -f staging/revenue-phase1c/sql/04_fulfillment_regression.sql
