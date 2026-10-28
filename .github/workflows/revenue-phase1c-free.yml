@@ -1,0 +1,29 @@
+name: Revenue staging guards (no funds, no secrets)
+
+on:
+  push:
+    branches:
+      - phase1c/revenue-staging-20261028
+    paths:
+      - 'staging/revenue-phase1c/**'
+      - '.github/workflows/revenue-phase1c-free.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-guards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout staging branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run synthetic guard tests without credentials or network payments
+        run: node --test staging/revenue-phase1c/tests/payment-guards.test.mjs
