@@ -63,7 +63,7 @@ The operating principle is:
 
 ## Free discovery
 
-These seven tools can be used anonymously to understand the provider, available offers, requirements, price, expected result, authorization state, and prepaid-credit options without spending money:
+These seven tools can be used anonymously to understand the provider, available offers, requirements, price, expected result, authorization state, and legacy-credit compatibility status without spending money:
 
 - `provider.describe`
 - `offers.list`
@@ -71,7 +71,7 @@ These seven tools can be used anonymously to understand the provider, available 
 - `cost.estimate`
 - `result.preview`
 - `execution.preflight`
-- `credits.options` (legacy compatibility status; new credit sales are disabled)
+- `credits.options` (legacy compatibility status only; returns no new credit packs)
 
 The normal discovery sequence is:
 
@@ -82,7 +82,7 @@ provider.describe
 → cost.estimate
 → result.preview
 → execution.preflight
-→ credits.options (legacy compatibility status; new credit sales are disabled)
+→ credits.options (legacy compatibility status only)
 ```
 
 A valid commercial flow may reach:
@@ -130,7 +130,7 @@ These 13 tools perform valuable computation, validation, or artifact generation 
 
 Current v4 paid capabilities use exact x402 Base USDC payments. Historical prepaid credit balances remain redeemable only through the separately named legacy compatibility path; v4 does not sell new credit packs.
 
-Free discovery does not consume paid execution credits.
+Free discovery never charges for computation. `credits.options` returns an empty pack list; new prepaid-credit sales are disabled. Existing paid-credit balances remain isolated behind the authenticated legacy redemption path. A legacy credit-priced XKEY descriptor remains in compatibility metadata; new XKEY executions use the direct x402 route.
 
 
 ## Authenticated verification

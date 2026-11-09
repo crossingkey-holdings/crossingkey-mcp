@@ -8,7 +8,8 @@
 
 `provider.describe` → `offers.list` → `requirements.check` →
 `cost.estimate` → `result.preview` → `execution.preflight` →
-(`credits.options`). Every step is read-only. `cost.estimate` is
+`credits.options`. Every step is read-only. `credits.options` returns an empty
+pack list; new prepaid-credit sales are disabled. `cost.estimate` is
 ESTIMATE_ONLY; `result.preview` reveals result shape, never paid output.
 
 ## Paid x402 capabilities
