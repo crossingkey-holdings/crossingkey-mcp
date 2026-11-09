@@ -260,8 +260,6 @@ function publicCapabilityList(){
 
     ['execution.preflight','Execution preflight','Final no-charge decision point before payment/execution.'],
 
-    ['credits.options','Request-credit purchase options','Returns prepaid request-credit packs.'],
-
   ].filter(([tool])=>CK_EXPOSE_LEGACY_TOOLS || !LEGACY_TOOL_NAMES.has(tool)).map(([tool,name,summary])=>({id:`tool.${tool}`,tool,name,summary,access:'free',price:{amount_usd:0}}));
   const machine=MACHINE_CAPABILITIES.map(x=>({id:x.name,tool:x.name,name:x.name,summary:x.description,access:'paid',charging_model:'x402_exact',price:{amount_usd:Number(x.priceUsd),currency:'USD'},deterministic:true,ai_required:false,idempotency_required:true}));
   return [...free,...PAID_CAPABILITIES,...machine];
@@ -387,11 +385,6 @@ const DISCOVERY_OUTPUT_SCHEMAS = {
     reason: z.string(),
     checks: z.object({}).passthrough()
   }),
-  'credits.options': z.object({
-    packs: z.array(z.object({}).passthrough()),
-    free: z.boolean(),
-    payment_started: z.boolean()
-  })
 };
 const X402_CHALLENGE_OUTPUT_SCHEMA = z.object({
   payment_required: z.literal(true).optional(),
@@ -1545,7 +1538,6 @@ const DISCOVERY_GUIDE_TEXT = [
   '4. cost.estimate — the known price; ESTIMATE_ONLY, never a charge.',
   '5. result.preview — result shape only; paid output is never revealed here.',
   '6. execution.preflight — final no-charge decision point.',
-  '7. credits.options — legacy-credit compatibility status; new credit sales are disabled.',
   'Then STOP. Human authorization is required before any purchase, signing,',
   'transfer, spending, entitlement creation, or paid execution.',
   '',
@@ -1600,8 +1592,8 @@ const COMMERCE_POLICY_TEXT = [
   'CrossingKey commerce policy.',
   '',
   'Free vs paid: discovery tools (provider.describe, offers.list,',
-  'requirements.check, cost.estimate, result.preview, execution.preflight,',
-  'credits.options, and the public marketplace discovery tools) are free and',
+  'requirements.check, cost.estimate, result.preview, and execution.preflight',
+  'are free and read-only, as are public marketplace discovery tools. Paid tools',
   'read-only. Paid tools return a native x402 v2 challenge; authorized retries',
   'carry _meta["x402/payment"] and return _meta["x402/payment-response"]. HTTP',
   'x402 v1/v2 remains a compatibility fallback. Legacy credit redemption is separately named and never charges x402.',
@@ -1664,8 +1656,6 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
   discoveryTool('cost.estimate',discoveryItemSchema,'FREE read-only cost estimate. This tool never creates checkout, reserves funds, or contacts a facilitator.',({item_id})=>discoveryCost(item_id));
   discoveryTool('result.preview',discoveryItemSchema,'FREE read-only result-shape preview. This tool never executes a capability or creates an entitlement or receipt.',({item_id})=>discoveryPreview(item_id));
   discoveryTool('execution.preflight',discoveryItemSchema,'FREE read-only execution preflight. Returns READY_FOR_HUMAN_AUTHORIZATION only; it never authorizes, purchases, settles, executes, or creates records.',({item_id})=>discoveryPreflight(item_id));
-
-  discoveryTool('credits.options',z.object({}).strict(),'FREE read-only legacy credit compatibility status. New prepaid-credit sales are disabled in v4; historical paid credits remain redeemable through a separate compatibility path.',()=>({packs:[],legacy_redemption:'separate_compatibility_path',new_sales_enabled:false,free:true,payment_started:false}));
 
   // Free commercial discovery is registered first. All current paid capabilities use x402.
 
