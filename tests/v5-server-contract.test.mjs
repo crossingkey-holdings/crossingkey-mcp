@@ -24,6 +24,7 @@ test('new public discovery does not advertise prepaid credit products', () => {
   const runtime = fs.readFileSync(new URL('../server-runtime.mjs', import.meta.url), 'utf8');
   assert.equal(MCP_TOOL_MANIFEST.freeTools.length, 6);
   assert.equal(MCP_TOOL_MANIFEST.freeTools.includes('credits.options'), false);
+  assert.deepEqual(MCP_TOOL_MANIFEST.authenticatedTools, ['xkey.validate.legacy']);
   assert.doesNotMatch(runtime, /discoveryTool\('credits\.options'/);
   assert.doesNotMatch(runtime, /\['credits\.options','Request-credit purchase options'/);
   assert.match(runtime, /registerTool\('xkey\.validate\.legacy'/);
