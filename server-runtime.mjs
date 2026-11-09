@@ -13,7 +13,6 @@ import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { CAPABILITIES as MACHINE_CAPABILITIES, RECEIVER as LOCKED_RECEIVER, createMachineCommerce, normalizeX402Version, sha256 } from './lib/machine-commerce.mjs';
 import {
-  PAID_CAPABILITIES as CATALOG_PAID_CAPABILITIES,
   X402_CAPABILITIES,
   PREPAID_CAPABILITIES,
   PAID_CAPABILITY_NAMES,
@@ -235,24 +234,13 @@ const PROVIDER_PROFILE=Object.freeze({
   human_sites:['https://www.crossingkeyintelligence.com','https://shop.crossingkeyintelligence.com'],
   machine_site:'https://mcp.crossingkeyintelligence.com/mcp'
 });
-const PAID_CAPABILITIES=Object.freeze([{
-  id:'xkey.validate',tool:'xkey.validate',name:'xkey Intake Validation',
-  summary:'Validates and normalizes a bounded xkey intake payload.',access:'paid',
-  charging_model:'prepaid_credit',price:{credits:1,currency:'CK_REQUEST_CREDIT'},
-  speculative_call_safe:false,idempotency_required:true,
-  input_schema:{type:'object',required:['idempotency_key','raw_intake'],properties:{
-    idempotency_key:{type:'string',minLength:8,maxLength:160},
-    raw_intake:{type:'string',minLength:2,maxLength:100000}},additionalProperties:false},
-  output_preview:{type:'object',properties:{success:{type:'boolean'},state:{enum:['VERIFIED_SUCCESS','SAFE_FAILURE']},request_hash:{type:'string'},normalized:{type:['object','null']},error:{type:['string','null']}}},
-  failure_policy:'Safe validation failures release the reserved credit. Successful validation commits one credit.'
-}]);
 function publicCapabilityList(){
   const free=[
     ['provider.describe','Provider discovery','Returns provider identity, commerce policy, payment rails, and discovery sequence.'],
 
     ['offers.list','Offer discovery','Searches public CrossingKey offers before payment.'],
 
-    ['cost.estimate','Cost estimation','Returns known purchase price or credit cost without executing.'],
+    ['cost.estimate','Cost estimation','Returns the known purchase price without executing.'],
 
     ['result.preview','Result preview','Shows result shape without revealing paid output.'],
 
@@ -262,7 +250,7 @@ function publicCapabilityList(){
 
   ].filter(([tool])=>CK_EXPOSE_LEGACY_TOOLS || !LEGACY_TOOL_NAMES.has(tool)).map(([tool,name,summary])=>({id:`tool.${tool}`,tool,name,summary,access:'free',price:{amount_usd:0}}));
   const machine=MACHINE_CAPABILITIES.map(x=>({id:x.name,tool:x.name,name:x.name,summary:x.description,access:'paid',charging_model:'x402_exact',price:{amount_usd:Number(x.priceUsd),currency:'USD'},deterministic:true,ai_required:false,idempotency_required:true}));
-  return [...free,...PAID_CAPABILITIES,...machine];
+  return [...free,...machine];
 }
 function offerDescriptor(x){
   const p=publicOffer(x);
