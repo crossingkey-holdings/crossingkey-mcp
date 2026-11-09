@@ -28,6 +28,8 @@ test('new public discovery does not advertise prepaid credit products', () => {
   assert.doesNotMatch(runtime, /\['credits\.options','Request-credit purchase options'/);
   assert.match(runtime, /registerTool\('xkey\.validate\.legacy'/);
   assert.match(runtime, /Compatibility-only redemption of an existing paid request credit/);
+  assert.doesNotMatch(runtime, /charging_model:'prepaid_credit'/);
+  assert.doesNotMatch(runtime, /CK_REQUEST_CREDIT/);
 });
 
 test('v5 preserves receiver-only Base mainnet x402 v1/v2 boundaries', () => {
