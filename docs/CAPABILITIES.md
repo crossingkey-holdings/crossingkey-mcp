@@ -1,88 +1,77 @@
 # CrossingKey MCP — Capabilities
 
-Canonical identity: `com.crossingkeyintelligence/crossingkey-mcp`
-Package: `crossingkey-mcp` v3.0.1 (ESM). MCP protocol `2025-11-25`.
+Canonical identity: `com.crossingkeyintelligence/crossingkey-mcp`  
+Source version: `5.0.1`  
+MCP protocol: `2025-11-25`
 
-All tools use the `resource.action` naming convention. Every tool exposes an
-`outputSchema` and `structuredContent`; tool errors use the
-`{error_code, message, hint}` shape.
+All current first-party paid capabilities use direct x402 exact payments. New prepaid request-credit packs are not offered. Historical paid balances remain isolated behind the authenticated `xkey.validate.legacy` compatibility path.
 
-## Free discovery tools (7, anonymous)
+## Free discovery tools (6, anonymous)
 
 | Tool | What it does | Cost |
-|---|---|---|
-| `provider.describe` | CrossingKey identity, commerce model, rails | free |
-| `offers.list` | Public offers and paid capabilities, metadata only | free |
-| `requirements.check` | Prerequisites for one `item_id` | free |
-| `cost.estimate` | Known price; ESTIMATE_ONLY, never a charge | free |
-| `result.preview` | Result shape only; paid output never revealed | free |
-| `execution.preflight` | Final no-charge decision point | free |
-| `credits.options` | Prepaid request-credit packs | free |
+|---|---|---:|
+| `provider.describe` | CrossingKey identity, commerce model, rails and discovery sequence | Free |
+| `offers.list` | Public offer and paid capability metadata | Free |
+| `requirements.check` | Prerequisites for one item | Free |
+| `cost.estimate` | Known price, estimate only | Free |
+| `result.preview` | Result shape only, never paid output | Free |
+| `execution.preflight` | Final no-charge authorization checkpoint | Free |
 
-## Paid x402 challenge tools (5, anonymous)
+The discovery sequence never starts payment or execution. A successful preflight stops at `READY_FOR_HUMAN_AUTHORIZATION`.
 
-Calling these spends nothing. Each returns an x402 **challenge**
-(`payment_required: true`, price, asset, network, pay-to address,
-`execution_url`, `PAYMENT-REQUIRED` header, `settlement_expectations`,
-`confirmation_expectations`, and an instruction to obtain authorized signing
-outside ordinary MCP computation). Execution is an out-of-band HTTP POST to
-`/api/x402/:capability` with a signed payment header and a unique
-`idempotency_key`.
+## Direct x402 paid capabilities (13)
 
-| Tool | Price (USDC, Base) | What it does after payment |
-|---|---|---|
-| `x402.compatibility_audit` | $1.00 | Audits an x402 endpoint for v1/v2 compatibility defects |
-| `mcp.schema_audit` | $1.00 | Audits MCP tool schemas for agent-readiness defects |
-| `openapi.quality_audit` | $1.00 | Scores an OpenAPI spec for machine-readability |
-| `machine_commerce.readiness_audit` | $2.00 | Probes a base URL for commerce-readiness signals |
-| `artifact.integrity_manifest` | $0.10 | Builds a SHA-256 manifest for supplied artifacts |
+| Tool | Price | Purpose |
+|---|---:|---|
+| `x402.compatibility_audit` | $1.00 USDC | Check x402 v1/v2 compatibility |
+| `mcp.schema_audit` | $1.00 USDC | Review MCP tool schemas and input contracts |
+| `openapi.quality_audit` | $1.00 USDC | Evaluate OpenAPI structure |
+| `machine_commerce.readiness_audit` | $2.00 USDC | Check machine-commerce discovery and health surfaces |
+| `artifact.integrity_manifest` | $0.10 USDC | Build a SHA-256 artifact manifest |
+| `hash.encode` | $0.01 USDC | SHA-256 text digest |
+| `secret.scan` | $0.01 USDC | Heuristic credential-pattern scan |
+| `pii.scan` | $0.01 USDC | Heuristic personal-data-pattern scan |
+| `json.repair` | $0.01 USDC | Conservative JSON validation and repair |
+| `prompt.audit` | $0.01 USDC | Heuristic prompt-structure audit |
+| `mcp.launch_audit` | $9.00 USDC | Bounded MCP endpoint launch audit |
+| `x402.purchase_path_audit` | $19.00 USDC | Bounded x402 purchase-challenge audit |
+| `xkey.validate` | $0.10 USDC | Bounded XKEY intake validation |
 
-Default network is Base Sepolia. Base mainnet settles only when the operator
-sets `CK_ENABLE_MAINNET=true`.
+Calling a paid MCP tool returns a payment challenge. The challenge call itself does not charge or execute. Authorized signing and payment occur outside ordinary MCP computation, followed by the bounded paid HTTP execution path. Base mainnet is configured in the current source candidate; live settlement must be verified separately.
 
-## Credit-gated tool (1)
+## Public marketplace discovery (8, anonymous)
 
-| Tool | What it does |
-|---|---|
-| `xkey.validate` | Direct $0.10 Base USDC x402 validation; shared receipt, entitlement, replay, and idempotency lifecycle. No credit balance required. |
-| `xkey.validate.legacy` | Authenticated compatibility-only redemption of an existing paid request credit; never charges x402. |
+- `marketplace.describe`
+- `provider.apply`
+- `provider.get`
+- `capability.get`
+- `capability.search`
+- `catalog.list`
+- `commerce.quote`
+- `creator.apply`
 
-## Marketplace tools — public (8, anonymous)
+These tools expose marketplace metadata and applications. They do not authorize paid execution. The current marketplace has no active providers or active public capabilities, so the marketplace catalog is not currently a source of purchasable offers.
 
-| Tool | What it does |
-|---|---|
-| `marketplace.describe` | How the marketplace works |
-| `provider.register` | Register as a provider (application) |
-| `provider.get` | One provider's public profile |
-| `capability.get` | One capability's detail |
-| `capability.search` | Search active public capabilities |
-| `catalog.list` | List the active public catalog |
-| `commerce.quote` | Authoritative price breakdown for a capability (includes a quote hash) |
-| `creator.apply` | Apply as a creator |
+## Authenticated verification and role-gated tools
 
-## Marketplace tools — authenticated
+Authenticated sessions may expose read-only verification tools:
 
-Visible only to authenticated sessions; some are role-restricted:
+- `approval.verify`
+- `idempotency.inspect`
+- `receipt.verify`
+- `entitlement.inspect`
 
-| Tool | Role | What it does |
-|---|---|---|
-| `approval.verify` | any authenticated | Inspect a human approval (buyer-bound) |
-| `idempotency.inspect` | any authenticated | Inspect an idempotency record; **never creates state** |
-| `receipt.verify` | any authenticated | Verify a receipt's integrity (hash chain) |
-| `entitlement.inspect` | any authenticated | Inspect an entitlement (bounded uses) |
-| `capability.purchase` | buyer | Execute a paid marketplace purchase: requires prior human approval naming the exact capability, input, idempotency key, and quote, plus verified x402 payment |
-| `job.status`, `receipt.get` | authenticated | Purchase job and receipt lookup |
-| `capability.register`, `settlement.get_balance`, `settlement.list_allocations` | provider/admin | Provider-side management |
-| `provider.set_status`, `capability.set_status`, `settlement.mark_settled` | admin | Admin-only controls |
+Marketplace buyers, providers and administrators receive only the operations allowed by their bound role. Human purchase approval is minted by the local operator and is not exposed as an agent-controlled MCP action.
 
-Approval **minting** is local-operator/CLI only — it is never exposed over MCP.
+## Legacy compatibility
 
-## Resources
+`xkey.validate.legacy` remains available only to authenticated customers with an existing paid-credit credential. It does not create a new credit purchase and does not settle an x402 payment. This compatibility path is retained to preserve previously purchased balances; it is not a current offer or recommended discovery path.
 
-| URI | Access | Content |
-|---|---|---|
-| `crossingkey://discovery-guide` | public | The free discovery sequence |
-| `crossingkey://commerce-policy` | public | Free/paid separation, receiver-only payments, authorization, idempotency, receipts |
-| `crossingkey://capability/{name}` | public | Per-capability instructions for one offer or paid capability |
+## Payment and authority boundaries
 
-No MCP prompts are registered.
+- Seller wallet is receiver-only.
+- Discovery, estimates, previews and preflight are no-charge.
+- Paid execution requires explicit human authorization and verified payment.
+- Idempotency and replay protection prevent duplicate settlement.
+- Receipts and entitlements are buyer-bound and inspectable.
+- Unknown settlement outcomes require reconciliation; the server must not blindly retry settlement.
