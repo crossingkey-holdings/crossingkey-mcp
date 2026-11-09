@@ -51,7 +51,7 @@ CrossingKey MCP is a governed machine-commerce interface for AI agents and autho
 
 The stable source preserves the existing anonymous MCP surface and adds the two authorized v4 paid audits. The exact live/public tool count remains a deployment-time verification item.
 
-- **6 free discovery and commercial-navigation tools**
+- **7 free discovery and commercial-navigation tools**
 - **8 public marketplace tools**
 - **13 direct x402 paid tools** plus a separately named legacy credit-redemption compatibility tool for existing customers
 
@@ -63,7 +63,7 @@ The operating principle is:
 
 ## Free discovery
 
-These six tools can be used anonymously to understand the provider, available offers, requirements, price, expected result, and authorization state without spending money:
+These seven tools can be used anonymously to understand the provider, available offers, requirements, price, expected result, authorization state, and legacy-credit compatibility status without spending money:
 
 - `provider.describe`
 - `offers.list`
@@ -71,6 +71,7 @@ These six tools can be used anonymously to understand the provider, available of
 - `cost.estimate`
 - `result.preview`
 - `execution.preflight`
+- `credits.options` (legacy compatibility status only; returns no new credit packs)
 
 The normal discovery sequence is:
 
@@ -128,7 +129,7 @@ These 13 tools perform valuable computation, validation, or artifact generation 
 
 Current v4 paid capabilities use exact x402 Base USDC payments. Historical prepaid credit balances remain redeemable only through the separately named legacy compatibility path; v4 does not sell new credit packs.
 
-Free discovery never charges for computation. New prepaid-credit sales are not offered. Existing paid-credit balances remain isolated behind the authenticated legacy redemption path.
+Free discovery never charges for computation. `credits.options` returns an empty pack list; new prepaid-credit sales are disabled. Existing paid-credit balances remain isolated behind the authenticated legacy redemption path. A legacy credit-priced XKEY descriptor remains in compatibility metadata; new XKEY executions use the direct x402 route.
 
 
 ## Authenticated verification
