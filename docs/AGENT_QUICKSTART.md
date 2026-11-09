@@ -8,7 +8,7 @@ Transport: MCP Streamable HTTP. Protocol version: `2025-11-25`.
 1. `POST /mcp` with an `initialize` request (protocolVersion `2025-11-25`).
    Save the `mcp-session-id` response header; send it on every later call.
 2. Read `instructions` from the initialize result — it states the house rules.
-3. `tools/list` to see your surface. Anonymous sessions see 21 tools;
+3. `tools/list` to see your surface. Anonymous sessions see 27 tools;
    authenticated sessions additionally see verification tools.
 
 ## The discovery sequence (free, read-only, no spending possible)
