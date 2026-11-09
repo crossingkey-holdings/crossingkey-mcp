@@ -4,9 +4,9 @@ Canonical identity: `com.crossingkeyintelligence/crossingkey-mcp`
 Source version: `5.0.1`  
 MCP protocol: `2025-11-25`
 
-All current first-party paid capabilities use direct x402 exact payments. New prepaid request-credit packs are not offered. Historical paid balances remain isolated behind the authenticated `xkey.validate.legacy` compatibility path.
+CrossingKey's current paid computation path is direct x402 exact payment. Prepaid request-credit pack sales are disabled. Historical paid balances remain protected through a separately named authenticated compatibility path.
 
-## Free discovery tools (6, anonymous)
+## Free discovery tools (7, anonymous)
 
 | Tool | What it does | Cost |
 |---|---|---:|
@@ -16,8 +16,9 @@ All current first-party paid capabilities use direct x402 exact payments. New pr
 | `cost.estimate` | Known price, estimate only | Free |
 | `result.preview` | Result shape only, never paid output | Free |
 | `execution.preflight` | Final no-charge authorization checkpoint | Free |
+| `credits.options` | Legacy compatibility status; returns an empty pack list | Free |
 
-The discovery sequence never starts payment or execution. A successful preflight stops at `READY_FOR_HUMAN_AUTHORIZATION`.
+The discovery sequence never starts payment or execution. A successful preflight stops at `READY_FOR_HUMAN_AUTHORIZATION`. The legacy status tool does not sell or provision credits.
 
 ## Direct x402 paid capabilities (13)
 
@@ -65,7 +66,9 @@ Marketplace buyers, providers and administrators receive only the operations all
 
 ## Legacy compatibility
 
-`xkey.validate.legacy` remains available only to authenticated customers with an existing paid-credit credential. It does not create a new credit purchase and does not settle an x402 payment. This compatibility path is retained to preserve previously purchased balances; it is not a current offer or recommended discovery path.
+`xkey.validate.legacy` remains available only to authenticated customers with an existing paid-credit credential. It does not create a new credit purchase and does not settle an x402 payment. The legacy credit-priced XKEY descriptor remains in compatibility metadata, but new XKEY executions should use the direct x402 `xkey.validate` route.
+
+New prepaid-credit pack sales are disabled. Existing customer balances are retained for compatibility; they are not a current product or recommended purchase path.
 
 ## Payment and authority boundaries
 
