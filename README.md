@@ -82,6 +82,7 @@ provider.describe
 → cost.estimate
 → result.preview
 → execution.preflight
+→ credits.options (legacy compatibility status only)
 ```
 
 A valid commercial flow may reach:
