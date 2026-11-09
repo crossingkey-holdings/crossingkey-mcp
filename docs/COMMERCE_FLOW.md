@@ -7,8 +7,7 @@
 ## Free discovery (no payment possible)
 
 `provider.describe` → `offers.list` → `requirements.check` →
-`cost.estimate` → `result.preview` → `execution.preflight` →
-(`credits.options`). Every step is read-only. `cost.estimate` is
+`cost.estimate` → `result.preview` → `execution.preflight`. Every step is read-only. `cost.estimate` is
 ESTIMATE_ONLY; `result.preview` reveals result shape, never paid output.
 
 ## Paid x402 capabilities
