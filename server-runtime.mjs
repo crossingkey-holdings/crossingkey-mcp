@@ -13,6 +13,7 @@ import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { CAPABILITIES as MACHINE_CAPABILITIES, RECEIVER as LOCKED_RECEIVER, createMachineCommerce, normalizeX402Version, sha256 } from './lib/machine-commerce.mjs';
 import {
+  PAID_CAPABILITIES as CATALOG_PAID_CAPABILITIES,
   X402_CAPABILITIES,
   PREPAID_CAPABILITIES,
   PAID_CAPABILITY_NAMES,
@@ -234,13 +235,24 @@ const PROVIDER_PROFILE=Object.freeze({
   human_sites:['https://www.crossingkeyintelligence.com','https://shop.crossingkeyintelligence.com'],
   machine_site:'https://mcp.crossingkeyintelligence.com/mcp'
 });
+const PAID_CAPABILITIES=Object.freeze([{
+  id:'xkey.validate',tool:'xkey.validate',name:'xkey Intake Validation',
+  summary:'Validates and normalizes a bounded xkey intake payload.',access:'paid',
+  charging_model:'prepaid_credit',price:{credits:1,currency:'CK_REQUEST_CREDIT'},
+  speculative_call_safe:false,idempotency_required:true,
+  input_schema:{type:'object',required:['idempotency_key','raw_intake'],properties:{
+    idempotency_key:{type:'string',minLength:8,maxLength:160},
+    raw_intake:{type:'string',minLength:2,maxLength:100000}},additionalProperties:false},
+  output_preview:{type:'object',properties:{success:{type:'boolean'},state:{enum:['VERIFIED_SUCCESS','SAFE_FAILURE']},request_hash:{type:'string'},normalized:{type:['object','null']},error:{type:['string','null']}}},
+  failure_policy:'Safe validation failures release the reserved credit. Successful validation commits one credit.'
+}]);
 function publicCapabilityList(){
   const free=[
     ['provider.describe','Provider discovery','Returns provider identity, commerce policy, payment rails, and discovery sequence.'],
 
     ['offers.list','Offer discovery','Searches public CrossingKey offers before payment.'],
 
-    ['cost.estimate','Cost estimation','Returns the known purchase price without executing.'],
+    ['cost.estimate','Cost estimation','Returns known purchase price or credit cost without executing.'],
 
     ['result.preview','Result preview','Shows result shape without revealing paid output.'],
 
@@ -248,9 +260,11 @@ function publicCapabilityList(){
 
     ['execution.preflight','Execution preflight','Final no-charge decision point before payment/execution.'],
 
+    ['credits.options','Request-credit purchase options','Returns prepaid request-credit packs.'],
+
   ].filter(([tool])=>CK_EXPOSE_LEGACY_TOOLS || !LEGACY_TOOL_NAMES.has(tool)).map(([tool,name,summary])=>({id:`tool.${tool}`,tool,name,summary,access:'free',price:{amount_usd:0}}));
   const machine=MACHINE_CAPABILITIES.map(x=>({id:x.name,tool:x.name,name:x.name,summary:x.description,access:'paid',charging_model:'x402_exact',price:{amount_usd:Number(x.priceUsd),currency:'USD'},deterministic:true,ai_required:false,idempotency_required:true}));
-  return [...free,...machine];
+  return [...free,...PAID_CAPABILITIES,...machine];
 }
 function offerDescriptor(x){
   const p=publicOffer(x);
@@ -373,6 +387,11 @@ const DISCOVERY_OUTPUT_SCHEMAS = {
     reason: z.string(),
     checks: z.object({}).passthrough()
   }),
+  'credits.options': z.object({
+    packs: z.array(z.object({}).passthrough()),
+    free: z.boolean(),
+    payment_started: z.boolean()
+  })
 };
 const X402_CHALLENGE_OUTPUT_SCHEMA = z.object({
   payment_required: z.literal(true).optional(),
@@ -1526,6 +1545,7 @@ const DISCOVERY_GUIDE_TEXT = [
   '4. cost.estimate — the known price; ESTIMATE_ONLY, never a charge.',
   '5. result.preview — result shape only; paid output is never revealed here.',
   '6. execution.preflight — final no-charge decision point.',
+  '7. credits.options — legacy-credit compatibility status; new credit sales are disabled.',
   'Then STOP. Human authorization is required before any purchase, signing,',
   'transfer, spending, entitlement creation, or paid execution.',
   '',
@@ -1580,8 +1600,8 @@ const COMMERCE_POLICY_TEXT = [
   'CrossingKey commerce policy.',
   '',
   'Free vs paid: discovery tools (provider.describe, offers.list,',
-  'requirements.check, cost.estimate, result.preview, and execution.preflight',
-  'are free and read-only, as are public marketplace discovery tools. Paid tools',
+  'requirements.check, cost.estimate, result.preview, execution.preflight,',
+  'credits.options, and the public marketplace discovery tools) are free and',
   'read-only. Paid tools return a native x402 v2 challenge; authorized retries',
   'carry _meta["x402/payment"] and return _meta["x402/payment-response"]. HTTP',
   'x402 v1/v2 remains a compatibility fallback. Legacy credit redemption is separately named and never charges x402.',
@@ -1644,6 +1664,8 @@ function makeMcpServer(authContext=null,marketplaceContext=()=>null,rateKey='ano
   discoveryTool('cost.estimate',discoveryItemSchema,'FREE read-only cost estimate. This tool never creates checkout, reserves funds, or contacts a facilitator.',({item_id})=>discoveryCost(item_id));
   discoveryTool('result.preview',discoveryItemSchema,'FREE read-only result-shape preview. This tool never executes a capability or creates an entitlement or receipt.',({item_id})=>discoveryPreview(item_id));
   discoveryTool('execution.preflight',discoveryItemSchema,'FREE read-only execution preflight. Returns READY_FOR_HUMAN_AUTHORIZATION only; it never authorizes, purchases, settles, executes, or creates records.',({item_id})=>discoveryPreflight(item_id));
+
+  discoveryTool('credits.options',z.object({}).strict(),'FREE read-only legacy credit compatibility status. New prepaid-credit sales are disabled in v4; historical paid credits remain redeemable through a separate compatibility path.',()=>({packs:[],legacy_redemption:'separate_compatibility_path',new_sales_enabled:false,free:true,payment_started:false}));
 
   // Free commercial discovery is registered first. All current paid capabilities use x402.
 
