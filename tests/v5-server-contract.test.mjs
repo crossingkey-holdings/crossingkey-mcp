@@ -20,6 +20,16 @@ test('v5 release metadata is consistent', () => {
   assert.equal(liveStatus.operatorHostVersionObserved, '5.0.0');
 });
 
+test('new public discovery does not advertise prepaid credit products', () => {
+  const runtime = fs.readFileSync(new URL('../server-runtime.mjs', import.meta.url), 'utf8');
+  assert.equal(MCP_TOOL_MANIFEST.freeTools.length, 6);
+  assert.equal(MCP_TOOL_MANIFEST.freeTools.includes('credits.options'), false);
+  assert.doesNotMatch(runtime, /discoveryTool\('credits\.options'/);
+  assert.doesNotMatch(runtime, /\['credits\.options','Request-credit purchase options'/);
+  assert.match(runtime, /registerTool\('xkey\.validate\.legacy'/);
+  assert.match(runtime, /Compatibility-only redemption of an existing paid request credit/);
+});
+
 test('v5 preserves receiver-only Base mainnet x402 v1/v2 boundaries', () => {
   const config = { network: 'eip155:8453', receiver: RECEIVER, publicBaseUrl: 'https://mcp.crossingkeyintelligence.com' };
   const v2 = paymentRequired('hash.encode', 2, config);
