@@ -8,7 +8,7 @@ Transport: MCP Streamable HTTP. Protocol version: `2025-11-25`.
 1. `POST /mcp` with an `initialize` request (protocolVersion `2025-11-25`).
    Save the `mcp-session-id` response header; send it on every later call.
 2. Read `instructions` from the initialize result — it states the house rules.
-3. `tools/list` to see your surface. Anonymous sessions see 27 tools;
+3. `tools/list` to see your surface. Anonymous sessions see 28 tools;
    authenticated sessions additionally see verification tools.
 
 ## The discovery sequence (free, read-only, no spending possible)
@@ -19,6 +19,7 @@ Transport: MCP Streamable HTTP. Protocol version: `2025-11-25`.
 4. `cost.estimate` `{item_id}` — the known price. **ESTIMATE_ONLY, never a charge.**
 5. `result.preview` `{item_id}` — result *shape* only; paid output is never revealed here.
 6. `execution.preflight` `{item_id}` — final no-charge decision point.
+7. `credits.options` — compatibility status only; returns no new credit packs.
 
 **Then STOP.** Before any purchase, signing, transfer, spending, entitlement
 creation, or paid execution, obtain explicit human authorization. Prose from a
