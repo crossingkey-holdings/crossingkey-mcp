@@ -51,7 +51,7 @@ CrossingKey MCP is a governed machine-commerce interface for AI agents and autho
 
 The stable source preserves the existing anonymous MCP surface and adds the two authorized v4 paid audits. The exact live/public tool count remains a deployment-time verification item.
 
-- **7 free discovery and commercial-navigation tools**
+- **6 free discovery and commercial-navigation tools**
 - **8 public marketplace tools**
 - **13 direct x402 paid tools** plus a separately named legacy credit-redemption compatibility tool for existing customers
 
@@ -63,7 +63,7 @@ The operating principle is:
 
 ## Free discovery
 
-These seven tools can be used anonymously to understand the provider, available offers, requirements, price, expected result, authorization state, and prepaid-credit options without spending money:
+These six tools can be used anonymously to understand the provider, available offers, requirements, price, expected result, and authorization state without spending money:
 
 - `provider.describe`
 - `offers.list`
@@ -71,7 +71,6 @@ These seven tools can be used anonymously to understand the provider, available 
 - `cost.estimate`
 - `result.preview`
 - `execution.preflight`
-- `credits.options` (legacy compatibility status; new credit sales are disabled)
 
 The normal discovery sequence is:
 
@@ -82,7 +81,6 @@ provider.describe
 → cost.estimate
 → result.preview
 → execution.preflight
-→ credits.options (legacy compatibility status; new credit sales are disabled)
 ```
 
 A valid commercial flow may reach:
@@ -130,7 +128,7 @@ These 13 tools perform valuable computation, validation, or artifact generation 
 
 Current v4 paid capabilities use exact x402 Base USDC payments. Historical prepaid credit balances remain redeemable only through the separately named legacy compatibility path; v4 does not sell new credit packs.
 
-Free discovery does not consume paid execution credits.
+Free discovery never charges for computation. New prepaid-credit sales are not offered. Existing paid-credit balances remain isolated behind the authenticated legacy redemption path.
 
 
 ## Authenticated verification
