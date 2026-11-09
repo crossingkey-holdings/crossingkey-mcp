@@ -9,7 +9,7 @@ Single Node.js ESM process. `server.mjs` is the thin entrypoint; the HTTP and MC
 | `POST /mcp` | MCP Streamable HTTP endpoint (initialize, tools, resources) |
 | `GET /health` | Liveness probe |
 | `POST /api/x402/:capability` | Out-of-band paid execution (signed payment header required) |
-| Stripe webhook, checkout, delivery, download routes | Credit packs and offer fulfillment (HTTP, not MCP) |
+| Stripe webhook, checkout, delivery, download routes | Legacy credit redemption and offer fulfillment (HTTP, not MCP) |
 
 The MCP endpoint listens on `127.0.0.1`; production terminates TLS at the
 operator's reverse proxy.
@@ -21,7 +21,7 @@ operator's reverse proxy.
 
 - **Server instructions** — the free/paid separation and stop-before-payment
   rule, delivered in the `initialize` result.
-- **28 anonymous tools** — 7 free discovery, 13 paid x402 challenge tools,
+- **27 anonymous tools** — 6 free discovery, 13 paid x402 challenge tools,
   8 public marketplace tools.
 - **Role-filtered marketplace tools** — authenticated sessions additionally
   see verification tools (`approval.verify`, `idempotency.inspect`,
@@ -39,10 +39,10 @@ content rather than executing.
 ## Sessions and state
 
 - Sessions are memory-resident, keyed by `mcp-session-id`, and bound to the
-  identity resolved at initialization (anonymous, `ck_` credit principal, or
+  identity resolved at initialization (anonymous, a legacy `ck_` credit principal, or
   marketplace role). Credential/session mismatch is rejected (`-32001`).
 - Durable state lives in `data/`: the funnel SQLite DB, commerce JSON,
-  marketplace JSON, credit accounts, and catalog files.
+  marketplace JSON, legacy credit accounts, and catalog files.
 - **Journal-before-settlement:** paid intents are durably recorded before any
   external settlement; reconciliation records track unknown outcomes.
 
@@ -70,16 +70,15 @@ content rather than executing.
 - `lib/marketplace-tools.mjs` — MCP registration for marketplace tools with
   role-based visibility.
 - `lib/mcp-manifest.mjs` — canonical tool-name lists and the MCP manifest.
-- `lib/discovery.mjs` — free discovery handlers (describe/list/estimate/
-  preview/preflight/credits).
+- `lib/discovery.mjs` — paid capability input contracts and discovery metadata.
 - `lib/paid-capability-catalog.mjs` — the 13 paid x402 capabilities + pricing.
 - `lib/onchain-verifier.mjs`, `lib/gate1b-*.mjs` — settlement verification
   and the Gate1B production adapter.
 
 ## Tests
 
-`npm test` runs the full suite (92 tests as of v3.0.0 upgrade): protocol
-contracts, discovery naming, verification surfaces, transport security,
-marketplace, machine commerce, and regression tests. Targeted suites live in
+`npm test` runs the current Node test suite: protocol contracts, discovery naming,
+verification surfaces, transport security, marketplace, machine commerce, and
+regression tests. Run it against the exact candidate before release. Targeted suites live in
 `tests/`. `scripts/agent-comprehension-test.mjs` walks the server the way a
 new agent would (19 checks).
