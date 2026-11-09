@@ -42,7 +42,7 @@ content rather than executing.
   identity resolved at initialization (anonymous, a legacy `ck_` credit principal, or
   marketplace role). Credential/session mismatch is rejected (`-32001`).
 - Durable state lives in `data/`: the funnel SQLite DB, commerce JSON,
-  marketplace JSON, legacy credit accounts, and catalog files.
+  marketplace JSON, legacy legacy credit accounts, and catalog files.
 - **Journal-before-settlement:** paid intents are durably recorded before any
   external settlement; reconciliation records track unknown outcomes.
 
