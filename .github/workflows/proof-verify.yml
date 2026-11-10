@@ -24,5 +24,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm test
+      - name: Run all MCP contract, transport, commerce, and security suites
+        run: node --test tests/*.test.mjs
       - run: sha256sum -c proof/evidence/SHA256SUMS
       - run: ./scripts/ck-proof-verify.sh
