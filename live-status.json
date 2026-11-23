@@ -7,21 +7,11 @@
   "wellKnown": "https://mcp.crossingkeyintelligence.com/.well-known/mcp.json",
   "transport": "streamable-http",
   "machineCommerce": true,
-  "mcpInitializeVerified": true,
   "publicEndpointVerified": true,
-  "statusSemantics": "v5.0.1_source_candidate_host_cutover_pending",
-  "marketplace": true,
-  "localVerification": "automated_v5.0.1_suite_passed; host cutover pending",
-  "operatorHostVersionObserved": "5.0.0",
-  "historicalValidatedProfile": {
-    "generation": "v2",
-    "scheme": "exact",
-    "network": "eip155:84532",
-    "chain": "Base Sepolia",
-    "asset": "USDC",
-    "sourceStatus": "historical_local_validation"
-  },
-  "currentConfiguredProfile": {
+  "mcpInitializeVerified": false,
+  "statusSemantics": "public_health_5.0.1_but_live_x402_receiver_mismatch_host_reconciliation_required",
+  "publicHealthVersionObserved": "5.0.1",
+  "sourceConfiguredProfile": {
     "x402Versions": [
       1,
       2
@@ -32,25 +22,54 @@
     "chain": "Base",
     "asset": "USDC",
     "contract": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    "receiver": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+    "receiver": "0x1cc1c0576874b30b0ba014abb93c0768a3fa1cb4",
     "mainnetEnabled": true,
+    "walletMode": "receiver-only"
+  },
+  "publicObservedProfile": {
+    "network": "eip155:8453",
+    "asset": "USDC",
+    "receiver": "0x2381A81818E0FdCBe36c901e52dD87472ceE6a32",
     "walletMode": "receiver-only",
-    "paymentVerifyOnchain": "configured; settlement proof remains separate",
-    "settlementProof": "pending_independent_payment"
+    "status": "mismatch"
+  },
+  "previousDocumentedReceiver": "0x15a879AEAb30A23f951dbF9d6e706f2Df893ed7B",
+  "paymentReadiness": "BLOCKED_UNTIL_LIVE_X402_CHALLENGE_MATCHES_SOURCE_RECEIVER",
+  "publicDocumentation": {
+    "url": "https://www.crossingkeyintelligence.com/mcp/",
+    "version": "5.0.1",
+    "pagesDeploymentCommit": "0b3ad28b612933b84d54c938d84dfcc62e085731",
+    "deploymentStatus": "success"
+  },
+  "cloudflare": {
+    "tunnel": "crossingkey-mcp",
+    "origin": "http://127.0.0.1:3401",
+    "dnsRecord": "mcp.crossingkeyintelligence.com CNAME to active Cloudflare tunnel",
+    "activeConnectionsObserved": 4
+  },
+  "endpoints": {
+    "health": "verified_200",
+    "mcpDiscovery": "verified",
+    "x402Discovery": "verified_but_receiver_mismatch",
+    "llmsTxt": "404_at_last_public_check",
+    "openapi": "fetch_tool_bot_blocked_unverified"
   },
   "execution": {
-    "deterministicXkey": true,
-    "entitlements": true,
-    "resultHashing": true,
-    "receiptBinding": true,
-    "replayResistance": true,
-    "idempotentRequests": true
+    "deterministicXkey": "source_feature",
+    "entitlements": "source_feature",
+    "resultHashing": "source_feature",
+    "receiptBinding": "source_feature",
+    "replayResistance": "source_feature",
+    "idempotentRequests": "source_feature"
   },
-  "verifiedAt": "2026-10-26",
+  "verifiedAt": "2026-11-23",
   "verificationSources": [
     "https://mcp.crossingkeyintelligence.com/health",
     "https://mcp.crossingkeyintelligence.com/.well-known/mcp.json",
+    "https://mcp.crossingkeyintelligence.com/.well-known/x402",
+    "https://www.crossingkeyintelligence.com/mcp/",
+    "Cloudflare Pages deployment API",
     "Cloudflare Tunnel configuration read-back",
-    "GitHub stable source commit prepared; host restart not executed in this session"
+    "GitHub main source"
   ]
 }
