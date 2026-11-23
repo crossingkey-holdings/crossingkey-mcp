@@ -8,12 +8,13 @@ CrossingKey MCP is a governed Streamable HTTP MCP for agent discovery, bounded c
 - Human documentation: https://www.crossingkeyintelligence.com/mcp/
 - Canonical identity: `com.crossingkeyintelligence/crossingkey-mcp`
 - Candidate server release: `5.0.1`
-- Current public runtime before cutover: `5.0.0`
+- Public health version observed: `5.0.1`
 - Protocol: MCP Streamable HTTP
 - Network: Base mainnet, `eip155:8453`
 - Asset: USDC
 - Canonical Base mainnet USDC receiving address: `0x1cc1c0576874b30b0ba014abb93c0768a3fa1cb4`
 - Wallet policy: receiver-only
+- **Payment readiness:** blocked until live x402 discovery and unpaid challenges both return the canonical source receiver `0x1cc1c0576874b30b0ba014abb93c0768a3fa1cb4`. Current public x402 discovery has been observed advertising `0x2381A81818E0FdCBe36c901e52dD87472ceE6a32`; do not send payment until corrected.
 
 ## Discovery sequence
 
