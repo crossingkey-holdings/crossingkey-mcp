@@ -12,6 +12,7 @@ CrossingKey MCP is a governed Streamable HTTP MCP for agent discovery, bounded c
 - Protocol: MCP Streamable HTTP
 - Network: Base mainnet, `eip155:8453`
 - Asset: USDC
+- Canonical Base mainnet USDC receiving address: `0x1cc1c0576874b30b0ba014abb93c0768a3fa1cb4`
 - Wallet policy: receiver-only
 
 ## Discovery sequence
