@@ -21,7 +21,7 @@ test('v5 release metadata is consistent', () => {
   assert.equal(liveStatus.publicHealthVersionObserved, '5.0.1');
   assert.equal(liveStatus.sourceConfiguredProfile.receiver, RECEIVER);
   assert.equal(liveStatus.publicObservedProfile.receiver, '0x2381A81818E0FdCBe36c901e52dD87472ceE6a32');
-  assert.match(serverRuntime, /app\\.get\\(['\"]\\/llms\\.txt['\"]/);
+  assert.ok(serverRuntime.includes("app.get('/llms.txt'"));
 });
 
 test('v5 preserves receiver-only Base mainnet x402 v1/v2 boundaries', () => {
