@@ -16,19 +16,22 @@ Agent-native MCP for governed commerce, x402 payments, paid capabilities, and ve
 
 `5.0.1` — the exact dependency-hardening source being prepared for promotion.
 
-**Current public runtime before host cutover**
+**Public health version observed**
 
-`5.0.0` — the current public runtime before the v5.0.1 host cutover.
+`5.0.1` — the live `/health` endpoint reports this version.
 
-**Promotion state**
+**Production payment status**
 
-The source is being prepared as patch release `5.0.1`. The host-side restart and GitHub release/tag are performed only after the running process is verified against this exact source.
+The live `/.well-known/x402` endpoint still advertises `0x2381A81818E0FdCBe36c901e52dD87472ceE6a32`, while the canonical source receiver is `0x1cc1c0576874b30b0ba014abb93c0768a3fa1cb4`. Paid execution must remain blocked for buyers until the production host is reconciled and a fresh unpaid challenge advertises the canonical receiver.
+
+The source release is `5.0.1`. A healthy `/health` response does not prove the payment configuration is current.
 
 **Public verification**
 
 - Cloudflare Tunnel `crossingkey-mcp` is healthy.
 - `mcp.crossingkeyintelligence.com` routes to the V5 origin on `127.0.0.1:3401`.
 - Public discovery reports V5, Streamable HTTP, and Base mainnet `eip155:8453`.
+- The live x402 receiver is currently inconsistent with source and must not be treated as payment-ready.
 - No live payment or Base settlement is implied by discovery metadata alone.
 
 This repository is the source of truth for the v5.0.1 candidate. Runtime deployment and release tagging are tracked separately.
