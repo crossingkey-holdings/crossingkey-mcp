@@ -1255,7 +1255,7 @@ app.get('/llms.txt', (_req, res) => {
     '- Canonical source receiver: 0x1cc1c0576874b30b0ba014abb93c0768a3fa1cb4',
     '- Verify the live PAYMENT-REQUIRED challenge before paying.',
     ''
-  ].join('\\n'));
+  ].join('\n'));
 });
 
 app.get('/.well-known/glama.json', (_req, res) => {
