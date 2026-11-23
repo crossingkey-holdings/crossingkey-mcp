@@ -50,7 +50,8 @@ const SERVICES_FILE = process.env.CK_SERVICES_FILE || path.join(HERE,'data','req
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
 const CLAIM_SECRET = process.env.CLAIM_SECRET || '';
-const CK_RECEIVER_ADDRESS = process.env.CK_RECEIVER_ADDRESS || LOCKED_RECEIVER;
+// Receiver identity is code-controlled to prevent host environment drift.
+const CK_RECEIVER_ADDRESS = LOCKED_RECEIVER;
 const CK_ENABLE_MAINNET = process.env.CK_ENABLE_MAINNET === 'true';
 const X402_FACILITATOR_URL = process.env.X402_FACILITATOR_URL || 'https://x402.org/facilitator';
 const MACHINE_COMMERCE_FILE = process.env.MACHINE_COMMERCE_FILE || path.join(HERE,'data','machine_commerce.json');

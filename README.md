@@ -202,6 +202,8 @@ CrossingKey supports governed machine-payment infrastructure including:
 - idempotent execution
 - replay protection
 
+The canonical Base mainnet USDC receiving address is `0x1cc1c0576874b30b0ba014abb93c0768a3fa1cb4`. It is code-controlled and cannot be silently overridden by host environment variables.
+
 The CrossingKey seller wallet boundary is **receiver-only**.
 
 Agents are not granted unrestricted wallet signing, sending, swapping, bridging, or autonomous seller-spend authority.
