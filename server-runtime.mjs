@@ -1226,6 +1226,38 @@ app.get('/health', (_req, res) => {
   });
 });
 
+app.get('/llms.txt', (_req, res) => {
+  res.set('Cache-Control', 'public, max-age=300');
+  res.set('X-Content-Type-Options', 'nosniff');
+  return res.type('text/plain').send([
+    '# CrossingKey MCP',
+    '',
+    'Governed Streamable HTTP MCP for bounded capabilities, buyer-authorized machine commerce, x402 payments, and verifiable receipts.',
+    '',
+    '## Endpoints',
+    '- MCP: https://mcp.crossingkeyintelligence.com/mcp',
+    '- Health: https://mcp.crossingkeyintelligence.com/health',
+    '- MCP discovery: https://mcp.crossingkeyintelligence.com/.well-known/mcp.json',
+    '- x402 discovery: https://mcp.crossingkeyintelligence.com/.well-known/x402',
+    '- OpenAPI: https://mcp.crossingkeyintelligence.com/openapi.json',
+    '- Human documentation: https://www.crossingkeyintelligence.com/mcp/',
+    '- Source: https://github.com/crossingkey-holdings/crossingkey-mcp',
+    '',
+    '## Commerce safety',
+    '- Discovery is free.',
+    '- Paid execution requires explicit buyer authorization and valid payment.',
+    '- Seller wallet policy is receiver-only.',
+    '- Never send payment unless the live x402 challenge matches the canonical receiver published in current MCP discovery.',
+    '',
+    '## Payment network',
+    '- Base mainnet: eip155:8453',
+    '- Asset: USDC',
+    '- Canonical source receiver: 0x1cc1c0576874b30b0ba014abb93c0768a3fa1cb4',
+    '- Verify the live PAYMENT-REQUIRED challenge before paying.',
+    ''
+  ].join('\\n'));
+});
+
 app.get('/.well-known/glama.json', (_req, res) => {
   res.set('Cache-Control', 'no-store');
   res.set('X-Content-Type-Options', 'nosniff');
