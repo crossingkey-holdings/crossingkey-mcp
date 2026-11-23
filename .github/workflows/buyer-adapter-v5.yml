@@ -6,12 +6,24 @@ on:
       - "clients/x402-buyer/**"
       - "tests/buyer-adapter-v5.test.mjs"
       - "docs/BUYER_ADAPTER_V5.md"
+      - "server-runtime.mjs"
+      - "lib/machine-commerce.mjs"
+      - "lib/mcp-manifest.mjs"
+      - "live-status.json"
+      - "scripts/audit-endpoint-continuity.mjs"
+      - "tests/v5-server-contract.test.mjs"
       - ".github/workflows/buyer-adapter-v5.yml"
   pull_request:
     paths:
       - "clients/x402-buyer/**"
       - "tests/buyer-adapter-v5.test.mjs"
       - "docs/BUYER_ADAPTER_V5.md"
+      - "server-runtime.mjs"
+      - "lib/machine-commerce.mjs"
+      - "lib/mcp-manifest.mjs"
+      - "live-status.json"
+      - "scripts/audit-endpoint-continuity.mjs"
+      - "tests/v5-server-contract.test.mjs"
       - ".github/workflows/buyer-adapter-v5.yml"
 
 permissions:
